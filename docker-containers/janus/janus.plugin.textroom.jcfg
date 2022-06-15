@@ -28,3 +28,7 @@ room-1234: {
 	history = 50
 	# post = "http://example.com/forward/here"
 }
+
+#room-1: {
+#	description = "Room 1"
+#}

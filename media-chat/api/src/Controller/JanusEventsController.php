@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Common\JanusConstants;
+use App\Service\JanusUserApiService;
+use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,10 +13,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class JanusEventsController extends AbstractController
 {
     private LoggerInterface $logger;
+    private Connection $conn;
+    private JanusUserApiService $janusUserApi;
 
-    public function __construct(LoggerInterface $janusEventsLogger)
+    public function __construct(
+        LoggerInterface $janusEventsLogger,
+        Connection $conn,
+        JanusUserApiService $janusUserApi
+    )
     {
         $this->logger = $janusEventsLogger;
+        $this->conn = $conn;
+        $this->janusUserApi = $janusUserApi;
     }
 
     #[Route(path: '/janus-events', format: 'json', methods: ['POST'])]
@@ -51,6 +61,14 @@ class JanusEventsController extends AbstractController
                 $this->logger->info('server_started');
                 // connect to server
                 // create absent rooms
+                $sql = '
+                    SELECT * FROM rooms WHERE deleted=0
+                ';
+                $rooms = $this->conn->fetchAllAssociative($sql);
+                foreach ($rooms as $room) {
+                    $this->logger->info('room ' . json_encode($room));
+                }
+                $this->janusUserApi->createRoomsIgnoreExisting($rooms);
                 break;
             case 'shutdown':
                 $this->logger->info('server_shutdown');

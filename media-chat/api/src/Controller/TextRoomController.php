@@ -113,7 +113,7 @@ class TextRoomController extends AbstractController
         return $this->json($result);
     }
 
-    #[Route('/{roomId}', methods: ['DELETE'], requirements: ['roomId' => '\d+'])]
+    #[Route('/{roomId}', requirements: ['roomId' => '\d+'], methods: ['DELETE'])]
     public function destroy(
         int $roomId,
         JanusUserApiService $janusUserApi,

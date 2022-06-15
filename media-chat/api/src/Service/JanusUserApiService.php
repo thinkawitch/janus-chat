@@ -1,14 +1,15 @@
 <?php
 namespace App\Service;
 
+use App\Common\JanusConstants;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JanusUserApiService
 {
     private HttpClientInterface $client;
     private string $textRoomAdminSecret;
-    private ?string $sessionId = null;
-    private ?string $textRoomId = null;
+    private ?string $sessionId = null; # session handler
+    private ?string $textRoomId = null; # textroom plugin handler
 
     public function __construct(HttpClientInterface $janusUserClient, string $textRoomAdminSecret)
     {
@@ -110,10 +111,10 @@ class JanusUserApiService
             'permanent' => $permanent,
         ];
 
-        if (strlen($description)) $body['description'] = $description;
-        if (strlen($secret)) $body['secret'] = $secret;
-        if (strlen($pin)) $body['pin'] = $pin;
-        if (strlen($post)) $body['post'] = $post;
+        if (!empty($description)) $body['description'] = $description;
+        if (!empty($secret)) $body['secret'] = $secret;
+        if (!empty($pin)) $body['pin'] = $pin;
+        if (!empty($post)) $body['post'] = $post;
 
         $endpoint = $this->sessionId . '/' . $this->textRoomId;
         $result = $this->makeTextRoomRequest($body, $endpoint);
@@ -122,6 +123,44 @@ class JanusUserApiService
         $this->destroySession();
 
         return $result;
+    }
+
+    public function createRoomsIgnoreExisting(array $rooms): void
+    {
+        $this->createNewSession();
+        $this->attachToTextRoom();
+
+        foreach ($rooms as $room) {
+            $body = [
+                'request' => 'create',
+                'admin_key' => $this->textRoomAdminSecret,
+                'room' => $room['id'],
+                'is_private' => $room['private'] === 1,
+                'history' => $room['history'],
+                'permanent' => $room['permanent'] === 1,
+            ];
+
+            if (!empty($room['description'])) $body['description'] = $room['description'];
+            if (!empty($room['secret'])) $body['secret'] = $room['secret'];
+            if (!empty($room['pin'])) $body['pin'] = $room['pin'];
+            if (!empty($room['post'])) $body['post'] = $room['post'];
+
+            $endpoint = $this->sessionId . '/' . $this->textRoomId;
+            try {
+                $this->makeTextRoomRequest($body, $endpoint);
+            } catch (\ErrorException $e) {
+                if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS) {
+                    // do nothing
+                } else {
+                    throw $e;
+                }
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        }
+
+        $this->detachFromTextRoom();
+        $this->destroySession();
     }
 
     public function destroyRoom(int $id, bool $permanent=false) : array
