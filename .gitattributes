@@ -1,3 +1,5 @@
 *.png filter=lfs diff=lfs merge=lfs -text
 *.ico filter=lfs diff=lfs merge=lfs -text
+media-chat/common/js/vendor/** filter=lfs diff=lfs merge=lfs -text
 media-chat/app/public/js/vendor/** filter=lfs diff=lfs merge=lfs -text
+media-chat/admin/public/js/vendor/** filter=lfs diff=lfs merge=lfs -text
