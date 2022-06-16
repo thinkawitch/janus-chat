@@ -1,14 +1,14 @@
-// preact 10.7.0 put into local dir, unpkg.com have not-correct builds
+// preact 10.8.0 put into local dir, unpkg.com have not-correct builds
 
 
 const shouldLoadDT = true; //new URLSearchParams(window.location.search).has('dev');
 console.log('should load devtool?', shouldLoadDT);
 if (shouldLoadDT) {
-    //await import('https://unpkg.com/preact@10.7.0/devtools/dist/devtools.module.js?module');
+    //await import('https://unpkg.com/preact@10.8.0/devtools/dist/devtools.module.js?module');
     await import('/js/vendor/preact/devtools.module.js');
 }
 
-//import { h, render, createContext, createElement } from 'https://unpkg.com/preact@10.7.0?module';
+//import { h, render, createContext, createElement } from 'https://unpkg.com/preact@10.8.0?module';
 import { h, render, createContext, createElement, createRef } from '/js/vendor/preact/preact.module.js';
 
 //import { useContext, useState, useReducer, useMemo } from 'https://unpkg.com/preact@latest/hooks/dist/hooks.module.js?module';
@@ -19,7 +19,7 @@ import {
 } from '/js/vendor/preact/hooks.module.js';
 
 // has wrong path to hooks
-//import { memo, forwardRef, unstable_batchedUpdates } from 'https://unpkg.com/preact@10.7.0/compat/dist/compat.module.js?module';
+//import { memo, forwardRef, unstable_batchedUpdates } from 'https://unpkg.com/preact@10.8.0/compat/dist/compat.module.js?module';
 import { memo, forwardRef, unstable_batchedUpdates } from '/js/vendor/preact/compat.module.js';
 
 import htm from 'https://unpkg.com/htm@latest/dist/htm.module.js?module';
@@ -56,13 +56,13 @@ delete window.ReactDOM;
 const { Provider, useSelector, useDispatch } = window.ReactRedux;
 
 // redux toolkit
-import 'https://unpkg.com/@reduxjs/toolkit@1.8.0/dist/redux-toolkit.umd.js';
+import 'https://unpkg.com/@reduxjs/toolkit@1.8.2/dist/redux-toolkit.umd.js';
 console.log('window.RTK', window.RTK);
 const { configureStore, createSlice, createAction, createAsyncThunk } = window.RTK;
 
 // day.js
-import dayjs from 'https://unpkg.com/dayjs@1.11.1/esm/index.js';
-import isToday from 'https://unpkg.com/dayjs@1.11.1/esm/plugin/isToday/index.js';
+import dayjs from 'https://unpkg.com/dayjs@1.11.3/esm/index.js';
+import isToday from 'https://unpkg.com/dayjs@1.11.3/esm/plugin/isToday/index.js';
 dayjs.extend(isToday);
 
 
