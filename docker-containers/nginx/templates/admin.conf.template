@@ -13,6 +13,11 @@ server {
     error_log  /var/log/nginx/admin.error.log info;
 
     root  /var/www/admin/public;
+
+    # rule for app urls
+    location ~ ^/(login|users|rooms) {
+        try_files index.html =404;
+    }
 }
 
 

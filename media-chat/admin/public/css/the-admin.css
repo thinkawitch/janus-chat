@@ -1,0 +1,35 @@
+
+/* make login form full screen */
+.screen-sign-in {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--bs-gray-100);
+}
+
+.form-sign-in {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+}
+
+.form-sign-in .ico-logo {
+    color: var(--bs-primary);
+}
+
+.form-sign-in .form-floating:focus-within {
+    z-index: 2;
+}
+
+.form-sign-in input[type="text"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-sign-in input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
