@@ -16,7 +16,7 @@ server {
 
     # rule for app urls
     location ~ ^/(login|users|rooms) {
-        try_files index.html =404;
+        try_files /index.html =404;
     }
 }
 

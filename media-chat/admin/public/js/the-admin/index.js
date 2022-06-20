@@ -2,6 +2,7 @@ import { html, render, Provider, useSelector, useDispatch, route } from './impor
 import { store } from './redux-toolkit/configure-store.js';
 import Main from './components/main.js';
 import Login from './components/login.js';
+import { userIsLoggedOut } from './redux-toolkit/actions/user-actions.js';
 
 
 function App() {
@@ -16,6 +17,8 @@ function App() {
         return Connecting();
     }*/
 
+    //const { data, error, isLoading } = useIsLoggedOutQuery();
+
     const { user } = useSelector(store => store);
     if (!user || !user.id ) {
         // save asked page and jump user to login
@@ -27,6 +30,7 @@ function App() {
             window.location.href = '/login';
         }*/
 
+
         return Login();
     }
 
@@ -34,6 +38,7 @@ function App() {
 }
 
 export function renderAdmin(node) {
+    store.dispatch(userIsLoggedOut());
     // store.dispatch(setUser(user));
     // store.dispatch(addUser(user));
     // store.dispatch(setRoomId(roomId));

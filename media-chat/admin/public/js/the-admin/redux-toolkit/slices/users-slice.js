@@ -1,5 +1,5 @@
 import { createSlice } from '../../imports.js';
-import { askExternalUser } from '../actions/users-actions.js';
+//import { askExternalUser } from '../actions/users-actions.js';
 
 // all app users, full objects from outside world
 const initialState = []
@@ -22,12 +22,12 @@ export const usersSlice = createSlice({
             state = [];
         }
     },
-    extraReducers: {
+    /*extraReducers: {
         [askExternalUser.fulfilled]: (state, action) => {
             //state.push(action.payload);
             addOrUpdateUser(state, action.payload);
         }
-    }
+    }*/
 });
 
 // Action creators are generated for each case reducer function

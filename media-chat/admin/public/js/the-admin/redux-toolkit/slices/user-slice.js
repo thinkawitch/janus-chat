@@ -1,4 +1,5 @@
 import { createSlice } from '../../imports.js';
+import { userIsLoggedOut } from '../actions/user-actions.js';
 
 const initialState = {
     id: null,
@@ -14,8 +15,16 @@ export const userSlice = createSlice({
         },
         clearUser: () => {
             return { ...initialState };
+        },
+        isLoggedOut: (state) => {
+
         }
     },
+    extraReducers: {
+        [userIsLoggedOut.fulfilled]: (state, action) => {
+            console.log('extraReducers, userIsLoggedOut.fulfilled', action)
+        }
+    }
 });
 
 // Action creators are generated for each case reducer function

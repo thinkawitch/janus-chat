@@ -64,6 +64,12 @@ import 'https://unpkg.com/@reduxjs/toolkit@1.8.2/dist/redux-toolkit.umd.js';
 console.log('window.RTK', window.RTK);
 const { configureStore, createSlice, createAction, createAsyncThunk } = window.RTK;
 
+// redux toolkit query, can't connect with preact
+// import 'https://unpkg.com/@reduxjs/toolkit@1.8.2/dist/query/rtk-query.umd.js';
+// //import 'https://unpkg.com/@reduxjs/toolkit@1.8.2/dist/query/react/rtk-query-react.umd.js';
+// console.log('window.RTKQ', window.RTKQ);
+// const { createApi, fetchBaseQuery, setupListeners } = window.RTKQ;
+
 // day.js
 import dayjs from 'https://unpkg.com/dayjs@1.11.3/esm/index.js';
 import isToday from 'https://unpkg.com/dayjs@1.11.3/esm/plugin/isToday/index.js';
@@ -96,6 +102,10 @@ export {
     createSlice,
     createAction,
     createAsyncThunk,
+    // redux-toolkit-query
+    // createApi,
+    // fetchBaseQuery,
+    // setupListeners,
     // day.js
     dayjs
 }
