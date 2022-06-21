@@ -115,6 +115,30 @@
         }
       }
     },
+    "/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get current user",
+        "description": "",
+        "operationId": "getMe",
+        "requestBody": {
+          "content": {
+            "application/json": {
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user (me)"
+          },
+          "401": {
+            "description": "User logged out"
+          }
+        }
+      }
+    },
 
     "/textroom": {
       "get": {

@@ -12,7 +12,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[Route(null, format:'json')]
 class LoginController extends AbstractController
 {
-    #[Route('/login', name: 'app_login')]
+    #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function index(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {
@@ -21,11 +21,11 @@ class LoginController extends AbstractController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        $token = '_some_token_';
+        //$token = '_some_token_';
 
         return $this->json([
-            'user' => $user->getUserIdentifier(),
-            'token' => $token,
+            'id' => $user->getId(),
+            'username' => $user->getUsername(),
         ]);
     }
 
@@ -35,7 +35,22 @@ class LoginController extends AbstractController
         throw new \Exception('Logout: should not run this');
     }
 
-    #[Route('/is_logged_out', name: 'app_is_logged_out')]
+    #[Route('/me', name: 'app_me', methods: ['GET'])]
+    public function me(#[CurrentUser] ?User $user): JsonResponse
+    {
+        if (null === $user) {
+            return $this->json([
+                'is_logged_out' => true,
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->json([
+            'id' => $user->getId(),
+            'username' => $user->getUsername(),
+        ]);
+    }
+
+    #[Route('/is_logged_out', name: 'app_is_logged_out', methods: ['GET'])]
     public function isLoggedOut(#[CurrentUser] ?User $user): JsonResponse
     {
         if (null === $user) {

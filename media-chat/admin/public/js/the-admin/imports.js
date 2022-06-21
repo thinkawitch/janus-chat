@@ -22,7 +22,8 @@ import {
 //import { memo, forwardRef, unstable_batchedUpdates } from 'https://unpkg.com/preact@10.8.0/compat/dist/compat.module.js?module';
 import { memo, forwardRef, unstable_batchedUpdates } from '/js/vendor/preact/compat.module.js';
 
-import htm from 'https://unpkg.com/htm@latest/dist/htm.module.js?module';
+//import htm from 'https://unpkg.com/htm@latest/dist/htm.module.js?module';
+import htm from 'https://unpkg.com/htm@3.1.1/dist/htm.module.js?module';
 const html = htm.bind(h);
 
 // preact-router

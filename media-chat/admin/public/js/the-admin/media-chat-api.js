@@ -1,16 +1,28 @@
 import { mediaChatApiBaseUrl } from './config.js';
 
 
-const init = {
+const fetchInit = {
     mode: 'cors',
     credentials: 'same-origin',
 }
 
 const mediaChatApi = {
-    isUserLoggedOut: async () => {
-        const data = await fetch(`${mediaChatApiBaseUrl}is_logged_out`, init);
-        console.log('isUserLoggedOut data', data);
-    }
+
+    auth: {
+        isLoggedOut: async () => {
+            const data = await fetch(`${mediaChatApiBaseUrl}is_logged_out`, fetchInit);
+            console.log('auth isLoggedOut data', data);
+        },
+    },
+
+    user: {
+        getMe: async () => {
+            const data = await fetch(`${mediaChatApiBaseUrl}me`, fetchInit);
+            console.log('user getMe data', data);
+        },
+    },
+
+
 }
 
 export default mediaChatApi;

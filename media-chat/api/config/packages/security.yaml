@@ -43,6 +43,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/is_logged_out, roles: PUBLIC_ACCESS }
+        - { path: ^/me, roles: PUBLIC_ACCESS }
         - { path: ^/janus-events, roles: ROLE_JANUS_EVENTS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
