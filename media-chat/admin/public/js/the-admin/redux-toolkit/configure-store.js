@@ -1,10 +1,12 @@
 import { configureStore/*, setupListeners*/ } from '../imports.js';
+import authReducer from './slices/auth-slice.js';
 import userReducer from './slices/user-slice.js';
 import usersReducer from './slices/users-slice.js';
 //import { mediaChatApi } from './services/media-chat-api.js';
 
 export const store = configureStore({
     reducer: {
+        auth: authReducer,  // for login/logout process
         user: userReducer,  // me
         users: usersReducer, // all users
     },

@@ -1,5 +1,6 @@
 import { createSlice } from '../../imports.js';
-import { userIsLoggedOut } from '../actions/user-actions.js';
+import { userLogin, userIsLoggedOut } from '../actions/auth-actions.js';
+import { userGetMe } from '../actions/user-actions.js';
 
 const initialState = {
     id: null,
@@ -22,8 +23,19 @@ export const userSlice = createSlice({
     },
     extraReducers: {
         [userIsLoggedOut.fulfilled]: (state, action) => {
-            console.log('extraReducers, userIsLoggedOut.fulfilled', action)
-        }
+            console.log('userSlice, userIsLoggedOut.fulfilled', action)
+        },
+        [userGetMe.fulfilled]: (state, action) => {
+            console.log('userSlice, userGetMe.fulfilled', action)
+            return { ...action.payload };
+        },
+        [userGetMe.rejected]: (state, action) => {
+            console.log('userSlice, userGetMe.rejected', action)
+            return { ...initialState };
+        },
+        [userLogin.fulfilled]: (state, action) => {
+            return { ...action.payload };
+        },
     }
 });
 

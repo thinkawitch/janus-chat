@@ -3,20 +3,20 @@ import { selectUserByFrom } from '../slices/users-slice.js';
 import mediaChatApi from '../../media-chat-api.js';
 
 
-export const userGetMe = createAsyncThunk(
-    'user/getMe',
+export const userLogin = createAsyncThunk(
+    'user/login',
+    async (arg, thunkAPI) => {
+        const { username, password } = arg;
+        return await mediaChatApi.auth.login(username, password);
+    }
+)
+
+
+export const userIsLoggedOut = createAsyncThunk(
+    'user/isLoggedOut',
     async (arg, thunkAPI) => {
 
-        // try {
-            const data = await mediaChatApi.user.getMe();
-            console.log('userGetMe_data', data);
-            return data;
-        // } catch (error) {
-        //     let errorText = 'user_get_me_unknown_error';
-        //     return thunkAPI.rejectWithValue(error);
-        // }
-
-
+        return await mediaChatApi.auth.isLoggedOut();
 
         /*const found = selectUserByFrom(thunkAPI.getState(), username);
         if (found) {

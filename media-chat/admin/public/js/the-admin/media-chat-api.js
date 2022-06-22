@@ -3,12 +3,28 @@ import { mediaChatApiBaseUrl } from './config.js';
 
 const fetchInit = {
     mode: 'cors',
-    credentials: 'same-origin',
+    credentials: 'include', //'same-origin',
 }
 
 const mediaChatApi = {
 
     auth: {
+        login: async (username, password) => {
+            const response = await fetch(`${mediaChatApiBaseUrl}login`, { ...fetchInit,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            console.log('data', data);
+            if (data) {
+                if ('id' in data) return data;
+                if ('error' in data) return Promise.reject(data.error);
+            }
+            return Promise.reject('login_unknown_error');
+        },
         isLoggedOut: async () => {
             const data = await fetch(`${mediaChatApiBaseUrl}is_logged_out`, fetchInit);
             console.log('auth isLoggedOut data', data);
@@ -17,8 +33,13 @@ const mediaChatApi = {
 
     user: {
         getMe: async () => {
-            const data = await fetch(`${mediaChatApiBaseUrl}me`, fetchInit);
-            console.log('user getMe data', data);
+            const response = await fetch(`${mediaChatApiBaseUrl}me`, fetchInit);
+            const data = await response.json();
+            if (!data || 'is_logged_out' in data) {
+                //throw new Error('is_logged_out');
+                return Promise.reject('is_logged_out');
+            }
+            return data;
         },
     },
 

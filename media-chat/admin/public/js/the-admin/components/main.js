@@ -7,16 +7,27 @@ import Rooms from './rooms.js';
 export default function Main() {
 
     return html`
-        <nav>
-            <a href="/users">users</a>
-            <a href="/rooms">rooms</a>
-        </nav>
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/rooms">Rooms</a>
+            </li>
+            <li class="nav-item ms-auto">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+        
         <${Router}>
             <${Login} path="/login" />
             <${Users} path="/users" />
             <${Rooms} path="/rooms"/>
             <div default>
-                dashboard
+                <h1>Dashboard</h1>
             </div>
         </Router>
     `;
