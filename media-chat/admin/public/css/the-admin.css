@@ -1,3 +1,13 @@
+/* bootstrap styles fixes for project  */
+.offcanvas-start {
+    width: 300px;
+}
+
+
+/* small-menu */
+.small-menu {
+    cursor: pointer;
+}
 
 /* make login form full screen */
 .screen-sign-in {
