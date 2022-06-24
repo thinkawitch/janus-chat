@@ -25,8 +25,14 @@ const mediaChatApi = {
             }
             return Promise.reject('login_unknown_error');
         },
+        logout: async () => {
+            const response = await fetch(`${mediaChatApiBaseUrl}logout`, fetchInit);
+            const data = await response.json();
+            console.log('auth logout data', data);
+        },
         isLoggedOut: async () => {
-            const data = await fetch(`${mediaChatApiBaseUrl}is_logged_out`, fetchInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}is_logged_out`, fetchInit);
+            const data = await response.json();
             console.log('auth isLoggedOut data', data);
         },
     },

@@ -11,6 +11,13 @@ export const userLogin = createAsyncThunk(
     }
 )
 
+export const userLogout = createAsyncThunk(
+    'user/logout',
+    async (arg, thunkAPI) => {
+        return await mediaChatApi.auth.logout();
+    }
+)
+
 
 export const userIsLoggedOut = createAsyncThunk(
     'user/isLoggedOut',

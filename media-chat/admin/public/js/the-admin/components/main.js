@@ -1,5 +1,6 @@
 import { html, useSelector, useDispatch, Router, route, useState, useCallback } from '../imports.js';
 import Login from './login.js';
+import HeaderSideMenu from './main/header-side-menu.js';
 import Users from './users.js';
 import Rooms from './rooms.js';
 
@@ -18,22 +19,10 @@ export default function Main() {
     }, [setShowPanel]);
 
     return html`
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/users">Users</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/rooms">Rooms</a>
-            </li>
-            <li class="nav-item ms-auto">
-                <a class="nav-link" href="/logout">Logout</a>
-            </li>
-        </ul>
-        
+        <${HeaderSideMenu} />
+        <div class="container-md">
         <${Router}>
+            
             <${Login} path="/login" />
             <${Users} path="/users" />
             <${Rooms} path="/rooms"/>
@@ -59,5 +48,6 @@ export default function Main() {
                 
             </div>
         </Router>
+        </div>
     `;
 }

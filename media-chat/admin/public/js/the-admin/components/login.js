@@ -16,7 +16,7 @@ export default function Login() {
     }, []);
 
     return html`
-        <div class="screen-sign-in h-100 d-flex flex-column align-items-center justify-content-center">
+        <div class="screen-sign-in d-flex flex-column align-items-center justify-content-center">
             <!--<h1>Login page</h1>-->
             <div class="form-sign-in">
                 <form action="" class="text-center" onSubmit=${onSubmit}>
