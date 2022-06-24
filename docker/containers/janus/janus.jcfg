@@ -198,8 +198,8 @@ certificates: {
 	#dtls_ciphers = "your-desired-openssl-ciphers"
 	#rsa_private_key = false
 
-	cert_pem = "/usr/local/etc/ssl-certs/cc.lan.crt"
-    cert_key = "/usr/local/etc/ssl-certs/cc.lan.key"
+	cert_pem = "/usr/local/etc/ssl-certs/ssl_media_chat.crt"
+    cert_key = "/usr/local/etc/ssl-certs/ssl_media_chat.key"
 	dtls_accept_selfsigned = true
 }
 

@@ -1,7 +1,7 @@
-docker-logs/*
-!docker-logs/.gitkeep
-docker-containers/ssl-certs/*
-!docker-containers/ssl-certs/.gitkeep
+docker/logs/*
+!docker/logs/.gitkeep
+docker/containers/ssl-certs/*
+!docker/containers/ssl-certs/.gitkeep
 .idea/
 /.env
 /make.env

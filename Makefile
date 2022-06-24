@@ -21,10 +21,10 @@ help: ## This help.
 # the commands
 
 delete-logs:	## Delete all logs
-	sudo rm -fr ./docker-logs/janus/log/*
-	sudo rm -fr ./docker-logs/nginx/log/*
-	sudo rm -fr ./docker-logs/php/admin/*
-	sudo rm -fr ./docker-logs/php/api/*
+	sudo rm -fr ./docker/logs/janus/log/*
+	sudo rm -fr ./docker/logs/nginx/log/*
+	sudo rm -fr ./docker/logs/php/admin/*
+	sudo rm -fr ./docker/logs/php/api/*
 
 build: ## Build docker containers and images
 	docker-compose build

@@ -67,6 +67,6 @@ certificates: {
 	#ciphers = "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256"
 
     # andrew
-	cert_pem = "/usr/local/etc/ssl-certs/cc.lan.crt"
-    cert_key = "/usr/local/etc/ssl-certs/cc.lan.key"
+	cert_pem = "/usr/local/etc/ssl-certs/ssl_media_chat.crt"
+    cert_key = "/usr/local/etc/ssl-certs/ssl_media_chat.key"
 }

@@ -73,6 +73,6 @@ certificates: {
 	#ciphers = "PFS:-VERS-TLS1.0:-VERS-TLS1.1:-3DES-CBC:-ARCFOUR-128"
 
     # andrew
-	cert_pem = "/usr/local/etc/ssl-certs/cc.lan.crt"
-    cert_key = "/usr/local/etc/ssl-certs/cc.lan.key"
+	cert_pem = "/usr/local/etc/ssl-certs/ssl_media_chat.crt"
+    cert_key = "/usr/local/etc/ssl-certs/ssl_media_chat.key"
 }

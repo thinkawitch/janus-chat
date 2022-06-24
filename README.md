@@ -6,7 +6,7 @@ Some simple chat to use on own purpose. Made with [Janus](https://janus.conf.mee
 ### Setup
 1. Make copies of .dist files: .env.dist, make.env.dist, config-ice-servers.js.dist 
 3. Make changes in `.env`, `make.env` according to your environment
-4. Place your ssl certificates to `docker-containers/ssl-certs/` and set their names in config files
+4. Place your ssl certificates to `docker/containers/ssl-certs/` as ssl_media_chat.crt, ssl_media_chat.key, or set their names in config files
 5. ```$ git clone git@github.com:meetecho/janus-gateway.git```
 6. ```$ docker-compose up```
 
@@ -14,6 +14,6 @@ Some simple chat to use on own purpose. Made with [Janus](https://janus.conf.mee
 
 ### Files
 
-- `./docker-containers/` - config files for janus, nginx, app, etc. 
-- `./docker-logs/` - log files from inside of docker 
+- `./docker/containers/` - config files for janus, nginx, app, etc. 
+- `./docker/logs/` - log files from inside of docker 
 - `./janus-gateway/` - original janus repo with demo apps
