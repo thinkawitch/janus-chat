@@ -5,7 +5,7 @@ export default function Login() {
     const { auth: { pending, rejected, error } } = useSelector(store => store);
     const dispatch = useDispatch();
     const [ formVals, setFromVals ] = useState({ username: '', password: '' })
-
+    //console.log('Login.formVals', formVals); // after unmount and mount state is the same, strange!
     const onSubmit = useCallback(e => {
         e.preventDefault();
         const username = e.target.username.value;

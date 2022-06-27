@@ -1,5 +1,5 @@
 import { createSlice } from '../../imports.js';
-import { userLogin, userIsLoggedOut } from '../actions/auth-actions.js';
+import { userLogin, userLogout, userIsLoggedOut } from '../actions/auth-actions.js';
 import { userGetMe } from '../actions/user-actions.js';
 
 const initialState = {
@@ -35,6 +35,10 @@ export const userSlice = createSlice({
         },
         [userLogin.fulfilled]: (state, action) => {
             return { ...action.payload };
+        },
+        [userLogout.fulfilled]: (state, action) => {
+            console.log('userSlice, userLogout.fulfilled', action)
+            return { ...initialState };
         },
     }
 });

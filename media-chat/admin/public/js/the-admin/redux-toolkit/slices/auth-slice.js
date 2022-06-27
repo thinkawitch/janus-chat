@@ -1,6 +1,6 @@
 import { createSlice } from '../../imports.js';
 import { userGetMe } from '../actions/user-actions.js';
-import { userLogin } from '../actions/auth-actions.js';
+import { userLogin, userLogout } from '../actions/auth-actions.js';
 
 
 const initialState = {
@@ -43,6 +43,10 @@ export const authSlice = createSlice({
         [userLogin.rejected]: (state, action) => {
             console.log('authSlice, userLogin.rejected', action)
             return { ...initialState, rejected: true, error: action.error.message };
+        },
+        [userLogout.fulfilled]: (state, action) => {
+            console.log('authSlice, userLogout.fulfilled', action)
+            return { ...initialState, error: 'You are signed out' };
         },
     }
 });

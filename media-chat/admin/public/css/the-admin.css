@@ -4,9 +4,12 @@
 }
 
 
-/* small-menu */
-.small-menu {
+/* small-screen-menu */
+.small-screen-menu {
     cursor: pointer;
+}
+#pageSideMenu .nav-pills .nav-link.active {
+    background-color: var(--bs-gray-500);
 }
 
 /* make login form full screen */

@@ -6,6 +6,16 @@ const fetchInit = {
     credentials: 'include', //'same-origin',
 }
 
+let authRequiredHandler = null; // call when api says auth required, auth expired, etc
+
+function checkResponse(response) {
+    console.log('checkResponse', response);
+    if (response.status === 401) {
+        authRequiredHandler && authRequiredHandler();
+        throw new Error('auth_required');
+    }
+}
+
 const mediaChatApi = {
 
     auth: {
@@ -18,7 +28,7 @@ const mediaChatApi = {
                 body: JSON.stringify({ username, password })
             });
             const data = await response.json();
-            console.log('data', data);
+            console.log('mediaChatApi auth.login data', data);
             if (data) {
                 if ('id' in data) return data;
                 if ('error' in data) return Promise.reject(data.error);
@@ -40,8 +50,10 @@ const mediaChatApi = {
     user: {
         getMe: async () => {
             const response = await fetch(`${mediaChatApiBaseUrl}me`, fetchInit);
+            console.log('mediaChatApi user.getMe response.status', response.status)
             const data = await response.json();
             if (!data || 'is_logged_out' in data) {
+                console.log('mediaChatApi user.getMe data', data)
                 //throw new Error('is_logged_out');
                 return Promise.reject('is_logged_out');
             }
@@ -49,7 +61,16 @@ const mediaChatApi = {
         },
     },
 
+    textroom: {
+        get: async () => {
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, fetchInit);
+            checkResponse(response);
+        },
+    },
 
+    setAuthRequiredHandler: (handler) => {
+        authRequiredHandler = handler;
+    }
 }
 
 export default mediaChatApi;

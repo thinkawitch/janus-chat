@@ -1,5 +1,6 @@
-import { html, useCallback, useDispatch } from '../../imports.js';
+import { html, useCallback, useDispatch, useSelector } from '../../imports.js';
 import { userLogout } from '../../redux-toolkit/actions/auth-actions.js';
+import { userGetMe } from '../../redux-toolkit/actions/user-actions.js';
 
 export default function HeaderSideMenu() {
     const dispatch = useDispatch();
@@ -7,6 +8,24 @@ export default function HeaderSideMenu() {
         e && e.preventDefault();
         dispatch(userLogout());
     });
+    const { user, router: { url } } = useSelector(store => store);
+
+    const class1HomeActive = url === '/' ? 'link-secondary' : 'link-dark';
+    const class1RoomsActive = url === '/rooms' ? 'link-secondary' : 'link-dark';
+    const class1UsersActive = url === '/users' ? 'link-secondary' : 'link-dark';
+
+    const class2HomeActive = url === '/' ? 'active' : 'link-dark';
+    const class2RoomsActive = url === '/rooms' ? 'active' : 'link-dark';
+    const class2UsersActive = url === '/users' ? 'active' : 'link-dark';
+
+    const getMe = useCallback(e => {
+        e && e.preventDefault();
+        dispatch(userGetMe());
+    });
+
+    const textroomGet = useCallback(e => {
+        e && e.preventDefault();
+    })
 
     return html`
         <header class="p-3 mb-3 border-bottom">
@@ -17,30 +36,14 @@ export default function HeaderSideMenu() {
                     <!--<a href="#" class="d-none d-lg-flex align-items-center text-dark text-decoration-none">
                         <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bi-bootstrap"/></svg>
                     </a>-->
-                    <a href="#" class="d-flex align-items-center">
+                    <a href="/" class="d-flex align-items-center">
                         <img height="32" src="/apple-touch-icon.png" />
                     </a>
 
                     <ul class="nav col-12 col-lg-auto ms-2 me-lg-auto justify-content-center">
-                        <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Rooms</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Users</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 3</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 4</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 5</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 6</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <!--<li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>
-                        <li><a href="#" class="nav-link px-2 link-dark">Section 7</a></li>-->
+                        <li><a href="/" class="nav-link px-2 ${class1HomeActive}">Home</a></li>
+                        <li><a href="/rooms" class="nav-link px-2 ${class1RoomsActive}">Rooms</a></li>
+                        <li><a href="/users" class="nav-link px-2 ${class1UsersActive}">Users</a></li>
 
                     </ul>
 
@@ -50,10 +53,14 @@ export default function HeaderSideMenu() {
 
                     <div class="dropdown text-end">
                         <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle" />
+                            <!--<img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle" />-->
+                            <svg class="bi me-2" width="32" height="32"><use xlink:href="#bi-person-circle"></use></svg>
                         </a>
                         <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-                            <li><a class="dropdown-item" href="#">New project...</a></li>
+                            <li class="dropdown-item">${user.username}</li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li><a class="dropdown-item" href="#" onClick=${getMe}>api user.getMe</a></li>
+                            <li><a class="dropdown-item" href="#" onClick=${textroomGet}>api textroom.get</a></li>
                             <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li><hr class="dropdown-divider"/></li>
@@ -64,7 +71,7 @@ export default function HeaderSideMenu() {
             </div>
             <!-- small screen menu -->
             <div class="container-fluid d-lg-none">
-                <div class="d-flex align-items-center justify-content-start small-menu" href="#pageSideMenu" data-bs-toggle="offcanvas">
+                <div class="d-flex align-items-center justify-content-start small-screen-menu" href="#pageSideMenu" data-bs-toggle="offcanvas">
                     <!--<a href="#offcanvas" data-bs-toggle="offcanvas" class="d-flex align-items-center text-dark text-decoration-none">
                         <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bi-bootstrap"/></svg>
                     </a>-->
@@ -98,41 +105,30 @@ export default function HeaderSideMenu() {
 
                     <ul class="nav nav-pills flex-column mb-auto">
                         <li class="nav-item">
-                            <a href="#" class="nav-link active" aria-current="page">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#bi-home"></use></svg>
+                            <a href="/" class="nav-link ${class2HomeActive}" off-aria-current="page">
+                                <svg class="bi mb-1 me-2" width="16" height="16"><use xlink:href="#bi-home"></use></svg>
                                 Home
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link link-dark">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#bi-speedometer2"></use></svg>
-                                Dashboard
+                            <a href="/rooms" class="nav-link ${class2RoomsActive}">
+                                <svg class="bi mb-1 me-2" width="16" height="16"><use xlink:href="#bi-grid"></use></svg>
+                                Rooms
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link link-dark">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#bi-table"></use></svg>
-                                Orders
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link link-dark">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#bi-grid"></use></svg>
-                                Products
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link link-dark">
-                                <svg class="bi me-2" width="16" height="16"><use xlink:href="#bi-people-circle"></use></svg>
-                                Customers
+                            <a href="/users" class="nav-link ${class2UsersActive}">
+                                <svg class="bi mb-1 me-2" width="16" height="16"><use xlink:href="#bi-people-circle"></use></svg>
+                                Users
                             </a>
                         </li>
                     </ul>
                     <hr />
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2" />
-                            <strong>mdo</strong>
+                            <!--<img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2" />-->
+                            <svg class="bi me-2" width="32" height="32"><use xlink:href="#bi-person-circle"></use></svg>
+                            <strong class="text-truncate">${user.username}1111111111111111111111111</strong>
                         </a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
                             <li><a class="dropdown-item" href="#">New project...</a></li>

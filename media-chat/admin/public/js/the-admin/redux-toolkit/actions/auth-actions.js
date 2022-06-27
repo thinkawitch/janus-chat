@@ -18,6 +18,7 @@ export const userLogout = createAsyncThunk(
     }
 )
 
+export const authRequired = createAction('user/authRequired');
 
 export const userIsLoggedOut = createAsyncThunk(
     'user/isLoggedOut',
