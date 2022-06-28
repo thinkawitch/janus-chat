@@ -1,5 +1,7 @@
 import { createSlice } from '../../imports.js';
 
+// not in use, changing the redux state inside Router:onChange leads to extra render
+
 const initialState = {
     url: null,
     previous: null,

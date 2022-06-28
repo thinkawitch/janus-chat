@@ -29,7 +29,7 @@ const html = htm.bind(h);
 // preact-router
 // https://unpkg.com/browse/preact-router@4.0.1/dist/
 //import { Router, route } from 'https://unpkg.com/preact-router@4.0.1/dist/preact-router.module.js?module';
-import { Router, route } from '/js/vendor/preact-router/preact-router.js';
+import { Router, route, useRouter } from '/js/vendor/preact-router/preact-router.js';
 
 
 
@@ -94,6 +94,7 @@ export {
     // preact-router
     Router,
     route,
+    useRouter,
     // react-redux
     Provider,
     useSelector,

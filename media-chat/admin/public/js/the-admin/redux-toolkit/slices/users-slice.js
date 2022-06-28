@@ -19,7 +19,7 @@ export const usersSlice = createSlice({
 
         },
         cleanUsers: (state) => {
-            state = [];
+            return [];
         }
     },
     /*extraReducers: {

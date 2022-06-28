@@ -2,10 +2,10 @@ import { createAction, createAsyncThunk } from '../../imports.js';
 import mediaChatApi from '../../media-chat-api.js';
 
 
-export const textroomGetAll = createAsyncThunk(
-    'textroom/getAll',
+export const textRoomGetAll = createAsyncThunk(
+    'textRoom/getAll',
     async (arg, thunkAPI) => {
-        const signal = arg.signal // allow to abort
+        const signal = arg && arg.signal ? arg.signal : null // allow to abort
         return await mediaChatApi.textroom.getAll(signal);
     }
 )

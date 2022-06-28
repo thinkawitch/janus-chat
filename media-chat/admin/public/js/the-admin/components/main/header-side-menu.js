@@ -1,7 +1,7 @@
-import { html, useCallback, useDispatch, useSelector } from '../../imports.js';
+import { html, useCallback, useDispatch, useSelector, useRouter } from '../../imports.js';
 import { userLogout } from '../../redux-toolkit/actions/auth-actions.js';
 import { userGetMe } from '../../redux-toolkit/actions/user-actions.js';
-import { textroomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
+import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
 
 export default function HeaderSideMenu() {
     const dispatch = useDispatch();
@@ -9,7 +9,9 @@ export default function HeaderSideMenu() {
         e && e.preventDefault();
         dispatch(userLogout());
     });
-    const { user, router: { url } } = useSelector(store => store);
+    const { user, /*router: { url }*/ } = useSelector(store => store);
+    const [ routerCtx ] = useRouter();
+    const url = routerCtx.url;
 
     const class1HomeActive = url === '/' ? 'link-secondary' : 'link-dark';
     const class1RoomsActive = url === '/rooms' ? 'link-secondary' : 'link-dark';
@@ -24,9 +26,9 @@ export default function HeaderSideMenu() {
         dispatch(userGetMe());
     });
 
-    const textroomGet = useCallback(e => {
+    const getRooms = useCallback(e => {
         e && e.preventDefault();
-        dispatch(textroomGetAll());
+        dispatch(textRoomGetAll());
     })
 
     return html`
@@ -62,7 +64,7 @@ export default function HeaderSideMenu() {
                             <li class="dropdown-item">${user.username}</li>
                             <li><hr class="dropdown-divider"/></li>
                             <li><a class="dropdown-item" href="#" onClick=${getMe}>api user.getMe</a></li>
-                            <li><a class="dropdown-item" href="#" onClick=${textroomGet}>api textroom.getAll</a></li>
+                            <li><a class="dropdown-item" href="#" onClick=${getRooms}>api textroom.getAll</a></li>
                             <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li><hr class="dropdown-divider"/></li>

@@ -1,25 +1,26 @@
 import { html, useEffect, useSelector, useDispatch } from '../imports.js';
-import { textroomGetAll } from '../redux-toolkit/actions/textroom-actions.js';
+import { textRoomGetAll } from '../redux-toolkit/actions/textroom-actions.js';
 import RoomsList from './rooms/rooms-list.js';
 
 export default function Rooms() {
-    const { router: { url } } = useSelector(store => store);
+    const { textRoom: { loading } } = useSelector(store => store);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('Rooms.useEffect in')
+        //console.log('Rooms.useEffect in', loading)
         const abortController = new AbortController();
-        dispatch(textroomGetAll({ signal: abortController.signal }));
-
+        dispatch(textRoomGetAll({ signal: abortController.signal }));
         return () => {
-            console.log('Rooms.useEffect out');
+            //console.log('Rooms.useEffect out');
             abortController.abort();
         }
     }, [])
 
-
     return html`
-        <h1>Rooms</h1>
+        <div class="d-flex flex-row align-items-center">
+            <h1>Rooms</h1>
+            ${loading && html`<div class="spinner-border ms-3 text-secondary" off-style="width: 2rem; height: 2rem;" role="status" aria-hidden="true"></div>`}
+        </div>
         <${RoomsList} />
     `;
 }
