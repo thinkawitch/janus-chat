@@ -1,5 +1,5 @@
 import { createSlice } from '../../imports.js';
-import { userLogin, userLogout, userIsLoggedOut } from '../actions/auth-actions.js';
+import { userLogin, userLogout, authRequired } from '../actions/auth-actions.js';
 import { userGetMe } from '../actions/user-actions.js';
 
 const initialState = {
@@ -10,34 +10,33 @@ const initialState = {
 export const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {
+    /*reducers: {
         setUser: (state, action) => {
             return { ...state, ...action.payload };
         },
         clearUser: () => {
             return { ...initialState };
         },
-        isLoggedOut: (state) => {
-
-        }
-    },
+    },*/
     extraReducers: {
-        [userIsLoggedOut.fulfilled]: (state, action) => {
-            console.log('userSlice, userIsLoggedOut.fulfilled', action)
-        },
         [userGetMe.fulfilled]: (state, action) => {
-            console.log('userSlice, userGetMe.fulfilled', action)
+            //console.log('userSlice, userGetMe.fulfilled', action)
             return { ...action.payload };
         },
-        [userGetMe.rejected]: (state, action) => {
-            console.log('userSlice, userGetMe.rejected', action)
+        // replaced with authRequired
+        /*[userGetMe.rejected]: (state, action) => {
+            //console.log('userSlice, userGetMe.rejected', action)
             return { ...initialState };
-        },
+        },*/
         [userLogin.fulfilled]: (state, action) => {
             return { ...action.payload };
         },
         [userLogout.fulfilled]: (state, action) => {
-            console.log('userSlice, userLogout.fulfilled', action)
+            //console.log('userSlice, userLogout.fulfilled', action)
+            return { ...initialState };
+        },
+        [authRequired]: (state, action) => {
+            //console.log('userSlice, authRequired', action)
             return { ...initialState };
         },
     }

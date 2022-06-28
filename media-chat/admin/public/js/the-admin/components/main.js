@@ -20,7 +20,7 @@ export default function Main() {
     }, [setShowPanel]);
 
     const handleRouteChange = useCallback(e => {
-        //console.log('handleRouteChange e', e)
+        //console.warn('handleRouteChange: updates state, leads to re-renders, e', e)
         dispatch(setCurrentRoute({ url: e.url, previous: e.previous }));
         const psm = document.getElementById('pageSideMenu');
         if (psm) {

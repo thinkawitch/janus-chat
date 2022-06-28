@@ -1,6 +1,6 @@
 import { createSlice } from '../../imports.js';
 import { userGetMe } from '../actions/user-actions.js';
-import { userLogin, userLogout } from '../actions/auth-actions.js';
+import { userLogin, userLogout, authRequired } from '../actions/auth-actions.js';
 
 
 const initialState = {
@@ -14,26 +14,24 @@ const initialState = {
 export const authSlice = createSlice({
     name: 'auth',
     initialState: { ...initialState, notInitialized: true },
-    reducers: {
+    /*reducers: {
         setUser: (state, action) => {
             return { ...state, ...action.payload };
         },
         clearUser: () => {
             return { ...initialState };
         },
-        isLoggedOut: (state) => {
-
-        }
-    },
+    },*/
     extraReducers: {
         [userGetMe.fulfilled]: (state, action) => {
-            console.log('authSlice, userGetMe.fulfilled', action)
+            //console.log('authSlice, userGetMe.fulfilled', action)
             return { ...initialState, fulfilled: true };
         },
-        [userGetMe.rejected]: (state, action) => {
-            console.log('authSlice, userGetMe.rejected', action)
+        // no need, replaces with authRequired
+        /*[userGetMe.rejected]: (state, action) => {
+            //console.log('authSlice, userGetMe.rejected', action)
             return { ...initialState };
-        },
+        },*/
         [userLogin.pending]: (state, action) => {
             return { ...state, pending: true };
         },
@@ -41,13 +39,17 @@ export const authSlice = createSlice({
             return { ...initialState, fulfilled: true };
         },
         [userLogin.rejected]: (state, action) => {
-            console.log('authSlice, userLogin.rejected', action)
+            //console.log('authSlice, userLogin.rejected', action)
             return { ...initialState, rejected: true, error: action.error.message };
         },
         [userLogout.fulfilled]: (state, action) => {
-            console.log('authSlice, userLogout.fulfilled', action)
+            //console.log('authSlice, userLogout.fulfilled', action)
             return { ...initialState, error: 'You are signed out' };
         },
+        [authRequired]: (state, action) => {
+            //console.log('authSlice, authRequired', action);
+            return { ...initialState, /*error: 'Please sign in'*/ };
+        }
     }
 });
 

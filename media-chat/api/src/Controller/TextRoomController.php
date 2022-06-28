@@ -39,6 +39,7 @@ class TextRoomController extends AbstractController
 
         $conn->fetchAllAssociative('SELECT * FROM rooms');
 
+sleep(5); // to test abort controller
 
         return $this->json([
             'textroom' => 1,

@@ -1,6 +1,7 @@
 import { html, useCallback, useDispatch, useSelector } from '../../imports.js';
 import { userLogout } from '../../redux-toolkit/actions/auth-actions.js';
 import { userGetMe } from '../../redux-toolkit/actions/user-actions.js';
+import { textroomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
 
 export default function HeaderSideMenu() {
     const dispatch = useDispatch();
@@ -25,6 +26,7 @@ export default function HeaderSideMenu() {
 
     const textroomGet = useCallback(e => {
         e && e.preventDefault();
+        dispatch(textroomGetAll());
     })
 
     return html`
@@ -60,7 +62,7 @@ export default function HeaderSideMenu() {
                             <li class="dropdown-item">${user.username}</li>
                             <li><hr class="dropdown-divider"/></li>
                             <li><a class="dropdown-item" href="#" onClick=${getMe}>api user.getMe</a></li>
-                            <li><a class="dropdown-item" href="#" onClick=${textroomGet}>api textroom.get</a></li>
+                            <li><a class="dropdown-item" href="#" onClick=${textroomGet}>api textroom.getAll</a></li>
                             <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li><hr class="dropdown-divider"/></li>

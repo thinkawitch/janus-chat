@@ -2,8 +2,14 @@ import { html, render, Provider, useSelector, useDispatch, route } from './impor
 import { store } from './redux-toolkit/configure-store.js';
 import Main from './components/main.js';
 import Login from './components/login.js';
+import { authRequired } from './redux-toolkit/actions/auth-actions.js';
 import { userGetMe } from './redux-toolkit/actions/user-actions.js';
+import mediaChatApi from './media-chat-api.js';
 
+
+function authRequiredHandler() {
+    store.dispatch(authRequired());
+}
 
 function App() {
     const { auth, user } = useSelector(store => store);
@@ -15,6 +21,7 @@ function App() {
 }
 
 export function renderAdmin(node) {
+    mediaChatApi.setAuthRequiredHandler(authRequiredHandler);
     // check auth
     store.dispatch(userGetMe());
     render(html`

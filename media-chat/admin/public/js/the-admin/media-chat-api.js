@@ -9,7 +9,7 @@ const fetchInit = {
 let authRequiredHandler = null; // call when api says auth required, auth expired, etc
 
 function checkResponse(response) {
-    console.log('checkResponse', response);
+    console.log('checkResponse status', response.status);
     if (response.status === 401) {
         authRequiredHandler && authRequiredHandler();
         throw new Error('auth_required');
@@ -38,33 +38,31 @@ const mediaChatApi = {
         logout: async () => {
             const response = await fetch(`${mediaChatApiBaseUrl}logout`, fetchInit);
             const data = await response.json();
-            console.log('auth logout data', data);
+            //console.log('auth logout data', data);
+            return data;
         },
-        isLoggedOut: async () => {
+        /*isLoggedOut: async () => {
             const response = await fetch(`${mediaChatApiBaseUrl}is_logged_out`, fetchInit);
             const data = await response.json();
             console.log('auth isLoggedOut data', data);
-        },
+        },*/
     },
 
     user: {
         getMe: async () => {
             const response = await fetch(`${mediaChatApiBaseUrl}me`, fetchInit);
-            console.log('mediaChatApi user.getMe response.status', response.status)
-            const data = await response.json();
-            if (!data || 'is_logged_out' in data) {
-                console.log('mediaChatApi user.getMe data', data)
-                //throw new Error('is_logged_out');
-                return Promise.reject('is_logged_out');
-            }
-            return data;
+            //console.log('mediaChatApi user.getMe response.status', response.status);
+            checkResponse(response);
+            return await response.json();
         },
     },
 
     textroom: {
-        get: async () => {
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, fetchInit);
+        getAll: async (signal) => {
+            const localInit = addSignalToFetchInit(fetchInit, signal);
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
             checkResponse(response);
+            return await response.json();
         },
     },
 
@@ -74,3 +72,10 @@ const mediaChatApi = {
 }
 
 export default mediaChatApi;
+
+
+function addSignalToFetchInit(init, signal) {
+    const localInit = { ...init };
+    if (signal) localInit.signal = signal;
+    return localInit;
+}
