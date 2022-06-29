@@ -1,6 +1,7 @@
 import { createSlice } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
 import { textRoomGetAll } from '../actions/textroom-actions.js';
+import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
 const initialState = {
@@ -28,6 +29,10 @@ export const textRoomSlice = createSlice({
         }
     },
     extraReducers: {
+        [userLogout.fulfilled]: (state, action) => {
+            // reset slice on user leave
+            return { ...initialState, notInitialized: true };
+        },
         [textRoomGetAll.pending]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.pending')
             return { ...state, loading: true }

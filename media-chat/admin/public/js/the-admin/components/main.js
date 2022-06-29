@@ -1,7 +1,8 @@
 import { html, useDispatch, Router, useState, useCallback } from '../imports.js';
 import HeaderSideMenu from './main/header-side-menu.js';
 import Users from './users.js';
-import Rooms from './rooms.js';
+import Rooms from './rooms/rooms.js';
+import AddRoom from './rooms/add-room.js';
 
 
 export default function Main() {
@@ -24,7 +25,8 @@ export default function Main() {
         <div class="container-lg">
             <${Router} onChange=${handleRouteChange}>
                 <${Users} path="/users" />
-                <${Rooms} path="/rooms"/>
+                <${Rooms} path="/rooms" />
+                <${AddRoom} path="/rooms/add" />
                 <div default>
                     <h1>Dashboard</h1>
                 </div>

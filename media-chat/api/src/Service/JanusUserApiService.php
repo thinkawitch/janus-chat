@@ -65,7 +65,7 @@ class JanusUserApiService
         $this->textRoomId = null;
     }
 
-    public function getRooms() : array
+    public function getRooms(bool $includePrivate = false) : array
     {
         $this->createNewSession();
         $this->attachToTextRoom();
@@ -77,6 +77,9 @@ class JanusUserApiService
                 'request' => 'list',
             ],
         ];
+        if ($includePrivate) {
+            $data['body']['admin_key'] = $this->textRoomAdminSecret;
+        }
         $endpoint = $this->sessionId . '/' . $this->textRoomId;
         $result = $this->makeRequest($data, $endpoint);
 

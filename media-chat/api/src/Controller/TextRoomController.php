@@ -21,11 +21,10 @@ class TextRoomController extends AbstractController
         Connection $conn
     ) : JsonResponse
     {
+        // janus
         #$serverInfo1 = $janusUserApi->getInfo();
         #$serverInfo2 = $janusAdminApi->getInfo();
-
-        $rooms = $janusUserApi->getRooms();
-
+        $janusRooms = $janusUserApi->getRooms(true);
         $status = $janusAdminApi->getStatus();
         $sessions = $janusAdminApi->listSessions();
         $handles = [];
@@ -37,15 +36,46 @@ class TextRoomController extends AbstractController
             }
         }*/
 
-        $conn->fetchAllAssociative('SELECT * FROM rooms');
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $sql = 'SELECT * FROM rooms WHERE deleted=0';
+        if (!$isAdmin) $sql .= ' AND user_id=' . $user->getId();
 
-sleep(5); // to test abort controller
+        // db
+        $dbRooms = $conn->fetchAllAssociative($sql);
+
+        // combine db data with janus live data
+        $rooms = [];
+        foreach ($dbRooms as $dbRoom) {
+            $room = $dbRoom;
+            $liveRoom = getJanusRoomById($janusRooms, $dbRoom['id']);
+            if ($liveRoom) {
+                $room['num_participants'] = $liveRoom['num_participants'];
+            }
+
+            if (!$isAdmin) {
+                //unset($room[''])
+            }
+            $rooms[] = $room;
+        }
+
+//sleep(5); // to test abort controller
+
+        $result = [
+            'textroom' => 1,
+            'rooms' => $rooms,
+            'janusRooms' => $janusRooms,
+        ];
+
+        return $this->json($result);
 
         return $this->json([
             'textroom' => 1,
+            'rooms' => $dbRooms,
             #'server_info_1' => $serverInfo1,
             #'server_info_2' => $serverInfo2,
-            'rooms' => $rooms,
+            'server_rooms' => $janusRooms,
+            'db_rooms' => $dbRooms,
             'admin' => [
                 'status' => $status,
                 'sessions' => $sessions,
@@ -138,7 +168,7 @@ sleep(5); // to test abort controller
                     ];
                     break;
                 default:
-                    throw  $e;
+                    throw $e;
             }
         }
 
@@ -149,4 +179,13 @@ sleep(5); // to test abort controller
 
         return $this->json($result);
     }
+}
+
+
+function getJanusRoomById($janusRooms, $id) {
+    if (!$janusRooms) return null;
+    foreach ($janusRooms as $jr) {
+        if ($jr['room'] == $id) return $jr;
+    }
+    return null;
 }
