@@ -9,7 +9,7 @@ const fetchInit = {
 let authRequiredHandler = null; // call when api says auth required, auth expired, etc
 
 function checkResponse(response) {
-    console.log('checkResponse status', response.status);
+    //console.log('checkResponse status', response.status);
     if (response.status === 401) {
         authRequiredHandler && authRequiredHandler();
         throw new Error('auth_required');
@@ -60,6 +60,20 @@ const mediaChatApi = {
     textroom: {
         getAll: async (signal) => {
             const localInit = addSignalToFetchInit(fetchInit, signal);
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
+            checkResponse(response);
+            return await response.json();
+        },
+        create: async (signal, data) => {
+            const localInit = {
+                ...addSignalToFetchInit(fetchInit, signal),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            };
+            //console.log('create localInit', localInit);
             const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
             checkResponse(response);
             return await response.json();

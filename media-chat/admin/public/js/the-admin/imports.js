@@ -77,6 +77,58 @@ import isToday from 'https://unpkg.com/dayjs@1.11.3/esm/plugin/isToday/index.js'
 dayjs.extend(isToday);
 
 
+// based on https://gist.github.com/kentcdodds/b36572b6e9227207e6c71fd80e63f3b4
+function ORIG_useAbortController() {
+    const abortControllerRef = useRef()
+    const getAbortController = useCallback(() => {
+        if (!abortControllerRef.current) {
+            abortControllerRef.current = new AbortController()
+        }
+        return abortControllerRef.current
+    }, [])
+
+    useEffect(() => {
+        return () => getAbortController().abort()
+    }, [getAbortController])
+
+    const getSignal = useCallback(() => getAbortController().signal, [getAbortController])
+
+    return getSignal;
+}
+
+function useAbortController() {
+    const abortControllerRef = useRef()
+
+    const getSignal = useCallback(() => {
+        if (!abortControllerRef.current) {
+            abortControllerRef.current = new AbortController()
+        }
+        return abortControllerRef.current.signal
+    }, [])
+
+    const getAbortController = useCallback(() => {
+        if (!abortControllerRef.current) {
+            abortControllerRef.current = new AbortController()
+        }
+        return abortControllerRef.current
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            console.log('useAbortController useEffect out')
+            abortControllerRef.current && abortControllerRef.current.abort()
+        }
+    }, [])
+
+    const resetAbortController = useCallback(() => {
+        abortControllerRef.current = new AbortController()
+    }, [])
+
+    return [getAbortController, resetAbortController]
+    return [getSignal, resetAbortController]
+}
+
+
 export {
     // htm
     html,
@@ -109,5 +161,7 @@ export {
     // fetchBaseQuery,
     // setupListeners,
     // day.js
-    dayjs
+    dayjs,
+    // custom
+    useAbortController,
 }

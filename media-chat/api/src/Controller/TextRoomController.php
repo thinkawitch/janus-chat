@@ -59,7 +59,7 @@ class TextRoomController extends AbstractController
             $rooms[] = $room;
         }
 
-//sleep(5); // to test abort controller
+sleep(5); // to test abort controller
 
         $result = [
             'textroom' => 1,
@@ -100,12 +100,12 @@ class TextRoomController extends AbstractController
         $post = null;
         $permanent = false; // false
         $description = null;
-
+sleep(5); return $this->json(['test']);
         $data = $request->toArray();
-        $description = $data['description'] ?? null;
-        $history = $data['history'] ?? 0;
-        $secret = $data['secret'] ?? null;
-        $pin = $data['pin'] ?? null;
+        $description = !empty($data['description']) ? trim($data['description']) : null;
+        $history = !empty($data['history']) ? intval($data['history']) : 0;
+        $secret = !empty($data['secret']) ? trim($data['secret']) : null;
+        $pin = !empty($data['pin']) ? trim($data['pin']) : null;
 
         try {
             $conn->beginTransaction();

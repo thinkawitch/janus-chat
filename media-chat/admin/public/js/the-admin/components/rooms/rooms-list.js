@@ -5,16 +5,19 @@ export default function RoomsList(props) {
     const { mode } = props;
     const { textRoom: { loading, rooms, notInitialized } } = useSelector(state => state);
     //const rooms = useSelector(selectRooms);
-    console.log('rooms', rooms);
+    //console.log('rooms', rooms);
 
     if (notInitialized) return null;
 
     if (!loading && !rooms.length) return html`<p>No rooms</p>`;
 
+    const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
+
     return html`
         <table class="table">
             <thead>
                 <th>#</th>
+                <th>creator</th>
                 <th>description</th>
                 <th>private</th>
                 <th>history</th>
@@ -22,14 +25,15 @@ export default function RoomsList(props) {
                 <th>participants</th>
             </thead>
             <tbody>
-            ${rooms.map(room => html`
+            ${rooms.map(r => html`
                 <tr>
-                    <td>${room.id}</td>
-                    <td>${room.description}</td>
-                    <td>${room.private ? 'Yes' : 'No'}</td>
-                    <td>${room.history}</td>
-                    <td>${room.pin ? 'Yes' : 'No'}</td>
-                    <td>${room.num_participants}</td>
+                    <td>${r.id}</td>
+                    <td>${r.user_id}</td>
+                    <td>${r.description}</td>
+                    <td>${r.private ? check : ''}</td>
+                    <td>${r.history}</td>
+                    <td>${r.pin ? check : ''}</td>
+                    <td>${r.num_participants}</td>
                 </tr>
             `)}
             </tbody>

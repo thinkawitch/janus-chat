@@ -14,14 +14,14 @@ const initialState = {
 export const authSlice = createSlice({
     name: 'auth',
     initialState: { ...initialState, notInitialized: true },
-    /*reducers: {
+    reducers: {
         setUser: (state, action) => {
             return { ...state, ...action.payload };
         },
         clearUser: () => {
             return { ...initialState };
         },
-    },*/
+    },
     extraReducers: {
         [userGetMe.fulfilled]: (state, action) => {
             //console.log('authSlice, userGetMe.fulfilled', action)

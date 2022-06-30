@@ -1,12 +1,15 @@
 import { createSlice } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll } from '../actions/textroom-actions.js';
+import { textRoomGetAll, textRoomCreate } from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
 const initialState = {
     rooms: [],
     loading: false,
+    creating: false,
+    updating: false,
+    deleting: false,
     notInitialized: false,
 }
 
@@ -35,15 +38,31 @@ export const textRoomSlice = createSlice({
         },
         [textRoomGetAll.pending]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.pending')
-            return { ...state, loading: true }
+            //return { ...state, loading: true } // this makes hang-up
+            state.loading = true;
         },
         [textRoomGetAll.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.fulfilled')
-            return { ...initialState, loading: false, rooms: action.payload.rooms }
+            return { ...state, loading: false, rooms: action.payload.rooms, notInitialized: false }
         },
         [textRoomGetAll.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.rejected')
-            return { ...state, loading: false }
+            //return { ...state, loading: false }
+            state.loading = false;
+        },
+        [textRoomCreate.pending]: (state, action) => {
+            console.log('textRoomSlice textRoomCreate.pending')
+            return { ...state, creating: true }
+            //state.creating = true;
+        },
+        [textRoomCreate.fulfilled]: (state, action) => {
+            console.log('textRoomSlice textRoomCreate.fulfilled')
+            return { ...state, creating: false }
+        },
+        [textRoomCreate.rejected]: (state, action) => {
+            console.log('textRoomSlice textRoomCreate.rejected')
+            return { ...state, creating: false }
+            //state.creating = false;
         },
     }
 });

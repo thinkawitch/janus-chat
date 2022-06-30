@@ -9,3 +9,12 @@ export const textRoomGetAll = createAsyncThunk(
         return await mediaChatApi.textroom.getAll(signal);
     }
 )
+
+export const textRoomCreate = createAsyncThunk(
+    'textRoom/create',
+    async (arg, thunkAPI) => {
+        const signal = arg && arg.signal ? arg.signal : null // allow to abort
+        const data = arg.data;
+        return await mediaChatApi.textroom.create(signal, data);
+    }
+)
