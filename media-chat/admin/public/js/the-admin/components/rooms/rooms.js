@@ -6,14 +6,15 @@ export default function Rooms() {
     const { loading } = useSelector(store => store.textRoom);
     const dispatch = useDispatch();
     const canAdd = true;
-    const [ getAC, resetAC ] = useAbortController();
+    const [ getAC, resetAC ] = useAbortController(true);
 
     // double render when returning from add form with fetch in progress !?
 
-    useEffect(() => {
+    useEffect(async () => {
         console.log('Rooms.useEffect in', loading)
         const abortController = new AbortController();
         //dispatch(textRoomGetAll({ signal: abortController.signal }));
+        //dispatch(textRoomGetAll());
         dispatch(textRoomGetAll({ signal: getAC().signal }));
         return () => {
             console.log('Rooms.useEffect out');

@@ -80,6 +80,15 @@ const mediaChatApi = {
         },
     },
 
+    test: {
+        get: async (signal) => {
+            const localInit = addSignalToFetchInit(fetchInit, signal);
+            const response = await fetch(`${mediaChatApiBaseUrl}me?sleep=5`, localInit);
+            checkResponse(response);
+            return await response.json();
+        }
+    },
+
     setAuthRequiredHandler: (handler) => {
         authRequiredHandler = handler;
     }

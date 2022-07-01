@@ -38,6 +38,10 @@ class LoginController extends AbstractController
     #[Route('/me', name: 'app_me', methods: ['GET'])]
     public function me(#[CurrentUser] ?User $user): JsonResponse
     {
+
+        $sleep = !empty($_GET['sleep']) ? intval($_GET['sleep']) : 0;
+        if ($sleep > 0) sleep($sleep);
+
         if (null === $user) {
             return $this->json([
                 'is_logged_out' => true,

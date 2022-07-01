@@ -96,38 +96,61 @@ function ORIG_useAbortController() {
     return getSignal;
 }
 
-function useAbortController() {
-    const abortControllerRef = useRef()
+function createMyAbortController() {
+    const ac = new AbortController();
+    const id = generateRandomNum(1, 10000);
+    console.log('myAC: created', id);
+    const origAbort = ac.abort;
+    ac.abort = () => {
+        console.log('myAC: aborting', id);
+        origAbort.call(ac);
+    }
+    ac.id = id;
+    return ac;
+}
 
-    const getSignal = useCallback(() => {
-        if (!abortControllerRef.current) {
-            abortControllerRef.current = new AbortController()
+function useAbortController(abortOnUnmount=false) {
+    const acRef = useRef()
+
+    /*const getSignal = useCallback(() => {
+        if (!acRef.current) {
+            acRef.current = new AbortController()
         }
-        return abortControllerRef.current.signal
-    }, [])
+        return acRef.current.signal
+    }, [])*/
 
     const getAbortController = useCallback(() => {
-        if (!abortControllerRef.current) {
-            abortControllerRef.current = new AbortController()
+        if (!acRef.current) {
+            //acRef.current = new AbortController()
+            //acRef.current.id = generateRandomNum(1, 10000);
+            acRef.current = createMyAbortController();
         }
-        return abortControllerRef.current
+        return acRef.current
     }, []);
 
-    useEffect(() => {
-        return () => {
-            console.log('useAbortController useEffect out')
-            abortControllerRef.current && abortControllerRef.current.abort()
-        }
-    }, [])
+    if (abortOnUnmount) {
+        useEffect(() => {
+            console.log('>>>>>>>>>> useAbortController')
+            return () => {
+                console.log('<<<<<<<<<< useAbortController',  acRef.current ? acRef.current.id : 'n/a')
+                acRef.current && acRef.current.abort()
+            }
+        }, [])
+    }
 
     const resetAbortController = useCallback(() => {
-        abortControllerRef.current = new AbortController()
+        //acRef.current = new AbortController()
+        //acRef.current.id = generateRandomNum(1, 10000);
+        acRef.current = createMyAbortController();
     }, [])
 
     return [getAbortController, resetAbortController]
-    return [getSignal, resetAbortController]
 }
 
+function generateRandomNum(min, max) {
+    const value = (Math.random() * (max - min + 1)) + min;
+    return Math.floor(value);
+}
 
 export {
     // htm

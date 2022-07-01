@@ -6,11 +6,11 @@ export default function AddRoom() {
     const dispatch = useDispatch();
     const [ routerCtx, route ] = useRouter();
     const cancelUrl = routerCtx.previous ?? '/';
-    const [ getAC, resetAC ] = useAbortController();
+    const [ getAC, resetAC ] = useAbortController(true);
 
     const onSubmit = useCallback(data => {
         dispatch(textRoomCreate({ data, signal: getAC().signal })).then(action => {
-            console.log('result action', action)
+            console.log('AddRoom result action', action)
         })
     }, []);
 
@@ -19,6 +19,13 @@ export default function AddRoom() {
         resetAC();
         //route(cancelUrl);
     }, []);
+
+    useEffect(() => {
+        return () => {
+            console.log('AddRoom.useEffect out');
+            getAC().abort();
+        }
+    }, [])
 
     const actions = useMemo(() => ({ onSubmit, onCancel }), [onSubmit, onCancel]);
 
