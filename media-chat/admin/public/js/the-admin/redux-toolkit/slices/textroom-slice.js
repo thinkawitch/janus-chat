@@ -1,6 +1,6 @@
-import { createSlice } from '../../imports.js';
+import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll, textRoomCreate } from '../actions/textroom-actions.js';
+import { textRoomGetAll, textRoomCreate, textRoomActionOn, textRoomActionOff } from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
@@ -11,6 +11,7 @@ const initialState = {
     updating: false,
     deleting: false,
     notInitialized: false,
+    action1:false,
 }
 
 export const textRoomSlice = createSlice({
@@ -29,7 +30,7 @@ export const textRoomSlice = createSlice({
         },
         cleanTextRoom: (state) => {
             return { ...initialState };
-        }
+        },
     },
     extraReducers: {
         [userLogout.fulfilled]: (state, action) => {
@@ -44,6 +45,9 @@ export const textRoomSlice = createSlice({
         [textRoomGetAll.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.fulfilled')
             return { ...state, loading: false, rooms: action.payload.rooms, notInitialized: false }
+            // state.loading = false;
+            // state.rooms = action.payload.rooms;
+            // state.notInitialized = false;
         },
         [textRoomGetAll.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.rejected')
@@ -64,6 +68,14 @@ export const textRoomSlice = createSlice({
             return { ...state, creating: false }
             //state.creating = false;
         },
+        [textRoomActionOn]: (state) => {
+            console.log('slice textRoomActionOn')
+            state.action1 = true;
+        },
+        [textRoomActionOff]: (state) => {
+            console.log('slice textRoomActionOff')
+            state.action1 = false;
+        },
     }
 });
 
@@ -78,3 +90,8 @@ export default textRoomSlice.reducer;
 export const selectRooms = (state) => {
     return state.textRoom.rooms;
 }
+
+const selectSelf = (state) => state.textRoom
+
+export const selectRoomsLoading = createSelector(selectSelf, textRoom => textRoom.loading);
+

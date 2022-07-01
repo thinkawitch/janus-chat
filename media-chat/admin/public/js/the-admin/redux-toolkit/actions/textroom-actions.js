@@ -20,6 +20,7 @@ export const textRoomGetAll = createAsyncThunk(
     {
         condition: (arg, { getState, extra }) => {
             const { textRoom: { loading } } = getState();
+            if (loading) console.log('textRoomGetAll will not start, condition!')
             return !loading;
         }
     }
@@ -44,3 +45,24 @@ export const textRoomCreate = createAsyncThunk(
         //return await mediaChatApi.textroom.create(signal, data);
     }
 )
+
+
+export const textRoomTestLongRequest = createAsyncThunk(
+    'textRoom/testLongRequest',
+    async (arg, thunkAPI) => {
+        const signal = arg && arg.signal ? arg.signal : null // allow to abort
+        const data = arg.data;
+
+        return await mediaChatApi.test.get(signal);
+
+        return await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject({ });
+                resolve({ });
+            }, 5000)
+        })
+    }
+)
+
+export const textRoomActionOn = createAction('textRoom/actionOn');
+export const textRoomActionOff = createAction('textRoom/actionOff');

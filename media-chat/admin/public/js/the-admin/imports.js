@@ -58,12 +58,12 @@ await import('https://unpkg.com/react-redux@7.2.8/dist/react-redux.js');
 console.log('window.ReactRedux', window.ReactRedux);
 delete window.React;
 delete window.ReactDOM;
-const { Provider, useSelector, useDispatch } = window.ReactRedux;
+const { Provider, useSelector, useDispatch, shallowEqual } = window.ReactRedux;
 
 // redux toolkit
 import 'https://unpkg.com/@reduxjs/toolkit@1.8.2/dist/redux-toolkit.umd.js';
 console.log('window.RTK', window.RTK);
-const { configureStore, createSlice, createAction, createAsyncThunk } = window.RTK;
+const { configureStore, createSlice, createAction, createAsyncThunk, createSelector, createDraftSafeSelector } = window.RTK;
 
 // redux toolkit query, can't connect with preact
 // import 'https://unpkg.com/@reduxjs/toolkit@1.8.2/dist/query/rtk-query.umd.js';
@@ -96,16 +96,17 @@ function ORIG_useAbortController() {
     return getSignal;
 }
 
+// own AC wrapper for debug
+let myAcId = 0;
 function createMyAbortController() {
     const ac = new AbortController();
-    const id = generateRandomNum(1, 10000);
-    console.log('myAC: created', id);
+    ac.id = ++myAcId; //generateRandomNum(1, 10000);
+    //console.log('myAC: created', ac.id);
     const origAbort = ac.abort;
     ac.abort = () => {
-        console.log('myAC: aborting', id);
+        //console.log('myAC: aborting', ac.id);
         origAbort.call(ac);
     }
-    ac.id = id;
     return ac;
 }
 
@@ -130,9 +131,9 @@ function useAbortController(abortOnUnmount=false) {
 
     if (abortOnUnmount) {
         useEffect(() => {
-            console.log('>>>>>>>>>> useAbortController')
+            //console.log('>>>>>>>>>> useAbortController')
             return () => {
-                console.log('<<<<<<<<<< useAbortController',  acRef.current ? acRef.current.id : 'n/a')
+                //console.log('<<<<<<<<<< useAbortController',  acRef.current ? acRef.current.id : 'n/a')
                 acRef.current && acRef.current.abort()
             }
         }, [])
@@ -174,11 +175,14 @@ export {
     Provider,
     useSelector,
     useDispatch,
+    shallowEqual,
     // redux-toolkit
     configureStore,
     createSlice,
     createAction,
     createAsyncThunk,
+    createSelector,
+    createDraftSafeSelector,
     // redux-toolkit-query
     // createApi,
     // fetchBaseQuery,
