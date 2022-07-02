@@ -20,7 +20,7 @@ export const textRoomGetAll = createAsyncThunk(
     {
         condition: (arg, { getState, extra }) => {
             const { textRoom: { loading } } = getState();
-            if (loading) console.log('textRoomGetAll will not start, condition!')
+            if (loading) console.log('textRoomGetAll will not start, already loading!')
             return !loading;
         }
     }

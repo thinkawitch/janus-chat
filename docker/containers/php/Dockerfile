@@ -17,6 +17,10 @@ RUN echo "html_errors = Off" >> /usr/local/etc/php/php.ini
 RUN echo "log_errors = On" >> /usr/local/etc/php/php.ini
 RUN echo "error_log = /var/log/php/php_errors.log" >> /usr/local/etc/php/php.ini
 
+# custom fpm settings
+RUN echo 'pm.max_children = 15' >> /usr/local/etc/php-fpm.d/zz-docker.conf
+RUN echo 'pm.max_requests = 500' >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
 # composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 

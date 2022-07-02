@@ -39,8 +39,8 @@ export const textRoomSlice = createSlice({
         },
         [textRoomGetAll.pending]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.pending')
-            //return { ...state, loading: true } // this makes hang-up
-            state.loading = true;
+            return { ...state, loading: true } // this makes hang-up
+            //state.loading = true;
         },
         [textRoomGetAll.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.fulfilled')
@@ -51,8 +51,8 @@ export const textRoomSlice = createSlice({
         },
         [textRoomGetAll.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.rejected')
-            //return { ...state, loading: false }
-            state.loading = false;
+            return { ...state, loading: false }
+            //state.loading = false;
         },
         [textRoomCreate.pending]: (state, action) => {
             console.log('textRoomSlice textRoomCreate.pending')
@@ -93,5 +93,8 @@ export const selectRooms = (state) => {
 
 const selectSelf = (state) => state.textRoom
 
-export const selectRoomsLoading = createSelector(selectSelf, textRoom => textRoom.loading);
+export const selectRoomsLoading = createDraftSafeSelector(selectSelf, textRoom => {
+    console.log('[selector] selectRoomsLoading', textRoom.loading)
+    return textRoom.loading
+});
 

@@ -9,7 +9,7 @@ if (shouldLoadDT) {
 }
 
 //import { h, render, createContext, createElement } from 'https://unpkg.com/preact@10.8.0?module';
-import { h, render, createContext, createElement, createRef } from '/js/vendor/preact/preact.module.js';
+import { h, render, createContext, createElement, createRef, Component } from '/js/vendor/preact/preact.module.js';
 
 //import { useContext, useState, useReducer, useMemo } from 'https://unpkg.com/preact@latest/hooks/dist/hooks.module.js?module';
 import {
@@ -158,6 +158,7 @@ export {
     html,
     // preact
     render,
+    Component,
     createContext,
     createRef,
     useContext,

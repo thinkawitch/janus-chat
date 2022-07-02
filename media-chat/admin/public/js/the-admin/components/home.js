@@ -6,8 +6,7 @@ import {
     useEffect,
     useAbortController,
     shallowEqual,
-    createSelector,
-    Component
+    createSelector
 } from '../imports.js';
 import {
     textRoomGetAll,
@@ -21,36 +20,7 @@ import {
 
 const makeSelectRoomsLoading = () => createSelector(state => state.textRoom, textRoom => textRoom.loading);
 
-/*class Users extends Component {
-    constructor(props) {
-        super(props);
-    }
-    componentWillUnmount() {
-        console.log('Users componentWillUnmount');
-        //const dispatch = useDispatch();
-        //dispatch(textRoomActionOff());
-    }
-    componentDidUnmount() {
-        console.log('Users componentDidUnmount');
-    }
-    componentDidMount() {
-        console.log('Users componentDidMount');
-    }
-    componentWillUpdate() {
-        console.log('Users componentWillUpdate');
-    }
-    componentDidUpdate() {
-        console.log('Users componentDidUpdate');
-    }
-    render() {
-        return html`
-            <h1>Users</h1>
-        `
-    }
-}
-export default Users;*/
-
-export default function Users() {
+export default function Home() {
     //const { loading } = useSelector(store => store.textRoom); // do cycle useEffect in/out !
     //const { loading } = useSelector(store => store.textRoom, shallowEqual); // no difference
     //const { action1 } = useSelector(store => store.textRoom); // do rerender !
@@ -58,10 +28,9 @@ export default function Users() {
     //const selectRoomsLoadingMemo = useMemo(makeSelectRoomsLoading, []);
     //const loading = useSelector(selectRoomsLoadingMemo);
 
-    const dispatch = useDispatch();
-    const [ getAC, resetAC ] = useAbortController(true);
-
-    useEffect(() => {
+    //const dispatch = useDispatch();
+    //const [ getAC, resetAC ] = useAbortController(true);
+    /*useEffect(() => {
         console.log('Users.useEffect in')
         getAC();
         //dispatch(textRoomTestLongRequest({ signal: getAC().signal }));
@@ -70,11 +39,18 @@ export default function Users() {
         return () => {
             console.log('Users.useEffect out')
             dispatch(textRoomActionOff());
-            //getAC().abort();
+            getAC().abort();
         }
-    }, []);
+    }, []);*/
+
+    useEffect(() => {
+        console.log('Home in');
+        return () => {
+            console.log('Home out')
+        }
+    }, [])
 
     return html`
-        <h1>Users</h1>
+        <h1>Dashboard</h1>
     `;
 }

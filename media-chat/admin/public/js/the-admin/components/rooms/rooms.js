@@ -5,13 +5,14 @@ import { selectRoomsLoading } from '../../redux-toolkit/slices/textroom-slice.js
 
 let rvc = 0; // room view counter
 export default function Rooms() {
+    console.log(`Rooms[${rvc}]`);
     //const { loading } = useSelector(store => store.textRoom);
     const loading = useSelector(selectRoomsLoading);
     //const loading = false;
     const dispatch = useDispatch();
     const canAdd = true;
     const [ getAC, resetAC ] = useAbortController(true);
-    console.log(`Rooms[${rvc}] loading`, loading)
+    //console.log(`Rooms[${rvc}] loading`, loading)
     // double render when returning from add form with fetch in progress !?
 
     useEffect(() => {
