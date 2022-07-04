@@ -1,11 +1,12 @@
-// preact 10.8.0 put into local dir, unpkg.com have not-correct builds
+// preact 10.8.2 put into local dir, unpkg.com have not-correct builds
 
 
 const shouldLoadDT = true; //new URLSearchParams(window.location.search).has('dev');
 console.log('should load devtool?', shouldLoadDT);
 if (shouldLoadDT) {
-    //await import('https://unpkg.com/preact@10.8.0/devtools/dist/devtools.module.js?module');
+    //await import('https://unpkg.com/preact@10.8.2/devtools/dist/devtools.module.js?module');
     await import('/js/vendor/preact/devtools.module.js');
+
 }
 
 //import { h, render, createContext, createElement } from 'https://unpkg.com/preact@10.8.0?module';
@@ -78,24 +79,6 @@ dayjs.extend(isToday);
 
 
 // based on https://gist.github.com/kentcdodds/b36572b6e9227207e6c71fd80e63f3b4
-function ORIG_useAbortController() {
-    const abortControllerRef = useRef()
-    const getAbortController = useCallback(() => {
-        if (!abortControllerRef.current) {
-            abortControllerRef.current = new AbortController()
-        }
-        return abortControllerRef.current
-    }, [])
-
-    useEffect(() => {
-        return () => getAbortController().abort()
-    }, [getAbortController])
-
-    const getSignal = useCallback(() => getAbortController().signal, [getAbortController])
-
-    return getSignal;
-}
-
 // own AC wrapper for debug
 let myAcId = 0;
 function createMyAbortController() {
@@ -109,8 +92,7 @@ function createMyAbortController() {
     }
     return ac;
 }
-
-function useAbortController(abortOnUnmount=false) {
+function useAbortController(runEffect=false, runLayoutEffect=false) {
     const acRef = useRef()
 
     /*const getSignal = useCallback(() => {
@@ -129,11 +111,18 @@ function useAbortController(abortOnUnmount=false) {
         return acRef.current
     }, []);
 
-    if (abortOnUnmount) {
+    if (runEffect) {
         useEffect(() => {
             //console.log('>>>>>>>>>> useAbortController')
             return () => {
                 //console.log('<<<<<<<<<< useAbortController',  acRef.current ? acRef.current.id : 'n/a')
+                acRef.current && acRef.current.abort()
+            }
+        }, [])
+    }
+    if (runLayoutEffect) {
+        useLayoutEffect(() => {
+            return () => {
                 acRef.current && acRef.current.abort()
             }
         }, [])
@@ -168,6 +157,7 @@ export {
     useCallback,
     useRef,
     useEffect,
+    useLayoutEffect,
     // preact-router
     Router,
     route,

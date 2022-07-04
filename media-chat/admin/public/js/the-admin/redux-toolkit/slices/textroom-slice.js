@@ -69,11 +69,13 @@ export const textRoomSlice = createSlice({
             //state.creating = false;
         },
         [textRoomActionOn]: (state) => {
-            console.log('slice textRoomActionOn')
+            console.log('[reducer] textRoomActionOn')
+            //return { ...state, action1: true }
             state.action1 = true;
         },
         [textRoomActionOff]: (state) => {
-            console.log('slice textRoomActionOff')
+            console.log('[reducer] textRoomActionOff')
+            //return { ...state, action1: false }
             state.action1 = false;
         },
     }
@@ -93,8 +95,18 @@ export const selectRooms = (state) => {
 
 const selectSelf = (state) => state.textRoom
 
-export const selectRoomsLoading = createDraftSafeSelector(selectSelf, textRoom => {
+export const selectRoomsLoading = createSelector(selectSelf, textRoom => {
     console.log('[selector] selectRoomsLoading', textRoom.loading)
     return textRoom.loading
 });
 
+
+export const selectRoomsAction1 = createSelector(selectSelf, textRoom => {
+    console.log('[selector] selectRoomsAction1', textRoom.action1)
+    return textRoom.action1
+});
+
+export const OFF_selectRoomsAction1 = createDraftSafeSelector(selectSelf, textRoom => {
+    console.log('[selector] selectRoomsAction1', textRoom.action1)
+    return textRoom.action1
+});

@@ -4,6 +4,8 @@ import {
     useDispatch,
     useMemo,
     useEffect,
+    useLayoutEffect,
+    useRef,
     useAbortController,
     shallowEqual,
     createSelector
@@ -15,38 +17,22 @@ import {
     textRoomActionOff,
 } from "../redux-toolkit/actions/textroom-actions.js";
 import {
+    selectRoomsAction1,
     selectRoomsLoading,
 } from "../redux-toolkit/slices/textroom-slice.js";
 
-const makeSelectRoomsLoading = () => createSelector(state => state.textRoom, textRoom => textRoom.loading);
+// value=useSelector() and action to change the value inside useEffect() - may lead to infinite loop
 
 export default function Home() {
-    //const { loading } = useSelector(store => store.textRoom); // do cycle useEffect in/out !
-    //const { loading } = useSelector(store => store.textRoom, shallowEqual); // no difference
-    //const { action1 } = useSelector(store => store.textRoom); // do rerender !
-    const loading = useSelector(selectRoomsLoading); //in/out no cycle
-    //const selectRoomsLoadingMemo = useMemo(makeSelectRoomsLoading, []);
-    //const loading = useSelector(selectRoomsLoadingMemo);
+    const action1 = useSelector(selectRoomsAction1); // cycle! when use effect changes the value
+    const dispatch = useDispatch();
 
-    //const dispatch = useDispatch();
-    //const [ getAC, resetAC ] = useAbortController(true);
-    /*useEffect(() => {
-        console.log('Users.useEffect in')
-        getAC();
-        //dispatch(textRoomTestLongRequest({ signal: getAC().signal }));
-        //dispatch(textRoomGetAll({ signal: getAC().signal }));
+    useLayoutEffect(() => {
+        console.log('Home layout_in')
         dispatch(textRoomActionOn());
         return () => {
-            console.log('Users.useEffect out')
+            console.log('Home layout_out')
             dispatch(textRoomActionOff());
-            getAC().abort();
-        }
-    }, []);*/
-
-    useEffect(() => {
-        console.log('Home in');
-        return () => {
-            console.log('Home out')
         }
     }, [])
 

@@ -4,6 +4,7 @@ import {
     useDispatch,
     useMemo,
     useEffect,
+    useLayoutEffect,
     useAbortController,
     shallowEqual,
     createSelector,
@@ -16,6 +17,7 @@ import {
     textRoomActionOff,
 } from "../redux-toolkit/actions/textroom-actions.js";
 import {
+    selectRoomsAction1,
     selectRoomsLoading,
 } from "../redux-toolkit/slices/textroom-slice.js";
 
@@ -51,26 +53,20 @@ const makeSelectRoomsLoading = () => createSelector(state => state.textRoom, tex
 export default Users;*/
 
 export default function Users() {
-    //const { loading } = useSelector(store => store.textRoom); // do cycle useEffect in/out !
-    //const { loading } = useSelector(store => store.textRoom, shallowEqual); // no difference
-    //const { action1 } = useSelector(store => store.textRoom); // do rerender !
-    const loading = useSelector(selectRoomsLoading); //in/out no cycle
-    //const selectRoomsLoadingMemo = useMemo(makeSelectRoomsLoading, []);
-    //const loading = useSelector(selectRoomsLoadingMemo);
+    const loading = useSelector(selectRoomsLoading);
+    const action1 = useSelector(selectRoomsAction1);
 
     const dispatch = useDispatch();
-    const [ getAC, resetAC ] = useAbortController(true);
+    const [ getAC, resetAC ] = useAbortController();
 
-    useEffect(() => {
-        console.log('Users.useEffect in')
+    useLayoutEffect(() => {
+        console.log('Users_layout_in')
         getAC();
-        //dispatch(textRoomTestLongRequest({ signal: getAC().signal }));
-        //dispatch(textRoomGetAll({ signal: getAC().signal }));
         dispatch(textRoomActionOn());
         return () => {
-            console.log('Users.useEffect out')
+            console.log('Users_layout_out')
             dispatch(textRoomActionOff());
-            //getAC().abort();
+            getAC().abort();
         }
     }, []);
 
