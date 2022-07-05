@@ -1,17 +1,14 @@
 import { html, useEffect, useSelector, useDispatch } from '../../imports.js';
 import { selectRooms } from '../../redux-toolkit/slices/textroom-slice.js';
 
-export default function RoomsList(props) {
-    const { mode } = props;
+const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
+
+export default function RoomsList() {
     const { textRoom: { loading, rooms, notInitialized } } = useSelector(state => state);
-    //const rooms = useSelector(selectRooms);
-    //console.log('rooms', rooms);
 
     if (notInitialized) return null;
 
     if (!loading && !rooms.length) return html`<p>No rooms</p>`;
-
-    const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
 
     return html`
         <table class="table">
@@ -23,6 +20,7 @@ export default function RoomsList(props) {
                 <th>history</th>
                 <th>pin</th>
                 <th>participants</th>
+                <th></th>
             </thead>
             <tbody>
             ${rooms.map(r => html`
@@ -34,6 +32,10 @@ export default function RoomsList(props) {
                     <td>${r.history}</td>
                     <td>${r.pin ? check : ''}</td>
                     <td>${r.num_participants}</td>
+                    <td>
+                        <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
+                        <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger">del</a>
+                    </td>
                 </tr>
             `)}
             </tbody>

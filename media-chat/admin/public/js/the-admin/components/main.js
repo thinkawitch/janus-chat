@@ -4,6 +4,7 @@ import Home from './home.js';
 import Users from './users.js';
 import Rooms from './rooms/rooms.js';
 import AddRoom from './rooms/add-room.js';
+import EditRoom from './rooms/edit-room.js';
 
 
 export default function Main() {
@@ -29,6 +30,7 @@ export default function Main() {
                 <${Users} path="/users" />
                 <${Rooms} path="/rooms" />
                 <${AddRoom} path="/rooms/add" />
+                <${EditRoom} path="/rooms/edit/:roomId" />
             </Router>
         </div>
     `;

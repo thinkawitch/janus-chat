@@ -14,13 +14,13 @@ export const textRoomGetAll = createAsyncThunk(
             }, 5000)
         })
     },
-    /*{
+    {
         condition: (arg, { getState, extra }) => {
             const { textRoom: { loading } } = getState();
             if (loading) console.log('textRoomGetAll will not start, already loading!')
             return !loading;
         }
-    }*/
+    }
 )
 
 export const textRoomCreate = createAsyncThunk(

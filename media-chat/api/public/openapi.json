@@ -242,6 +242,31 @@
       }
     },
     "/textroom/{roomId}": {
+      "get": {
+        "tags": [
+          "textroom"
+        ],
+        "summary": "Get text room",
+        "description": "",
+        "operationId": "getTextRoom",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "description": "roomId to get",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Text room"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "textroom"

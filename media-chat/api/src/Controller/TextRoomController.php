@@ -59,7 +59,7 @@ class TextRoomController extends AbstractController
             $rooms[] = $room;
         }
 
-sleep(5); // to test abort controller
+//sleep(5); // to test abort controller
 
         $result = [
             'textroom' => 1,
@@ -83,6 +83,37 @@ sleep(5); // to test abort controller
                 'handlesInfo' => $handlesInfo,
             ]
         ]);
+    }
+
+    #[Route('/{roomId}', requirements: ['roomId' => '\d+'], methods: ['GET'])]
+    public function getRoom(
+        int $roomId,
+        Connection $conn,
+        JanusUserApiService $janusUserApi,
+    ) : JsonResponse
+    {
+        // janus
+        $janusRooms = $janusUserApi->getRooms(true);
+
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+        $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
+        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+
+        $dbRooms = $conn->fetchAllAssociative($sql, $sqlParams);
+        $room = $dbRooms[0];
+
+        $liveRoom = getJanusRoomById($janusRooms, $roomId);
+        if ($liveRoom) {
+            $room['num_participants'] = $liveRoom['num_participants'];
+        }
+
+        $result = [
+            'textroom' => 1,
+            'room' => $room,
+        ];
+        return $this->json($result);
     }
 
     #[Route('', methods: ['POST'])]

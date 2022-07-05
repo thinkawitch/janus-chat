@@ -110,3 +110,21 @@ export const OFF_selectRoomsAction1 = createDraftSafeSelector(selectSelf, textRo
     console.log('[selector] selectRoomsAction1', textRoom.action1)
     return textRoom.action1
 });
+
+export const selectRoomById = createSelector(
+    [
+        state => state.textRoom.rooms,
+        (_, roomId) => roomId,
+    ],
+    (rooms, roomId) => {
+        let found = null;
+        rooms.some(r => {
+            //console.log('roomId', roomId, 'r', r)
+            if (r.id == roomId) {
+                found = r;
+                return true;
+            }
+        })
+        return found;
+    }
+);
