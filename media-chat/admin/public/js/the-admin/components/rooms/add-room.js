@@ -20,13 +20,6 @@ export default function AddRoom() {
         route(cancelUrl);
     }, []);
 
-    /*useEffect(() => {
-        return () => {
-            console.log('AddRoom.useEffect out');
-            getAC().abort();
-        }
-    }, [])*/
-
     const actions = useMemo(() => ({ onSubmit, onCancel }), [onSubmit, onCancel]);
 
     return html`

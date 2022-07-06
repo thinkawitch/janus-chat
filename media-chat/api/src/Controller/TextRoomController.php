@@ -108,7 +108,7 @@ class TextRoomController extends AbstractController
         if ($liveRoom) {
             $room['num_participants'] = $liveRoom['num_participants'];
         }
-
+sleep(3);
         $result = [
             'textroom' => 1,
             'room' => $room,

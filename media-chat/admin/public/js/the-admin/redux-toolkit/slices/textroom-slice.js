@@ -1,12 +1,13 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll, textRoomCreate, textRoomActionOn, textRoomActionOff } from '../actions/textroom-actions.js';
+import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomActionOn, textRoomActionOff } from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
 const initialState = {
     rooms: [],
-    loading: false,
+    loading: false, // loading all
+    getting: false, // loading one
     creating: false,
     updating: false,
     deleting: false,
@@ -54,6 +55,26 @@ export const textRoomSlice = createSlice({
             return { ...state, loading: false }
             //state.loading = false;
         },
+        [textRoomGet.pending]: (state) => {
+            state.getting = true;
+        },
+        [textRoomGet.fulfilled]: (state, action) => {
+            const room = action.payload.room;
+            const roomIdx = state.rooms.findIndex(r => {
+                if (r.id == room.id) return true;
+            })
+            if (roomIdx > -1) {
+                // update
+                state.rooms = state.rooms.map((el,idx) => idx === roomIdx ? room : el)
+            } else {
+                // add
+                state.rooms.push(action.payload.room)
+            }
+            state.getting = false;
+        },
+        [textRoomGet.rejected]: (state) => {
+            state.getting = false;
+        },
         [textRoomCreate.pending]: (state, action) => {
             console.log('textRoomSlice textRoomCreate.pending')
             return { ...state, creating: true }
@@ -93,20 +114,20 @@ export const selectRooms = (state) => {
     return state.textRoom.rooms;
 }
 
-const selectSelf = (state) => state.textRoom
+export const selectTextRoom = (state) => state.textRoom;
 
-export const selectRoomsLoading = createSelector(selectSelf, textRoom => {
+export const selectRoomsLoading = createSelector(selectTextRoom, textRoom => {
     console.log('[selector] selectRoomsLoading', textRoom.loading)
     return textRoom.loading
 });
 
 
-export const selectRoomsAction1 = createSelector(selectSelf, textRoom => {
+export const selectRoomsAction1 = createSelector(selectTextRoom, textRoom => {
     console.log('[selector] selectRoomsAction1', textRoom.action1)
     return textRoom.action1
 });
 
-export const OFF_selectRoomsAction1 = createDraftSafeSelector(selectSelf, textRoom => {
+export const OFF_selectRoomsAction1 = createDraftSafeSelector(selectTextRoom, textRoom => {
     console.log('[selector] selectRoomsAction1', textRoom.action1)
     return textRoom.action1
 });

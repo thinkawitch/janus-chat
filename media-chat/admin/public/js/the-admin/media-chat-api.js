@@ -64,6 +64,12 @@ const mediaChatApi = {
             checkResponse(response);
             return await response.json();
         },
+        get: async (signal, roomId) => {
+            const localInit = addSignalToFetchInit(fetchInit, signal);
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
+            checkResponse(response);
+            return await response.json();
+        },
         create: async (signal, data) => {
             const localInit = {
                 ...addSignalToFetchInit(fetchInit, signal),

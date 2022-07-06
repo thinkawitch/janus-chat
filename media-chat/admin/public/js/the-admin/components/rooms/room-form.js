@@ -1,4 +1,4 @@
-import { html, useEffect, useSelector, useDispatch, useCallback, useState } from '../../imports.js';
+import { html, useEffect, useSelector, useDispatch, useCallback, useState, useRef } from '../../imports.js';
 
 export default function RoomForm(props) {
     const { mode, room, actions: { onSubmit, onCancel } } = props;
@@ -17,6 +17,13 @@ export default function RoomForm(props) {
         for (const f in initFields) initFields[f] = room[f];
     }
     const [fields, setFields] = useState(initFields); // make fields controlled to render correct values in edit mode
+
+    useEffect(() => {
+        console.log('useEffect for changed room')
+        let updateFields = {};
+        for (const f in initFields) updateFields[f] = room[f];
+        setFields(updateFields);
+    }, [room])
 
     const onFormSubmit = useCallback(e => {
         e.preventDefault();
@@ -39,8 +46,9 @@ export default function RoomForm(props) {
         const field = e.target.name;
         let val = e.target.value;
         if (field == 'history') val = parseInt(val);
-        setFields({ ...fields, [field]: val });
-    }, [setFields]);
+        const newFields = { ...fields, [field]: val };
+        setFields(newFields);
+    }, [fields]);
 
     return html`
         <form onSubmit=${onFormSubmit}>

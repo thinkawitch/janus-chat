@@ -48,6 +48,7 @@ services:
       # nginx
       - ./docker/containers/ssl-certs:/etc/nginx/deploy/ssl-certs
       - ./docker/containers/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/containers/nginx/01-lf-monitored.conf:/etc/nginx/conf.d/01-lf-monitored.conf
       - ./docker/containers/nginx/api-inner.conf:/etc/nginx/api-inner.conf
       - ./docker/containers/nginx/wildcard-cors.conf:/etc/nginx/wildcard-cors.conf
       - ./docker/containers/nginx/templates:/etc/nginx/templates

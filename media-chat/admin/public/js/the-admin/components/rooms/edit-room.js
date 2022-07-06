@@ -1,7 +1,7 @@
-import { html, useEffect, useRef, useCallback, useMemo, useSelector, useDispatch, useRouter, useAbortController } from '../../imports.js';
+import { html, useEffect, useLayoutEffect, useRef, useCallback, useMemo, useSelector, useDispatch, useRouter, useAbortController } from '../../imports.js';
 import RoomForm from './room-form.js';
-import { textRoomCreate } from '../../redux-toolkit/actions/textroom-actions.js';
-import { selectRoomById } from '../../redux-toolkit/slices/textroom-slice.js';
+import { textRoomCreate, textRoomGet } from '../../redux-toolkit/actions/textroom-actions.js';
+import { selectTextRoom, selectRoomById } from '../../redux-toolkit/slices/textroom-slice.js';
 
 export default function EditRoom({ roomId }) {
     console.log('EditRoom', roomId);
@@ -9,6 +9,22 @@ export default function EditRoom({ roomId }) {
     const [ routerCtx, route ] = useRouter();
     const cancelUrl = routerCtx.previous ?? '/';
     const [ getAC, resetAC ] = useAbortController(true);
+
+    const selectTheRoom = useMemo(() => (state => selectRoomById(state, roomId)), [roomId]);
+    const room = useSelector(selectTheRoom);
+    const { getting } = useSelector(selectTextRoom);
+
+    let alwaysGetFresh = true;
+    useLayoutEffect(() => {
+        let promise;
+        if (!room || alwaysGetFresh) {
+            promise = dispatch(textRoomGet({ roomId }))
+        }
+        return () => {
+            promise?.abort();
+        }
+    }, [roomId])
+
 
     const onSubmit = useCallback(data => {
         dispatch(textRoomCreate({ data, signal: getAC().signal })).then(action => {
@@ -23,13 +39,21 @@ export default function EditRoom({ roomId }) {
     }, []);
 
     const actions = useMemo(() => ({ onSubmit, onCancel }), [onSubmit, onCancel]);
-    const selectTheRoom = useMemo(() => (state => selectRoomById(state, roomId)), [roomId]);
-    const room = useSelector(selectTheRoom);
-console.log('trying to find roomId', roomId);
 
-    if (!room) return html`
-        <div class="alert alert-danger">No room #${roomId}</div>
-    `;
+    let content = html`<${RoomForm} mode="edit" actions=${actions} room=${room} />`;
+
+    if (!room) {
+        content = getting
+            ? html`
+                <div class="d-flex align-items-center text-secondary">
+                    <span>Loading room...</span>
+                    <div class="spinner-border spinner-border-sm  ms-2" role="status" aria-hidden="true"></div>
+                </div>
+            `
+            : html`
+                <div class="alert alert-danger">No room #${roomId}</div>
+            `;
+    }
 
     return html`
         <nav aria-label="breadcrumb">
@@ -38,6 +62,7 @@ console.log('trying to find roomId', roomId);
                 <li class="breadcrumb-item active" aria-current="page">Edit room #${roomId}</li>
             </ol>
         </nav>
-        <${RoomForm} mode="edit" actions=${actions} room=${room} />
+        
+        ${content}
     `;
 }

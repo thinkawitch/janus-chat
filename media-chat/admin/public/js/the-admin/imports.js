@@ -78,44 +78,19 @@ import isToday from 'https://unpkg.com/dayjs@1.11.3/esm/plugin/isToday/index.js'
 dayjs.extend(isToday);
 
 
-// based on https://gist.github.com/kentcdodds/b36572b6e9227207e6c71fd80e63f3b4
-// own AC wrapper for debug
-let myAcId = 0;
-function createMyAbortController() {
-    const ac = new AbortController();
-    ac.id = ++myAcId; //generateRandomNum(1, 10000);
-    //console.log('myAC: created', ac.id);
-    const origAbort = ac.abort;
-    ac.abort = () => {
-        //console.log('myAC: aborting', ac.id);
-        origAbort.call(ac);
-    }
-    return ac;
-}
+// https://gist.github.com/thinkawitch/25f622448c899f2908e4735638b7dfcf
 function useAbortController(runEffect=false, runLayoutEffect=false) {
     const acRef = useRef()
-
-    /*const getSignal = useCallback(() => {
-        if (!acRef.current) {
-            acRef.current = new AbortController()
-        }
-        return acRef.current.signal
-    }, [])*/
-
     const getAbortController = useCallback(() => {
         if (!acRef.current) {
-            //acRef.current = new AbortController()
-            //acRef.current.id = generateRandomNum(1, 10000);
-            acRef.current = createMyAbortController();
+            acRef.current = new AbortController()
         }
         return acRef.current
     }, []);
 
     if (runEffect) {
         useEffect(() => {
-            //console.log('>>>>>>>>>> useAbortController')
             return () => {
-                //console.log('<<<<<<<<<< useAbortController',  acRef.current ? acRef.current.id : 'n/a')
                 acRef.current && acRef.current.abort()
             }
         }, [])
@@ -129,17 +104,18 @@ function useAbortController(runEffect=false, runLayoutEffect=false) {
     }
 
     const resetAbortController = useCallback(() => {
-        //acRef.current = new AbortController()
-        //acRef.current.id = generateRandomNum(1, 10000);
-        acRef.current = createMyAbortController();
+        acRef.current = new AbortController()
     }, [])
 
     return [getAbortController, resetAbortController]
 }
 
-function generateRandomNum(min, max) {
-    const value = (Math.random() * (max - min + 1)) + min;
-    return Math.floor(value);
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value; //assign the value of ref to the argument
+    },[value]); //this code will run when the value of 'value' changes
+    return ref.current; //in the end, return the current ref value.
 }
 
 export {
@@ -182,4 +158,5 @@ export {
     dayjs,
     // custom
     useAbortController,
+    usePrevious,
 }
