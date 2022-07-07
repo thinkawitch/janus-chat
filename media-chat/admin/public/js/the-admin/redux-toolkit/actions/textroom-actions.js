@@ -50,6 +50,3 @@ export const textRoomTestLongRequest = createAsyncThunk(
         })
     }
 )
-
-export const textRoomActionOn = createAction('textRoom/actionOn');
-export const textRoomActionOff = createAction('textRoom/actionOff');

@@ -1,6 +1,6 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomActionOn, textRoomActionOff } from '../actions/textroom-actions.js';
+import { textRoomGetAll, textRoomGet, textRoomCreate } from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
@@ -8,11 +8,11 @@ const initialState = {
     rooms: [],
     loading: false, // loading all
     getting: false, // loading one
+    gettingError: null,  // { status, title, message }
     creating: false,
     updating: false,
     deleting: false,
     notInitialized: false,
-    action1:false,
 }
 
 export const textRoomSlice = createSlice({
@@ -56,6 +56,7 @@ export const textRoomSlice = createSlice({
             //state.loading = false;
         },
         [textRoomGet.pending]: (state) => {
+            state.gettingError = null;
             state.getting = true;
         },
         [textRoomGet.fulfilled]: (state, action) => {
@@ -72,7 +73,10 @@ export const textRoomSlice = createSlice({
             }
             state.getting = false;
         },
-        [textRoomGet.rejected]: (state) => {
+        [textRoomGet.rejected]: (state, action) => {
+            console.log('textRoomSlice textRoomGet.rejected', action.error);
+            console.dir(action.error);
+            state.gettingError = action.error;
             state.getting = false;
         },
         [textRoomCreate.pending]: (state, action) => {
@@ -88,16 +92,6 @@ export const textRoomSlice = createSlice({
             console.log('textRoomSlice textRoomCreate.rejected')
             return { ...state, creating: false }
             //state.creating = false;
-        },
-        [textRoomActionOn]: (state) => {
-            console.log('[reducer] textRoomActionOn')
-            //return { ...state, action1: true }
-            state.action1 = true;
-        },
-        [textRoomActionOff]: (state) => {
-            console.log('[reducer] textRoomActionOff')
-            //return { ...state, action1: false }
-            state.action1 = false;
         },
     }
 });
@@ -121,16 +115,6 @@ export const selectRoomsLoading = createSelector(selectTextRoom, textRoom => {
     return textRoom.loading
 });
 
-
-export const selectRoomsAction1 = createSelector(selectTextRoom, textRoom => {
-    console.log('[selector] selectRoomsAction1', textRoom.action1)
-    return textRoom.action1
-});
-
-export const OFF_selectRoomsAction1 = createDraftSafeSelector(selectTextRoom, textRoom => {
-    console.log('[selector] selectRoomsAction1', textRoom.action1)
-    return textRoom.action1
-});
 
 export const selectRoomById = createSelector(
     [

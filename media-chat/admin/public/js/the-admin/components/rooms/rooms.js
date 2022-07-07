@@ -32,7 +32,7 @@ export default function Rooms() {
             ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary ms-3">add room</a>`}
             <button class="btn btn-secondary btn-sm ms-3" onClick=${refresh} disabled=${loading}>
                 ${loading && html`<div class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></div>`}
-                refresh
+                ${loading ? 'loading' : 'refresh'}
             </button>
         </div>
         <${RoomsList} />

@@ -4,7 +4,7 @@ import { textRoomCreate, textRoomGet } from '../../redux-toolkit/actions/textroo
 import { selectTextRoom, selectRoomById } from '../../redux-toolkit/slices/textroom-slice.js';
 
 export default function EditRoom({ roomId }) {
-    console.log('EditRoom', roomId);
+    //console.log('EditRoom', roomId);
     const dispatch = useDispatch();
     const [ routerCtx, route ] = useRouter();
     const cancelUrl = routerCtx.previous ?? '/';
@@ -12,7 +12,7 @@ export default function EditRoom({ roomId }) {
 
     const selectTheRoom = useMemo(() => (state => selectRoomById(state, roomId)), [roomId]);
     const room = useSelector(selectTheRoom);
-    const { getting } = useSelector(selectTextRoom);
+    const { getting, gettingError } = useSelector(selectTextRoom);
 
     let alwaysGetFresh = true;
     useLayoutEffect(() => {
@@ -51,7 +51,7 @@ export default function EditRoom({ roomId }) {
                 </div>
             `
             : html`
-                <div class="alert alert-danger">No room #${roomId}</div>
+                <div class="alert alert-danger">${gettingError?.status}: ${gettingError?.message}</div>
             `;
     }
 
@@ -62,7 +62,6 @@ export default function EditRoom({ roomId }) {
                 <li class="breadcrumb-item active" aria-current="page">Edit room #${roomId}</li>
             </ol>
         </nav>
-        
         ${content}
     `;
 }

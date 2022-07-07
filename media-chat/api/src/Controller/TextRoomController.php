@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TextRoomController extends AbstractController
 {
     #[Route('', methods: ['GET'])]
-    public function index(
+    public function getRooms(
         JanusUserApiService $janusUserApi,
         JanusAdminApiService $janusAdminApi,
         Connection $conn
@@ -85,7 +85,7 @@ class TextRoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{roomId}', requirements: ['roomId' => '\d+'], methods: ['GET'])]
+    #[Route('/{roomId}', /*requirements: ['roomId' => '\d+'],*/ methods: ['GET'])]
     public function getRoom(
         int $roomId,
         Connection $conn,
@@ -101,14 +101,14 @@ class TextRoomController extends AbstractController
         $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
 
-        $dbRooms = $conn->fetchAllAssociative($sql, $sqlParams);
-        $room = $dbRooms[0];
+        $room = $conn->fetchAssociative($sql, $sqlParams);
+        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'message' => 'Room not found'], 404);
 
         $liveRoom = getJanusRoomById($janusRooms, $roomId);
         if ($liveRoom) {
             $room['num_participants'] = $liveRoom['num_participants'];
         }
-sleep(3);
+
         $result = [
             'textroom' => 1,
             'room' => $room,
@@ -182,7 +182,19 @@ sleep(5); return $this->json(['test']);
         Connection $conn
     ) : JsonResponse
     {
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
         // only creator or admin can destroy the room
+        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+        $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
+        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+        $room = $conn->fetchAssociative($sql, $sqlParams);
+        if (!$room) return $this->json(['textroom' => 1, 'error' => 404, 'message' => 'Room not found'], 404);
+
+throw $this->createAccessDeniedException();
+
+
         $deleteFromDb = true;
 
         try {

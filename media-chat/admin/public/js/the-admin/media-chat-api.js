@@ -8,11 +8,37 @@ const fetchInit = {
 
 let authRequiredHandler = null; // call when api says auth required, auth expired, etc
 
+
+class MCError extends Error {
+    constructor(message, status) {
+        super(message);
+        this.status = status;
+    }
+}
+
+
 function checkResponse(response) {
-    //console.log('checkResponse status', response.status);
+    console.log('checkResponse status', response.status, response);
     if (response.status === 401) {
         authRequiredHandler && authRequiredHandler();
         throw new Error('auth_required');
+    }
+    if (response.status >= 500) {
+        try {
+            throw new MCError('server_error33333333', 300);
+        } catch (e) {
+            console.log('e22222222222', e.status);
+            throw e;
+        }
+    }
+    if (response.headers.get('Content-Type') !== 'application/json') {
+        throw new Error('json_required');
+    }
+}
+
+function checkErrorData(data) {
+    if (data.error) {
+        throw new Error(data.message);
     }
 }
 
@@ -62,13 +88,17 @@ const mediaChatApi = {
             const localInit = addSignalToFetchInit(fetchInit, signal);
             const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
             checkResponse(response);
-            return await response.json();
+            const data = await response.json();
+            checkErrorData(data);
+            return data;
         },
         get: async (signal, roomId) => {
             const localInit = addSignalToFetchInit(fetchInit, signal);
             const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
             checkResponse(response);
-            return await response.json();
+            const data = await response.json();
+            checkErrorData(data);
+            return data;
         },
         create: async (signal, data) => {
             const localInit = {

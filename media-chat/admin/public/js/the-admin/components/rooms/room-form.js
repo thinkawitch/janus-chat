@@ -19,10 +19,11 @@ export default function RoomForm(props) {
     const [fields, setFields] = useState(initFields); // make fields controlled to render correct values in edit mode
 
     useEffect(() => {
-        console.log('useEffect for changed room')
-        let updateFields = {};
-        for (const f in initFields) updateFields[f] = room[f];
-        setFields(updateFields);
+        if (modeEdit) {
+            let updateFields = {};
+            for (const f in initFields) updateFields[f] = room[f];
+            setFields(updateFields);
+        }
     }, [room])
 
     const onFormSubmit = useCallback(e => {
