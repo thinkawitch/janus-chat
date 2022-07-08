@@ -85,7 +85,7 @@ class TextRoomController extends AbstractController
         ]);
     }
 
-    #[Route('/{roomId}', /*requirements: ['roomId' => '\d+'],*/ methods: ['GET'])]
+    #[Route('/{roomId}', requirements: ['roomId' => '\d+'], methods: ['GET'])]
     public function getRoom(
         int $roomId,
         Connection $conn,
@@ -102,7 +102,7 @@ class TextRoomController extends AbstractController
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
 
         $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'message' => 'Room not found'], 404);
+        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found"], 404);
 
         $liveRoom = getJanusRoomById($janusRooms, $roomId);
         if ($liveRoom) {

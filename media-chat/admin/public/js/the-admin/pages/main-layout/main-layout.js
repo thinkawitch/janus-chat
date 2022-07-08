@@ -1,13 +1,13 @@
-import { html, useDispatch, Router, useState, useCallback } from '../imports.js';
-import HeaderSideMenu from './main/header-side-menu.js';
-import Home from './home.js';
-import Users from './users.js';
-import Rooms from './rooms/rooms.js';
-import AddRoom from './rooms/add-room.js';
-import EditRoom from './rooms/edit-room.js';
+import { html, useDispatch, Router, useState, useCallback } from '../../imports.js';
+import HeaderSideMenu from './header-side-menu.js';
+import Home from './../home.js';
+import Users from './../users.js';
+import Rooms from './../rooms/rooms.js';
+import AddRoom from './../rooms/add-room.js';
+import EditRoom from './../rooms/edit-room.js';
 
 
-export default function Main() {
+export default function MainLayout() {
     const handleRouteChange = useCallback(e => {
         //console.warn('handleRouteChange: updates state, leads to re-renders, e', e)
         // do re-render, replaced with useRouter

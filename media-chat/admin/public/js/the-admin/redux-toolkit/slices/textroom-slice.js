@@ -7,8 +7,9 @@ import { userLogout } from '../actions/auth-actions.js';
 const initialState = {
     rooms: [],
     loading: false, // loading all
+    loadingError: null,
     getting: false, // loading one
-    gettingError: null,  // { status, title, message }
+    gettingError: null,  // { status, title, detail }
     creating: false,
     updating: false,
     deleting: false,
@@ -40,20 +41,21 @@ export const textRoomSlice = createSlice({
         },
         [textRoomGetAll.pending]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.pending')
-            return { ...state, loading: true } // this makes hang-up
-            //state.loading = true;
+            //return { ...state, loading: true } // this makes hang-up
+            state.loadingError = null;
+            state.loading = true;
         },
         [textRoomGetAll.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.fulfilled')
-            return { ...state, loading: false, rooms: action.payload.rooms, notInitialized: false }
+            return { ...state, loading: false, loadingError: null, rooms: action.payload.rooms, notInitialized: false }
             // state.loading = false;
             // state.rooms = action.payload.rooms;
             // state.notInitialized = false;
         },
         [textRoomGetAll.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.rejected')
-            return { ...state, loading: false }
-            //state.loading = false;
+            state.loadingError = action.error;
+            state.loading = false;
         },
         [textRoomGet.pending]: (state) => {
             state.gettingError = null;
@@ -74,9 +76,10 @@ export const textRoomSlice = createSlice({
             state.getting = false;
         },
         [textRoomGet.rejected]: (state, action) => {
-            console.log('textRoomSlice textRoomGet.rejected', action.error);
-            console.dir(action.error);
-            state.gettingError = action.error;
+            //console.log('textRoomSlice textRoomGet.rejected', action.error);
+            if (action.payload === 'check_rwvError') {
+                state.gettingError = action.meta.rwvError;
+            }
             state.getting = false;
         },
         [textRoomCreate.pending]: (state, action) => {

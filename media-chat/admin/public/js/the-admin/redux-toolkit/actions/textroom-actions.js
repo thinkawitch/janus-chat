@@ -5,7 +5,7 @@ import mediaChatApi from '../../media-chat-api.js';
 export const textRoomGetAll = createAsyncThunk(
     'textRoom/getAll',
     async (arg, thunkAPI) => {
-        return await mediaChatApi.textroom.getAll(thunkAPI.signal);
+        return await mediaChatApi.textroom.getAll(thunkAPI);
     }, {
         condition: (arg, { getState, extra }) => {
             const { textRoom: { loading } } = getState();
@@ -18,7 +18,7 @@ export const textRoomGetAll = createAsyncThunk(
 export const textRoomGet = createAsyncThunk(
     'textRoom/get',
     async (arg, thunkAPI) => {
-        return await mediaChatApi.textroom.get(thunkAPI.signal, arg.roomId);
+        return await mediaChatApi.textroom.get(arg.roomId, thunkAPI);
     }
 )
 

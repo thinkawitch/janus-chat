@@ -31,8 +31,8 @@ export default function Rooms() {
             <h1>Rooms</h1>
             ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary ms-3">add room</a>`}
             <button class="btn btn-secondary btn-sm ms-3" onClick=${refresh} disabled=${loading}>
-                ${loading && html`<div class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></div>`}
-                ${loading ? 'loading' : 'refresh'}
+                ${loading && false && html`<div class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></div>`}
+                ${loading ? 'refreshing' : 'refresh'}
             </button>
         </div>
         <${RoomsList} />

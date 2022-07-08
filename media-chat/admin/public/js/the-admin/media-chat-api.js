@@ -1,46 +1,56 @@
 import { mediaChatApiBaseUrl } from './config.js';
 
-
+const fetchHeaderAccept = {
+    'Accept': 'application/json'
+}
+const fetchHeaderContentType = { 'Content-Type': 'application/json;charset=utf-8' }
 const fetchInit = {
     mode: 'cors',
     credentials: 'include', //'same-origin',
+    headers: {
+        ...fetchHeaderAccept
+    },
 }
 
 let authRequiredHandler = null; // call when api says auth required, auth expired, etc
 
 
-class MCError extends Error {
-    constructor(message, status) {
-        super(message);
-        this.status = status;
-    }
-}
-
-
-function checkResponse(response) {
-    console.log('checkResponse status', response.status, response);
+async function processResponse(response, rejectWithValue) {
+    console.log('processResponse status', response.status);
     if (response.status === 401) {
         authRequiredHandler && authRequiredHandler();
         throw new Error('auth_required');
     }
-    if (response.status >= 500) {
-        try {
-            throw new MCError('server_error33333333', 300);
-        } catch (e) {
-            console.log('e22222222222', e.status);
-            throw e;
-        }
-    }
     if (response.headers.get('Content-Type') !== 'application/json') {
-        throw new Error('json_required');
+        // symfony error as html
+        const text = await response.text();
+        const status = response.status;
+        let title = 'unknown_html_error_title'
+        let detail = 'unknown_html_error_detail';
+        try {
+            // case of dev.env format: long detail message (short title)
+            detail = text.match(/<title[^>]*>([^<]+)<\/title>/i)[1];
+            const lastBracket1 = detail.lastIndexOf('(');
+            const lastBracket2 = detail.lastIndexOf(')');
+            title = detail.substring(lastBracket1 + 1, lastBracket2);
+        } catch (e) {}
+        //throw new Error(JSON.stringify({status, title, detail}));
+        throw rejectWithValue('check_rwvError', { rwvError: {status, title, detail} })
     }
+
+    const data = await response.json();
+
+    if (response.status === 404) {
+        throw rejectWithValue('check_rwvError', { rwvError: data })
+    }
+    if (response.status === 500) {
+        // symfony error as json
+        throw rejectWithValue('check_rwvError', { rwvError: data })
+    }
+
+    return data;
 }
 
-function checkErrorData(data) {
-    if (data.error) {
-        throw new Error(data.message);
-    }
-}
 
 const mediaChatApi = {
 
@@ -49,7 +59,8 @@ const mediaChatApi = {
             const response = await fetch(`${mediaChatApiBaseUrl}login`, { ...fetchInit,
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
+                    ...fetchHeaderAccept,
+                    ...fetchHeaderContentType,
                 },
                 body: JSON.stringify({ username, password })
             });
@@ -78,34 +89,28 @@ const mediaChatApi = {
         getMe: async () => {
             const response = await fetch(`${mediaChatApiBaseUrl}me`, fetchInit);
             //console.log('mediaChatApi user.getMe response.status', response.status);
-            checkResponse(response);
-            return await response.json();
+            return await processResponse(response);
         },
     },
 
     textroom: {
-        getAll: async (signal) => {
-            const localInit = addSignalToFetchInit(fetchInit, signal);
+        getAll: async (thunkAPI) => {
+            const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
             const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
-            checkResponse(response);
-            const data = await response.json();
-            checkErrorData(data);
-            return data;
+            return await processResponse(response, thunkAPI.rejectWithValue);
         },
-        get: async (signal, roomId) => {
-            const localInit = addSignalToFetchInit(fetchInit, signal);
+        get: async (roomId, thunkAPI) => {
+            const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
             const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
-            checkResponse(response);
-            const data = await response.json();
-            checkErrorData(data);
-            return data;
+            return await processResponse(response, thunkAPI.rejectWithValue);
         },
         create: async (signal, data) => {
             const localInit = {
                 ...addSignalToFetchInit(fetchInit, signal),
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
+                    ...fetchHeaderAccept,
+                    ...fetchHeaderContentType,
                 },
                 body: JSON.stringify(data)
             };

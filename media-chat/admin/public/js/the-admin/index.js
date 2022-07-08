@@ -1,7 +1,7 @@
 import { html, render, Provider, useSelector, useDispatch, route } from './imports.js';
 import { store } from './redux-toolkit/configure-store.js';
-import Main from './components/main.js';
-import Login from './components/login.js';
+import MainLayout from './pages/main-layout/main-layout.js';
+import Login from './pages/login.js';
 import { authRequired } from './redux-toolkit/actions/auth-actions.js';
 import { userGetMe } from './redux-toolkit/actions/user-actions.js';
 import mediaChatApi from './media-chat-api.js';
@@ -17,7 +17,7 @@ function App() {
         if (auth.notInitialized) return Connecting();
         return Login();
     }
-    return Main();
+    return MainLayout();
 }
 
 export function renderAdmin(node) {
