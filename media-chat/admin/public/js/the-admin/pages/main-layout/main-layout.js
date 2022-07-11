@@ -5,6 +5,8 @@ import Users from './../users.js';
 import Rooms from './../rooms/rooms.js';
 import AddRoom from './../rooms/add-room.js';
 import EditRoom from './../rooms/edit-room.js';
+import { DialogConfirm } from '../../components/dialog-confirm.js';
+import {DialogConfirmContextProvider} from '../../components/dialog-confirm-context.js';
 
 
 export default function MainLayout() {
@@ -23,15 +25,18 @@ export default function MainLayout() {
     }, []);
 
     return html`
-        <${HeaderSideMenu} />
-        <div class="container-lg">
-            <${Router} onChange=${handleRouteChange}>
-                <${Home} default />
-                <${Users} path="/users" />
-                <${Rooms} path="/rooms" />
-                <${AddRoom} path="/rooms/add" />
-                <${EditRoom} path="/rooms/edit/:roomId" />
-            </Router>
-        </div>
+        <${DialogConfirmContextProvider}>
+            <${HeaderSideMenu} />
+            <div class="container-lg">
+                <${Router} onChange=${handleRouteChange}>
+                    <${Home} default />
+                    <${Users} path="/users" />
+                    <${Rooms} path="/rooms" />
+                    <${AddRoom} path="/rooms/add" />
+                    <${EditRoom} path="/rooms/edit/:roomId" />
+                </Router>
+            </div>
+            <${DialogConfirm} />
+        </>
     `;
 }
