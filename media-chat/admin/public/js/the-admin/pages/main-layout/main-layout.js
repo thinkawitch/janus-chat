@@ -5,8 +5,8 @@ import Users from './../users.js';
 import Rooms from './../rooms/rooms.js';
 import AddRoom from './../rooms/add-room.js';
 import EditRoom from './../rooms/edit-room.js';
-import { DialogConfirm } from '../../components/dialog-confirm.js';
-import {DialogConfirmContextProvider} from '../../components/dialog-confirm-context.js';
+import { DialogConfirm, DialogAlert } from '../../components/andrew-preact-dialog/dialog-component.js';
+import { DialogContextProvider } from '../../components/andrew-preact-dialog/dialog-context.js';
 
 
 export default function MainLayout() {
@@ -17,15 +17,12 @@ export default function MainLayout() {
         const psm = document.getElementById('pageSideMenu');
         if (psm) {
             const offcanvas = bootstrap.Offcanvas.getInstance(psm);
-            if (offcanvas) {
-                // it is opened
-                offcanvas.hide();
-            }
+            offcanvas?.hide();
         }
     }, []);
 
     return html`
-        <${DialogConfirmContextProvider}>
+        <${DialogContextProvider}>
             <${HeaderSideMenu} />
             <div class="container-lg">
                 <${Router} onChange=${handleRouteChange}>
@@ -37,6 +34,7 @@ export default function MainLayout() {
                 </Router>
             </div>
             <${DialogConfirm} />
+            <${DialogAlert} />
         </>
     `;
 }
