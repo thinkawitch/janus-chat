@@ -5,8 +5,8 @@ import Users from './../users.js';
 import Rooms from './../rooms/rooms.js';
 import AddRoom from './../rooms/add-room.js';
 import EditRoom from './../rooms/edit-room.js';
-import { DialogConfirm, DialogAlert } from '../../components/andrew-preact-dialog/dialog-component.js';
 import { DialogContextProvider } from '../../components/andrew-preact-dialog/dialog-context.js';
+import { DialogConfirm, DialogAlert, DialogPrompt } from '../../components/andrew-preact-dialog/dialog-component.js';
 
 
 export default function MainLayout() {
@@ -35,6 +35,7 @@ export default function MainLayout() {
             </div>
             <${DialogConfirm} />
             <${DialogAlert} />
+            <${DialogPrompt} />
         </>
     `;
 }

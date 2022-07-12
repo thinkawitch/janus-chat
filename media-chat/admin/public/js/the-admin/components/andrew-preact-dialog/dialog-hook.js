@@ -1,5 +1,12 @@
-import { createContext, useContext, useReducer, html, useEffect, useLayoutEffect, useRef } from '../../imports.js';
-import { DialogContext, DIALOG_SHOW, DIALOG_HIDE, DIALOG_ID_CONFIRM, DIALOG_ID_ALERT } from './dialog-context.js';
+import { useContext } from '../../imports.js';
+import {
+    DialogContext,
+    DIALOG_SHOW,
+    DIALOG_HIDE,
+    DIALOG_ID_CONFIRM,
+    DIALOG_ID_ALERT,
+    DIALOG_ID_PROMPT
+} from './dialog-context.js';
 
 
 let theResolve; // one resolver, there can be only one dialog active at the time
@@ -13,24 +20,28 @@ export function useDialog(dialogId) {
             payload: { dialogId }
         });
     };
-    const onConfirm = () => {
+    const onConfirm = (value) => {
         close();
-        theResolve(true);
+        const result = dialogId === DIALOG_ID_PROMPT ? [true, value] : true;
+        console.log('on_confirm_result', result)
+        theResolve(result)
     }
     const onCancel = () => {
         close();
-        theResolve(false);
+        const result = dialogId === DIALOG_ID_PROMPT ? [false] : false;
+        console.log('on_cancel_result', result)
+        theResolve(result);
     }
-    const ask = ({ text }) => {
+    const ask = ({ message, promptValue }) => {
         dispatch({
             type: DIALOG_SHOW,
-            payload: { dialogId, text }
+            payload: { dialogId, message, promptValue }
         });
         return new Promise((resolve, reject) => {
             theResolve = resolve;
         })
     }
-    return { ask, onConfirm, onCancel, dialogState };
+    return { ask, onConfirm, onCancel, dialogState }
 }
 
 export function useDialogConfirm() {
@@ -41,4 +52,9 @@ export function useDialogConfirm() {
 export function useDialogAlert() {
     const { ask, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_ALERT);
     return { alert: ask, onConfirm, onCancel, dialogState }
+}
+
+export function useDialogPrompt() {
+    const { ask, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_PROMPT);
+    return { prompt: ask, onConfirm, onCancel, dialogState }
 }

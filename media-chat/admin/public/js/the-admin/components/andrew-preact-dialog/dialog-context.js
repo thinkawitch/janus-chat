@@ -8,24 +8,28 @@ export const DialogContext = createContext();
 export const DIALOG_SHOW = 'DIALOG_SHOW';
 export const DIALOG_HIDE = 'DIALOG_HIDE';
 
-export const DIALOG_ID_CONFIRM = 1;
-export const DIALOG_ID_ALERT = 2;
+export const DIALOG_ID_CONFIRM = 'id_confirm';
+export const DIALOG_ID_ALERT = 'id_alert';
+export const DIALOG_ID_PROMPT = 'id_prompt';
 
-const oneDialogDefault = { show: false, text: '' }
+const oneDialogDefault = { show: false, message: '', promptValue: '' }
 
 const initialState = {
     /* [dialogId] => {oneDialog}  */
     [DIALOG_ID_CONFIRM]: { ...oneDialogDefault },
     [DIALOG_ID_ALERT]: { ...oneDialogDefault },
+    [DIALOG_ID_PROMPT]: { ...oneDialogDefault },
 };
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case DIALOG_SHOW: {
-            const { dialogId, text } = action.payload;
+            const { dialogId, message, promptValue } = action.payload;
+            const newVal = { show: true, message };
+            if (dialogId === DIALOG_ID_PROMPT) newVal.promptValue = promptValue || '';
             return {
                 ...state,
-                [dialogId]: { show: true, text }
+                [dialogId]: newVal
             };
         }
         case DIALOG_HIDE: {
@@ -42,6 +46,7 @@ const reducer = (state = initialState, action) => {
 
 export const DialogContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
+    console.log('DialogContextProvider state', state)
     return html`
         <${DialogContext.Provider} value=${[state, dispatch]}>
             ${children}
