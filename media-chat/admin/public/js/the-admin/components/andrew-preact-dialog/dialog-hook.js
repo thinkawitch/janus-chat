@@ -23,13 +23,11 @@ export function useDialog(dialogId) {
     const onConfirm = (value) => {
         close();
         const result = dialogId === DIALOG_ID_PROMPT ? [true, value] : true;
-        console.log('on_confirm_result', result)
         theResolve(result)
     }
     const onCancel = () => {
         close();
         const result = dialogId === DIALOG_ID_PROMPT ? [false] : false;
-        console.log('on_cancel_result', result)
         theResolve(result);
     }
     const ask = ({ message, promptValue }) => {

@@ -1,4 +1,4 @@
-import {html, useEffect, useSelector, useDispatch, useCallback} from '../../imports.js';
+import { html, useEffect, useSelector, useDispatch, useCallback } from '../../imports.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
 import { useDialogConfirm, useDialogAlert, useDialogPrompt } from '../../components/andrew-preact-dialog/dialog-hook.js';
 
@@ -66,7 +66,9 @@ export default function RoomsList() {
                     <td>
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
                         <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger" rel=${r.id} onClick=${confirmToDel} data-native>del</a>
-                        <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-info" rel=${r.id} onClick=${testPrompt} data-native>???</a>
+                        
+                        <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-info ms-2" rel=${r.id} onClick=${testAlert} data-native>alert</a>
+                        <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-info ms-2" rel=${r.id} onClick=${testPrompt} data-native>prompt</a>
                     </td>
                 </tr>
             `)}

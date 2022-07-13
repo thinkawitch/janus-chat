@@ -1,4 +1,4 @@
-import { html, useEffect, useLayoutEffect, useRef, useState } from '../../imports.js';
+import { html, useEffect, useRef, useState } from '../../imports.js';
 import { useDialogConfirm, useDialogAlert, useDialogPrompt } from './dialog-hook.js';
 
 
@@ -7,11 +7,16 @@ export function DialogConfirm() {
     const { show, message } = dialogState;
     const ref = useRef(null);
 
-    useLayoutEffect(() => {
-        // update state on escape press
-        ref.current?.addEventListener('cancel', e => {
-            onCancel();
-        })
+    useEffect(() => {
+        const dialog = ref.current;
+        const onDialogClose = e => {
+            dialog.returnValue === 'yes' ? onConfirm() : onCancel();
+            dialog.returnValue = ''; //reset for next time
+        }
+        dialog.addEventListener('close', onDialogClose)
+        return () => {
+            dialog.removeEventListener('close', onDialogClose)
+        }
     }, [])
 
     useEffect(() => {
@@ -22,23 +27,36 @@ export function DialogConfirm() {
         <dialog ref=${ref}>
             <p>${message}</p>
             <form method="dialog">
-                <button class="btn btn-primary me-3" onClick=${onConfirm}>OK</button>
-                <button class="btn btn-secondary" onClick=${onCancel} autofocus>Cancel</button>
+                <button type="submit" value="yes" class="btn btn-primary me-3">OK</button>
+                <button type="submit" value="no" class="btn btn-secondary" autofocus>Cancel</button>
             </form>
         </dialog>
     `;
 }
 
+
 export function DialogAlert() {
-    const { onConfirm, onCancel, dialogState } = useDialogAlert();
+    const { onConfirm, dialogState } = useDialogAlert();
     const { show, message } = dialogState;
     const ref = useRef(null);
 
-    useLayoutEffect(() => {
-        ref.current?.addEventListener('cancel', e => {
+    useEffect(() => {
+        const dialog = ref.current;
+        const onDialogCancel = e => {
             e.preventDefault(); // force user to agree, no escape
-            //onCancel();
-        })
+        }
+        const onDialogClose = e => {
+            if (dialog.returnValue === 'yes') {
+                onConfirm();
+            }
+            dialog.returnValue = ''; //reset for next time
+        }
+        dialog.addEventListener('cancel', onDialogCancel)
+        dialog.addEventListener('close', onDialogClose)
+        return () => {
+            dialog.removeEventListener('cancel', onDialogCancel)
+            dialog.removeEventListener('close', onDialogClose)
+        }
     }, [])
 
     useEffect(() => {
@@ -49,81 +67,59 @@ export function DialogAlert() {
         <dialog ref=${ref}>
             <p>${message}</p>
             <form method="dialog">
-                <button class="btn btn-primary" onClick=${onConfirm}>OK</button>
+                <button type="submit" value="yes" class="btn btn-primary">OK</button>
             </form>
         </dialog> 
     `;
 }
 
+
 export function DialogPrompt() {
     const { onConfirm, onCancel, dialogState } = useDialogPrompt();
     const { show, message, promptValue } = dialogState;
-    const [ val, setVal ] = useState(promptValue);
+    const [ val, setVal ] = useState('');
     const ref = useRef(null);
 
-    useLayoutEffect(() => {
-        // update state on escape press
-        ref.current?.addEventListener('cancel', e => {
-            console.log('DialogPrompt_cancel')
-            //onCancel();
-            localOnCancel();
-        })
-        /*ref.current?.addEventListener('close', e => {
-            console.log('DialogPrompt_close e', e)
+    useEffect(() => {
+        const dialog = ref.current;
+        const onDialogCancel = e => {
             onCancel();
-        })*/
-
-    }, [])
+        }
+        const onDialogClose = e => {
+            if (dialog.returnValue === 'yes') {
+                onConfirm(val)
+            } else {
+                onCancel();
+            }
+            dialog.returnValue = '';
+        }
+        dialog.addEventListener('cancel', onDialogCancel)
+        dialog.addEventListener('close', onDialogClose)
+        return () => {
+            dialog.removeEventListener('cancel', onDialogCancel)
+            dialog.removeEventListener('close', onDialogClose)
+        }
+    }, [val])
 
     useEffect(() => {
         if (show) {
-            setVal(promptValue); // set default value
+            setVal(promptValue); // set default value, when dialog opens for the new prompt
             ref.current?.showModal();
         }
     }, [show])
 
     const onInput = e => {
-        //console.log('onInput e', e)
-        // do not work in modal
-        /*if (e.key === 'Enter') {
-            console.log('Enter')
-            e.preventDefault();
-            e.stopPropagation();
-            onConfirm(val)
-            return false;
-        }*/
         setVal(e.target.value);
     }
-
-    const localOnCancel = e => {
-        setVal('');
-        onCancel();
-    }
-
-    const localOnForm = (e) => {
-        console.log('localOnForm')
-        e.preventDefault();
-        //ref.current?.close();
-
-        //onConfirm(e.target['input_text']?.value);
-        onConfirm(val);
-    }
-    const localOnOk = e => {
-        console.log('localOnOk')
-        //onConfirm(e.target.form?.['input_text']?.value)
-        setVal('');
-        onConfirm(val)
-    }
-
 
     return html`
         <dialog ref=${ref}>
             <p>${message}</p>
-            <form method="dialog" onSubmit2=${localOnForm}>
-                <input type="text" class="form-control mb-3" value=${val} name="input_text" onInput=${onInput} />
+            <form method="dialog">
+                <input type="text" class="form-control mb-3" value=${val} onInput=${onInput} />
                 <!-- first should be ok button to submit form while enter pressed in text field -->
-                <button class="btn btn-primary me-3" onClick=${localOnOk}>OK</button>
-                <button class="btn btn-secondary" onClick=${localOnCancel}>Cancel</button>
+                <button type="submit" value="yes" class="btn btn-primary me-3">OK</button>
+                <button type="submit" value="no" class="btn btn-secondary">Cancel</button>
             </form>
         </dialog>
     `;

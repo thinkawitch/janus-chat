@@ -46,7 +46,7 @@ const reducer = (state = initialState, action) => {
 
 export const DialogContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
-    console.log('DialogContextProvider state', state)
+    //console.log('DialogContextProvider state', state)
     return html`
         <${DialogContext.Provider} value=${[state, dispatch]}>
             ${children}
