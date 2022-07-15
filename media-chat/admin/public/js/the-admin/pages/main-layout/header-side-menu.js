@@ -1,7 +1,15 @@
-import { html, useCallback, useDispatch, useSelector, useRouter } from '../../imports.js';
+import { html, useCallback, useDispatch, useSelector, useRouter, useLayoutEffect } from '../../imports.js';
 import { userLogout } from '../../redux-toolkit/actions/auth-actions.js';
 import { userGetMe } from '../../redux-toolkit/actions/user-actions.js';
 import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
+
+
+/*function updateTopSmallTitle() {
+    const h1Title = document.getElementById('pageTitle');
+    const smallTitle = document.getElementById('pageTitleIfSmall');
+    const newTitle = h1Title?.innerText ?? 'MC Admin';
+    smallTitle.innerText = newTitle;
+}*/
 
 export default function HeaderSideMenu() {
     const dispatch = useDispatch();
@@ -30,6 +38,18 @@ export default function HeaderSideMenu() {
         e && e.preventDefault();
         dispatch(textRoomGetAll());
     })
+
+    /*useLayoutEffect(() => {
+        const resizeHandler = () => {
+            if (window.innerWidth <= 992) {
+                updateTopSmallTitle();
+            }
+        }
+        window.addEventListener('resize', resizeHandler)
+        return () => {
+            window.removeEventListener('resize', resizeHandler)
+        }
+    }, [])*/
 
     return html`
         <header class="p-3 mb-3 border-bottom">
@@ -85,7 +105,7 @@ export default function HeaderSideMenu() {
                     <svg class="bi flex-shrink-0" width="32" height="40" role="img" aria-label="Menu"><use xlink:href="#bi-list"/></svg>
 
                     <ul class="nav justify-content-start ms-2">
-                        <li class="px-2">MC Admin Some long long page title 456 54645 654 6</li>
+                        <li class="px-2" id="pageTitleIfSmall">MC Admin</li>
                     </ul>
                 </div>
             </div>

@@ -8,7 +8,8 @@ import {
     useRef,
     useAbortController,
     shallowEqual,
-    createSelector
+    createSelector,
+    useSmallTitle,
 } from '../imports.js';
 import {
     textRoomGetAll,
@@ -19,9 +20,9 @@ import {
 
 export default function Home() {
     const dispatch = useDispatch();
-
+    useSmallTitle('Home');
     return html`
-        <h1>Dashboard</h1>
+        <h1 class="d-none d-lg-block">Home</h1>
         <div class="dashboard">
             <div class="dash-rooms card">
                 <div class="card-body">

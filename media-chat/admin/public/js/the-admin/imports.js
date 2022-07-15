@@ -118,6 +118,13 @@ function usePrevious(value) {
     return ref.current; //in the end, return the current ref value.
 }
 
+function useSmallTitle(title) {
+    useEffect(() => {
+        const node = document.getElementById('pageTitleIfSmall');
+        if (node) node.innerText = title;
+    }, [])
+}
+
 export {
     // htm
     html,
@@ -159,4 +166,5 @@ export {
     // custom
     useAbortController,
     usePrevious,
+    useSmallTitle,
 }

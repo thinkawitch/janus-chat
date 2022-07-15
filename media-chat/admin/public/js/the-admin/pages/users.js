@@ -7,6 +7,7 @@ import {
     useLayoutEffect,
     useAbortController,
     createSelector,
+    useSmallTitle,
 } from '../imports.js';
 import {
     textRoomGetAll,
@@ -21,11 +22,11 @@ const makeSelectRoomsLoading = () => createSelector(state => state.textRoom, tex
 
 export default function Users() {
     const loading = useSelector(selectRoomsLoading);
-
     const dispatch = useDispatch();
     const [ getAC, resetAC ] = useAbortController();
+    useSmallTitle('Users');
 
     return html`
-        <h1>Users</h1>
+        <h1 class="d-none d-lg-block">Users</h1>
     `;
 }

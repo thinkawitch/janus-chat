@@ -1,4 +1,13 @@
-import { html, useEffect, useLayoutEffect, useSelector, useDispatch, useCallback, useAbortController } from '../../imports.js';
+import {
+    html,
+    useEffect,
+    useLayoutEffect,
+    useSelector,
+    useDispatch,
+    useCallback,
+    useAbortController,
+    useSmallTitle
+} from '../../imports.js';
 import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
 import RoomsList from './rooms-list.js';
 import { selectRoomsLoading } from '../../redux-toolkit/slices/textroom-slice.js';
@@ -25,12 +34,13 @@ export default function Rooms() {
         dispatch(textRoomGetAll());
     }, [])
 
+    useSmallTitle('Rooms');
 
     return html`
         <div class="d-flex flex-row align-items-center">
-            <h1>Rooms</h1>
-            ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary ms-3">add room</a>`}
-            <button class="btn btn-secondary btn-sm ms-3" onClick=${refresh} disabled=${loading}>
+            <h1 class="d-none d-lg-block me-3">Rooms</h1>
+            ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary me-3">add room</a>`}
+            <button class="btn btn-secondary btn-sm" onClick=${refresh} disabled=${loading}>
                 ${loading && false && html`<div class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></div>`}
                 ${loading ? 'refreshing' : 'refresh'}
             </button>
