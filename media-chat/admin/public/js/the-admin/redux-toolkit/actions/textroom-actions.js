@@ -24,12 +24,16 @@ export const textRoomGet = createAsyncThunk(
 
 export const textRoomCreate = createAsyncThunk(
     'textRoom/create',
-    async (arg, thunkAPI) => {
-        const signal = arg?.signal || null // allow to abort
-        const data = arg.data;
+    async (args, thunkAPI) => {
+        const { data, signal } = args;
+        return await mediaChatApi.textroom.create(data, thunkAPI, signal);
+    }
+)
 
-        //return await mediaChatApi.test.get(signal);
-        return await mediaChatApi.textroom.create(signal, data);
+export const textRoomDelete = createAsyncThunk(
+    'textRoom/delete',
+    async (arg, thunkAPI) => {
+        return await mediaChatApi.textroom.delete(arg.roomId, thunkAPI);
     }
 )
 

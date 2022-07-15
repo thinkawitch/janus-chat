@@ -30,7 +30,7 @@ export function useDialog(dialogId) {
         const result = dialogId === DIALOG_ID_PROMPT ? [false] : false;
         theResolve(result);
     }
-    const ask = ({ message, promptValue }) => {
+    const open = ({ message, promptValue }) => {
         dispatch({
             type: DIALOG_SHOW,
             payload: { dialogId, message, promptValue }
@@ -39,20 +39,20 @@ export function useDialog(dialogId) {
             theResolve = resolve;
         })
     }
-    return { ask, onConfirm, onCancel, dialogState }
+    return { open, onConfirm, onCancel, dialogState }
 }
 
 export function useDialogConfirm() {
-    const { ask, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_CONFIRM);
-    return { confirm: ask, onConfirm, onCancel, dialogState }
+    const { open, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_CONFIRM);
+    return { confirm: open, onConfirm, onCancel, dialogState }
 }
 
 export function useDialogAlert() {
-    const { ask, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_ALERT);
-    return { alert: ask, onConfirm, onCancel, dialogState }
+    const { open, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_ALERT);
+    return { alert: open, onConfirm, onCancel, dialogState }
 }
 
 export function useDialogPrompt() {
-    const { ask, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_PROMPT);
-    return { prompt: ask, onConfirm, onCancel, dialogState }
+    const { open, onConfirm, onCancel, dialogState } = useDialog(DIALOG_ID_PROMPT);
+    return { prompt: open, onConfirm, onCancel, dialogState }
 }

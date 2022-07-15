@@ -11,6 +11,7 @@ const initialState = {
     getting: false, // loading one
     gettingError: null,  // { status, title, detail }
     creating: false,
+    creatingError: null,
     updating: false,
     deleting: false,
     notInitialized: false,
@@ -83,18 +84,19 @@ export const textRoomSlice = createSlice({
             state.getting = false;
         },
         [textRoomCreate.pending]: (state, action) => {
-            console.log('textRoomSlice textRoomCreate.pending')
-            return { ...state, creating: true }
-            //state.creating = true;
+            state.creatingError = null;
+            state.creating = true;
         },
         [textRoomCreate.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomCreate.fulfilled')
-            return { ...state, creating: false }
+            state.creating = false;
         },
         [textRoomCreate.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomCreate.rejected')
-            return { ...state, creating: false }
-            //state.creating = false;
+            if (action.payload === 'check_rwvError') {
+                state.creatingError = action.meta.rwvError;
+            }
+            state.creating = false;
         },
     }
 });

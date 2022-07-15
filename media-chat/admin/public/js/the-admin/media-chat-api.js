@@ -40,10 +40,7 @@ async function processResponse(response, rejectWithValue) {
 
     const data = await response.json();
 
-    if (response.status === 404) {
-        throw rejectWithValue('check_rwvError', { rwvError: data })
-    }
-    if (response.status === 500) {
+    if ([403, 404, 500].includes(response.status)) {
         // symfony error as json
         throw rejectWithValue('check_rwvError', { rwvError: data })
     }
@@ -104,7 +101,8 @@ const mediaChatApi = {
             const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
-        create: async (signal, data) => {
+        create: async (data, thunkAPI, customSignal) => {
+            const signal = customSignal ?? thunkAPI.signal;
             const localInit = {
                 ...addSignalToFetchInit(fetchInit, signal),
                 method: 'POST',
@@ -114,10 +112,19 @@ const mediaChatApi = {
                 },
                 body: JSON.stringify(data)
             };
-            //console.log('create localInit', localInit);
             const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
-            checkResponse(response);
-            return await response.json();
+            return await processResponse(response, thunkAPI.rejectWithValue);
+        },
+        delete: async (roomId, thunkAPI) => {
+            const localInit = {
+                ...addSignalToFetchInit(fetchInit, thunkAPI.signal),
+                method: 'DELETE',
+                headers: {
+                    ...fetchHeaderAccept,
+                }
+            };
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
+            return await processResponse(response, thunkAPI.rejectWithValue);
         },
     },
 

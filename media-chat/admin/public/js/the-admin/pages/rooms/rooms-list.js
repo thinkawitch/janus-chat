@@ -1,45 +1,30 @@
-import { html, useEffect, useSelector, useDispatch, useCallback } from '../../imports.js';
+import { html, useSelector, useDispatch, useCallback } from '../../imports.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
 import { useDialogConfirm, useDialogAlert, useDialogPrompt } from '../../components/andrew-preact-dialog/dialog-hook.js';
+import { textRoomDelete } from '../../redux-toolkit/actions/textroom-actions.js';
 
 const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
 
 export default function RoomsList() {
     const { loading, rooms, notInitialized } = useSelector(selectTextRoom);
     const { confirm } = useDialogConfirm();
-    const { alert } = useDialogAlert();
-    const { prompt } = useDialogPrompt();
-    if (notInitialized) return null;
+    const dispatch = useDispatch();
 
+    if (notInitialized) return null;
     if (!loading && !rooms.length) return html`<p>No rooms</p>`;
 
     const confirmToDel = useCallback(async (e) => {
         e.preventDefault();
         const roomId = e.target.rel;
-        const isConfirmed = await confirm({ message: `Delete room #${roomId}?`});
-        console.log('isConfirmed', isConfirmed)
-    }, [confirm])
+        const confirmed = await confirm({ message: `Delete room #${roomId}?`});
+        if (confirmed) {
+            const action = await dispatch(textRoomDelete({ roomId }));
+            console.log('result action', action)
+            if (!action.error) {
 
-    const testAlert = useCallback(async (e) => {
-        e.preventDefault();
-        const roomId = e.target.rel;
-        const agreed = await alert({ message: `Alert #${roomId}!`});
-        console.log('agreed', agreed)
-    }, [alert])
-
-    const testPrompt = useCallback(async (e) => {
-        e.preventDefault();
-        const roomId = e.target.rel;
-        const [isConfirmed, value] = await prompt({ message: 'Enter your name', promptValue: `Andrew${roomId}`});
-        console.log('prompt', 'isConfirmed', isConfirmed, 'value', value)
-    }, [prompt])
-
-    const testPrompt2 = async (e) => {
-        e.preventDefault();
-        const roomId = e.target.rel;
-        const [isConfirmed, value] = await prompt({ message: 'Enter your name', promptValue: `Andrew${roomId}`});
-        console.log('prompt', 'isConfirmed', isConfirmed, 'value', value)
-    }
+            }
+        }
+    }, [])
 
     return html`
         <table class="table">
@@ -55,7 +40,7 @@ export default function RoomsList() {
             </thead>
             <tbody>
             ${rooms.map(r => html`
-                <tr>
+                <tr key=${r.id}>
                     <td>${r.id}</td>
                     <td>${r.user_id}</td>
                     <td>${r.description}</td>
@@ -66,9 +51,6 @@ export default function RoomsList() {
                     <td>
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
                         <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger" rel=${r.id} onClick=${confirmToDel} data-native>del</a>
-                        
-                        <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-info ms-2" rel=${r.id} onClick=${testAlert} data-native>alert</a>
-                        <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-info ms-2" rel=${r.id} onClick=${testPrompt} data-native>prompt</a>
                     </td>
                 </tr>
             `)}

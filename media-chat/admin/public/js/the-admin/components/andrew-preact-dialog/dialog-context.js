@@ -1,8 +1,5 @@
 import { createContext, useReducer, html } from '../../imports.js';
 
-
-// base on https://devrecipes.net/custom-confirm-dialog-with-react-hooks-and-the-context-api/
-
 export const DialogContext = createContext();
 
 export const DIALOG_SHOW = 'DIALOG_SHOW';
@@ -40,13 +37,12 @@ const reducer = (state = initialState, action) => {
             }
         }
         default:
-            return initialState;
+            return state;
     }
 }
 
 export const DialogContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
-    //console.log('DialogContextProvider state', state)
     return html`
         <${DialogContext.Provider} value=${[state, dispatch]}>
             ${children}

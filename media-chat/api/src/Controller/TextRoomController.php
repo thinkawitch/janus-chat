@@ -131,7 +131,10 @@ class TextRoomController extends AbstractController
         $post = null;
         $permanent = false; // false
         $description = null;
-sleep(5); return $this->json(['test']);
+
+//        throw $this->createAccessDeniedException();
+//sleep(5); return $this->json(['test']);
+
         $data = $request->toArray();
         $description = !empty($data['description']) ? trim($data['description']) : null;
         $history = !empty($data['history']) ? intval($data['history']) : 0;

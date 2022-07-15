@@ -69,7 +69,7 @@ export function DialogAlert() {
             <form method="dialog">
                 <button type="submit" value="yes" class="btn btn-primary">OK</button>
             </form>
-        </dialog> 
+        </dialog>
     `;
 }
 

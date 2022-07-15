@@ -1,8 +1,9 @@
 import { html, useEffect, useSelector, useDispatch, useCallback, useState, useRef } from '../../imports.js';
+import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
 
 export default function RoomForm(props) {
     const { mode, room, actions: { onSubmit, onCancel } } = props;
-    const { creating, updating } = useSelector(store => store.textRoom);
+    const { creating, updating } = useSelector(selectTextRoom);
     const modeAdd = mode === 'add';
     const modeEdit = mode === 'edit';
     const pending = creating || updating;
@@ -50,6 +51,10 @@ export default function RoomForm(props) {
         const newFields = { ...fields, [field]: val };
         setFields(newFields);
     }, [fields]);
+
+    useEffect(() => {
+        document.getElementById('rfDescription')?.focus()
+    }, [])
 
     return html`
         <form onSubmit=${onFormSubmit}>

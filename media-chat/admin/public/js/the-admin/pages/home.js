@@ -22,5 +22,23 @@ export default function Home() {
 
     return html`
         <h1>Dashboard</h1>
+        <div class="dashboard">
+            <div class="dash-rooms card">
+                <div class="card-body">
+                    <a href="/rooms/add" class="btn btn-primary">Add room</a>
+                </div>
+            </div>
+            <div class="dash-users card">
+                <div class="card-body">
+                    Some text<br />
+                    Some text<br />
+                    Some text<br />
+                    Some text<br />
+                    Some text<br />
+                    Some text<br />
+                    Some text<br />
+                </div>
+            </div>
+        </div>
     `;
 }

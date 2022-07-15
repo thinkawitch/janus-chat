@@ -47,3 +47,22 @@
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+
+/* home dashboard */
+.dashboard {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-areas: "dash-rooms dash-users";
+}
+.dashboard .dash-rooms {
+    grid-area: dash-rooms;
+}
+.dashboard .dash-users {
+    grid-area: dash-users;
+}
+@media (max-width: 767.98px/*991.98px*/) {
+    .dashboard {
+        grid-template-areas: "dash-rooms" "dash-users";
+    }
+}
