@@ -7,6 +7,8 @@ import AddRoom from './../rooms/add-room.js';
 import EditRoom from './../rooms/edit-room.js';
 import { DialogContextProvider } from '../../components/andrew-preact-dialog/dialog-context.js';
 import { DialogConfirm, DialogAlert, DialogPrompt } from '../../components/andrew-preact-dialog/dialog-component.js';
+import { ToastContextProvider } from '../../components/andrew-preact-bootstrap-toast/toast-context.js';
+import { ToastHolder } from '../../components/andrew-preact-bootstrap-toast/toast-component.js';
 
 
 export default function MainLayout() {
@@ -22,6 +24,7 @@ export default function MainLayout() {
     }, []);
 
     return html`
+        <${ToastContextProvider}>
         <${DialogContextProvider}>
             <${HeaderSideMenu} />
             <div class="container-lg">
@@ -36,6 +39,8 @@ export default function MainLayout() {
             <${DialogConfirm} />
             <${DialogAlert} />
             <${DialogPrompt} />
+            <${ToastHolder} position="bottom-right" />
+        <//>
         <//>
     `;
 }

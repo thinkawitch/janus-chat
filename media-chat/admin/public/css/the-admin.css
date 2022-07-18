@@ -66,3 +66,8 @@
         grid-template-areas: "dash-rooms" "dash-users";
     }
 }
+
+
+.toast-container {
+    z-index: 1045; /* same as $zindex-offcanvas */
+}
