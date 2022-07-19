@@ -5,10 +5,8 @@ export const ToastContext = createContext();
 export const TOAST_ADD = 'pbt/TOAST_ADD';
 export const TOAST_REMOVE = 'pbt/TOAST_REMOVE';
 
-const oneToastDefault = { icon: '', title: '', message: '', delay: 5000 }
-
 const initialState = {
-    toasts: []  /* idx => {oneToast} */
+    toasts: []  /* idx => { toastId, removeToast, icon, title, titleNotice, message, delay, type } */
 };
 
 const reducer = (state = initialState, action) => {
@@ -19,11 +17,8 @@ const reducer = (state = initialState, action) => {
         }
         case TOAST_REMOVE: {
             const { toastId } = action.payload;
-            const toasts = state.toasts.filter(t => t.toastId !== toastId)
-            return {
-                ...state,
-                toasts
-            }
+            const toasts = state.toasts.filter(t => t.toastId !== toastId);
+            return { ...state, toasts };
         }
         default:
             return state;

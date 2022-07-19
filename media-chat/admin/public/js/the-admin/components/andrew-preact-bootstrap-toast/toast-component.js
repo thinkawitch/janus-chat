@@ -1,13 +1,14 @@
-import { html, useContext, useEffect, useRef, useState } from '../../imports.js';
+import { html, useContext, useEffect } from '../../imports.js';
 import { ToastContext } from './toast-context.js';
 
+
 export function Toast({ toast, onHidden }) {
-    const { toastId, icon, title, timeNotice, message, delay } = toast;
+    const { toastId, icon, title, titleNotice, message, delay, type } = toast;
     const nodeId = `idToast${toastId}`;
+
     useEffect(() => {
         const afterHide = () => {
             onHidden && onHidden();
-            console.log('removed', toastId)
         }
         const node = document.getElementById(nodeId);
         if (node) {
@@ -22,14 +23,14 @@ export function Toast({ toast, onHidden }) {
     }, [])
 
     const bsDelay = delay || 5000;
-    const oneLiner = !icon && !title && !timeNotice;
+    const oneLiner = !icon && !title && !titleNotice;
 
-    const nodeIcon = icon ? html`<img src="/" class="rounded me-2" alt="" />` : null;
-    const nodeTimeNotice = timeNotice ? html`<small class="text-muted">${timeNotice}</small>` : null;
+    const nodeIcon = icon ? html`<i class="bi ${icon} me-1"></i>` : null;
+    const nodeNotice = titleNotice ? html`<small class="text-muted">${titleNotice}</small>` : null;
 
     const content = oneLiner
         ? html`
-            <div class="d-flex bg-warning">
+            <div class="d-flex">
                 <div class="toast-body">
                     ${message}
                 </div>
@@ -40,7 +41,7 @@ export function Toast({ toast, onHidden }) {
             <div class="toast-header">
                 ${nodeIcon}
                 <strong class="me-auto">${title}</strong>
-                ${nodeTimeNotice}
+                ${nodeNotice}
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
@@ -48,20 +49,17 @@ export function Toast({ toast, onHidden }) {
             </div>
         `;
 
-
+    const toastClass = type ? 'bg-'+type : '';  // bg-primary bg-warning etc
     return html`
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id=${`idToast${toastId}`} data-bs-delay=${bsDelay}>
+        <div class="toast ${toastClass}" role="alert" aria-live="assertive" aria-atomic="true" id=${nodeId} data-bs-delay=${bsDelay}>
             ${content}
         </div>
     `;
 }
 
 
-
 export function ToastHolder({ position }) {
-    const { state } = useContext(ToastContext);
-    const { toasts } = state;
-    console.log('ToastHolder toasts', toasts);
+    const { state: { toasts } } = useContext(ToastContext);
     let posClasses = 'bottom-0 end-0'; // top right
     switch (position) {
         case 'top-left': posClasses = 'top-0 start-0'; break;
@@ -77,5 +75,5 @@ export function ToastHolder({ position }) {
                 `)}
             </div>
         </div>
-    `
+    `;
 }

@@ -1,7 +1,6 @@
 import { useContext } from '../../imports.js';
 import { ToastContext, TOAST_ADD, TOAST_REMOVE } from './toast-context.js';
 
-//const generateId = () => `${performance.now()}${Math.random().toString().slice(5)}`.replace('.','')
 // https://stackoverflow.com/a/67643666/1065945
 const idCreator = function* () {
     let i = 1;
@@ -21,16 +20,11 @@ export function useToast() {
         });
     }
 
-    const addToast = ({ icon, title, timeNotice, message, delay }) => {
-        let toastResolve;
-        const promise = new Promise((resolve, reject) => {
-            toastResolve = resolve;
-        })
+    const addToast = ({ icon, title, titleNotice, message, delay, type }) => {
         dispatch({
             type: TOAST_ADD,
-            payload: { toastId, icon, title, timeNotice, message, delay, toastResolve, removeToast }
+            payload: { toastId, removeToast, icon, title, titleNotice, message, delay, type }
         });
-        return promise;
     }
 
     return { addToast, removeToast, toastId }

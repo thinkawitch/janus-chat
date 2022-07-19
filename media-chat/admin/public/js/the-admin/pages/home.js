@@ -15,7 +15,7 @@ import {
     textRoomGetAll,
     textRoomTestLongRequest,
 } from "../redux-toolkit/actions/textroom-actions.js";
-import {useToast} from "../components/andrew-preact-bootstrap-toast/toast-hook.js";
+import { useToast } from "../components/andrew-preact-bootstrap-toast/toast-hook.js";
 
 // value=useSelector() and action to change the value inside useEffect() - may lead to infinite loop
 
@@ -27,16 +27,16 @@ export default function Home() {
     console.log('Home toastId', toastId)
 
     const showToast1 = () => {
-        addToast({ message: 'How are you?' })
+        addToast({ message: 'How are you?', type:'info' })
     }
 
     const showToast2 = () => {
-        addToast({ title: 'Wow', message: 'Wait for 20 secs', delay: 20000 })
+        addToast({ title: 'Wow', message: 'Wait for 20 secs', delay: 20000, type:'danger' })
         window.removeToast = removeToast; //test removal before timer expires
     }
 
     const showToast3 = () => {
-        addToast({ title: 'Warning', timeNotice: '10 mins left', message: 'Think about it', delay: 10000 })
+        addToast({ icon: 'bi-sun', title: 'Always sunny', titleNotice: '10 mins left', message: 'Think about it', delay: 10000 })
     }
 
     return html`
