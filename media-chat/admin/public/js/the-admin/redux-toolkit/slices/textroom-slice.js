@@ -1,6 +1,6 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll, textRoomGet, textRoomCreate } from '../actions/textroom-actions.js';
+import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomDelete } from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
@@ -97,6 +97,10 @@ export const textRoomSlice = createSlice({
                 state.creatingError = action.meta.rwvError;
             }
             state.creating = false;
+        },
+        [textRoomDelete.fulfilled]: (state, action) => {
+            const roomId = parseInt(action.meta.arg.roomId);
+            state.rooms = state.rooms.filter(r => r.id !== roomId);
         },
     }
 });

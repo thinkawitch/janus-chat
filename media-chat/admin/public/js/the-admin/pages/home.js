@@ -27,7 +27,7 @@ export default function Home() {
     console.log('Home toastId', toastId)
 
     const showToast1 = () => {
-        addToast({ message: 'How are you?', type:'info' })
+        addToast({ message: 'How are you?', type:'primary' })
     }
 
     const showToast2 = () => {

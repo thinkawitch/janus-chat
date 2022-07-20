@@ -71,3 +71,6 @@
 .toast-container {
     z-index: 1045; /* same as $zindex-offcanvas */
 }
+.toast-container :where(.bg-primary, .bg-secondary, .bg-success, .bg-danger, .bg-dark) .toast-body {
+    color: var(--bs-light);
+}

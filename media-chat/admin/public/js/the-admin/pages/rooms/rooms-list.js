@@ -1,13 +1,15 @@
 import { html, useSelector, useDispatch, useCallback } from '../../imports.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
-import { useDialogConfirm, useDialogAlert, useDialogPrompt } from '../../components/andrew-preact-dialog/dialog-hook.js';
+import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
 import { textRoomDelete } from '../../redux-toolkit/actions/textroom-actions.js';
+import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
 const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
 
 export default function RoomsList() {
     const { loading, rooms, notInitialized } = useSelector(selectTextRoom);
     const { confirm } = useDialogConfirm();
+    const { addToast } = useToast();
     const dispatch = useDispatch();
 
     if (notInitialized) return null;
@@ -21,7 +23,7 @@ export default function RoomsList() {
             const action = await dispatch(textRoomDelete({ roomId }));
             console.log('result action', action)
             if (!action.error) {
-
+                addToast({ message: `Room #${roomId} deleted.` });
             }
         }
     }, [])
@@ -35,6 +37,7 @@ export default function RoomsList() {
                 <th>private</th>
                 <th>history</th>
                 <th>pin</th>
+                <th>secret</th>
                 <th>participants</th>
                 <th></th>
             </thead>
@@ -47,6 +50,7 @@ export default function RoomsList() {
                     <td>${r.private ? check : ''}</td>
                     <td>${r.history}</td>
                     <td>${r.pin ? check : ''}</td>
+                    <td>${r.secret ? check : ''}</td>
                     <td>${r.num_participants}</td>
                     <td>
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>

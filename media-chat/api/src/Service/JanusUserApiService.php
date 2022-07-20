@@ -166,7 +166,7 @@ class JanusUserApiService
         $this->destroySession();
     }
 
-    public function destroyRoom(int $id, bool $permanent=false) : array
+    public function destroyRoom(int $id, string $secret=null, bool $permanent=false) : array
     {
         $this->createNewSession();
         $this->attachToTextRoom();
@@ -177,6 +177,7 @@ class JanusUserApiService
             'room' => $id,
             'permanent' => $permanent,
         ];
+        if (strlen($secret)) $body['secret'] = $secret;
         $endpoint = $this->sessionId . '/' . $this->textRoomId;
         $result = $this->makeTextRoomRequest($body, $endpoint);
 

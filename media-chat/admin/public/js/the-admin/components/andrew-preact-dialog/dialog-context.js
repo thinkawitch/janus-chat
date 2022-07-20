@@ -2,8 +2,8 @@ import { createContext, useReducer, html } from '../../imports.js';
 
 export const DialogContext = createContext();
 
-export const DIALOG_SHOW = 'DIALOG_SHOW';
-export const DIALOG_HIDE = 'DIALOG_HIDE';
+export const DIALOG_SHOW = 'pd/DIALOG_SHOW';
+export const DIALOG_HIDE = 'pd/DIALOG_HIDE';
 
 export const DIALOG_ID_CONFIRM = 'id_confirm';
 export const DIALOG_ID_ALERT = 'id_alert';

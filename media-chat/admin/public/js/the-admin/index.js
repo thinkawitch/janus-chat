@@ -1,5 +1,7 @@
-import { html, render, Provider, useSelector, useDispatch, route } from './imports.js';
+import { html, render, Provider, useSelector } from './imports.js';
 import { store } from './redux-toolkit/configure-store.js';
+import { ToastContextProvider } from './components/andrew-preact-bootstrap-toast/toast-context.js';
+import { DialogContextProvider } from './components/andrew-preact-dialog/dialog-context.js';
 import MainLayout from './pages/main-layout/main-layout.js';
 import Login from './pages/login.js';
 import { authRequired } from './redux-toolkit/actions/auth-actions.js';
@@ -26,7 +28,11 @@ export function renderAdmin(node) {
     store.dispatch(userGetMe());
     render(html`
         <${Provider} store=${store}>
-            <${App} />
+            <${ToastContextProvider}>
+                <${DialogContextProvider}>
+                    <${App} />
+                <//>
+            <//>
         </Provider>
     `, node);
 }

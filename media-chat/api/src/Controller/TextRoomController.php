@@ -193,15 +193,13 @@ class TextRoomController extends AbstractController
         $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
         $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['textroom' => 1, 'error' => 404, 'message' => 'Room not found'], 404);
-
-throw $this->createAccessDeniedException();
+        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
 
 
         $deleteFromDb = true;
 
         try {
-            $result = $janusUserApi->destroyRoom($roomId);
+            $result = $janusUserApi->destroyRoom($roomId, $room['secret']);
         } catch (\Exception $e) {
             $deleteFromDb = false;
             switch ($e->getCode()) {

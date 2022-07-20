@@ -1,15 +1,14 @@
-import { html, useDispatch, Router, useState, useCallback } from '../../imports.js';
+import { html, Router, useCallback } from '../../imports.js';
 import HeaderSideMenu from './header-side-menu.js';
 import Home from './../home.js';
 import Users from './../users.js';
 import Rooms from './../rooms/rooms.js';
 import AddRoom from './../rooms/add-room.js';
 import EditRoom from './../rooms/edit-room.js';
-import { DialogContextProvider } from '../../components/andrew-preact-dialog/dialog-context.js';
 import { DialogConfirm, DialogAlert, DialogPrompt } from '../../components/andrew-preact-dialog/dialog-component.js';
-import { ToastContextProvider } from '../../components/andrew-preact-bootstrap-toast/toast-context.js';
 import { ToastHolder } from '../../components/andrew-preact-bootstrap-toast/toast-component.js';
-
+import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
+import mediaChatApi from '../../media-chat-api.js';
 
 export default function MainLayout() {
     const handleRouteChange = useCallback(e => {
@@ -23,24 +22,27 @@ export default function MainLayout() {
         }
     }, []);
 
+    // must be inside ToastContextProvider
+    const { addToast } = useToast();
+    mediaChatApi.setDisplayErrorHandler(message => {
+        console.error(message);
+        addToast({ message, type: 'danger', delay: 10000 });
+    })
+
     return html`
-        <${ToastContextProvider}>
-        <${DialogContextProvider}>
-            <${HeaderSideMenu} />
-            <div class="container-lg">
-                <${Router} onChange=${handleRouteChange}>
-                    <${Home} default />
-                    <${Users} path="/users" />
-                    <${Rooms} path="/rooms" />
-                    <${AddRoom} path="/rooms/add" />
-                    <${EditRoom} path="/rooms/edit/:roomId" />
-                </Router>
-            </div>
-            <${DialogConfirm} />
-            <${DialogAlert} />
-            <${DialogPrompt} />
-            <${ToastHolder} position="bottom-right" />
-        <//>
-        <//>
+        <${HeaderSideMenu} />
+        <div class="container-lg">
+            <${Router} onChange=${handleRouteChange}>
+                <${Home} default />
+                <${Users} path="/users" />
+                <${Rooms} path="/rooms" />
+                <${AddRoom} path="/rooms/add" />
+                <${EditRoom} path="/rooms/edit/:roomId" />
+            </Router>
+        </div>
+        <${DialogConfirm} />
+        <${DialogAlert} />
+        <${DialogPrompt} />
+        <${ToastHolder} position="bottom-right" />
     `;
 }

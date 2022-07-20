@@ -63,13 +63,15 @@ export function ToastHolder({ position }) {
     let posClasses = 'bottom-0 end-0'; // top right
     switch (position) {
         case 'top-left': posClasses = 'top-0 start-0'; break;
+        case 'top-center': posClasses = 'top-0 start-50 translate-middle-x'; break;
         case 'top-right': posClasses = 'top-0 end-0'; break;
         case 'bottom-left': posClasses = 'bottom-0 start-0'; break;
+        case 'bottom-center': posClasses = 'bottom-0 start-50 translate-middle-x'; break;
         case 'bottom-right': posClasses = 'bottom-0 end-0'; break;
     }
     return html`
-        <div aria-live="polite" aria-atomic="true" class="position-static">
-            <div class="toast-container position-absolute ${posClasses} p-3">
+        <div aria-live="polite" aria-atomic="true" class="position-relative">
+            <div class="toast-container position-fixed ${posClasses} p-3">
                 ${toasts.map(t => html`
                     <${Toast} key=${t.toastId} toast=${t} onHidden=${t.removeToast} />
                 `)}

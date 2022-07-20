@@ -13,7 +13,7 @@ const fetchInit = {
 }
 
 let authRequiredHandler = null; // call when api says auth required, auth expired, etc
-
+let displayErrorHandler = null; // display toast with error
 
 async function processResponse(response, rejectWithValue) {
     console.log('processResponse status', response.status);
@@ -35,6 +35,7 @@ async function processResponse(response, rejectWithValue) {
             title = detail.substring(lastBracket1 + 1, lastBracket2);
         } catch (e) {}
         //throw new Error(JSON.stringify({status, title, detail}));
+        displayErrorHandler && displayErrorHandler(detail);
         throw rejectWithValue('check_rwvError', { rwvError: {status, title, detail} })
     }
 
@@ -42,6 +43,7 @@ async function processResponse(response, rejectWithValue) {
 
     if ([403, 404, 500].includes(response.status)) {
         // symfony error as json
+        displayErrorHandler && displayErrorHandler(data.detail);
         throw rejectWithValue('check_rwvError', { rwvError: data })
     }
 
@@ -137,8 +139,12 @@ const mediaChatApi = {
         }
     },
 
-    setAuthRequiredHandler: (handler) => {
+    setAuthRequiredHandler: handler => {
         authRequiredHandler = handler;
+    },
+
+    setDisplayErrorHandler: handler => {
+        displayErrorHandler = handler;
     }
 }
 
