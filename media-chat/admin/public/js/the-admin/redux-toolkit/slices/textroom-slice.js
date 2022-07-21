@@ -1,6 +1,6 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomDelete } from '../actions/textroom-actions.js';
+import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomUpdate, textRoomDelete } from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
@@ -13,6 +13,7 @@ const initialState = {
     creating: false,
     creatingError: null,
     updating: false,
+    updatingError: null,
     deleting: false,
     notInitialized: false,
 }
@@ -98,9 +99,31 @@ export const textRoomSlice = createSlice({
             }
             state.creating = false;
         },
+        [textRoomUpdate.pending]: (state, action) => {
+            state.updatingError = null;
+            state.updating = true;
+        },
+        [textRoomUpdate.fulfilled]: (state, action) => {
+            console.log('textRoomSlice textRoomUpdate.fulfilled')
+            state.updating = false;
+        },
+        [textRoomUpdate.rejected]: (state, action) => {
+            console.log('textRoomSlice textRoomUpdate.rejected')
+            if (action.payload === 'check_rwvError') {
+                state.updatingError = action.meta.rwvError;
+            }
+            state.updating = false;
+        },
+        [textRoomDelete.pending]: (state, action) => {
+            state.deleting = true;
+        },
         [textRoomDelete.fulfilled]: (state, action) => {
             const roomId = parseInt(action.meta.arg.roomId);
             state.rooms = state.rooms.filter(r => r.id !== roomId);
+            state.deleting = false;
+        },
+        [textRoomDelete.rejected]: (state, action) => {
+            state.deleting = false;
         },
     }
 });

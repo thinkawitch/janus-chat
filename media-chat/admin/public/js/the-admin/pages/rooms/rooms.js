@@ -11,6 +11,7 @@ import {
 import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
 import RoomsList from './rooms-list.js';
 import { selectRoomsLoading } from '../../redux-toolkit/slices/textroom-slice.js';
+import ButtonSpinner from '../../components/button-spinner.js';
 
 let rvc = 0; // room view counter
 export default function Rooms() {
@@ -40,13 +41,8 @@ export default function Rooms() {
         <div class="d-flex flex-row align-items-center">
             <h1 class="d-none d-lg-block me-3">Rooms</h1>
             ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary me-3">add room</a>`}
-            <button class="btn btn-secondary btn-sm" onClick=${refresh} disabled=${loading}>
-                ${loading && false && html`<div class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></div>`}
-                ${loading ? 'refreshing' : 'refresh'}
-            </button>
+            <${ButtonSpinner} class="btn btn-secondary btn-sm" onClick=${refresh} disabled=${loading}>refresh<//>
         </div>
         <${RoomsList} />
     `;
 }
-// ${loading && html`<div class="spinner-border ms-3 text-secondary" off-style="width: 2rem; height: 2rem;" role="status" aria-hidden="true"></div>`}
-// ${!loading && html`<button class="btn btn-secondary btn-sm ms-3" onClick=${refresh}>refresh</button>`}

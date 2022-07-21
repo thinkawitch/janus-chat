@@ -41,8 +41,9 @@ async function processResponse(response, rejectWithValue) {
 
     const data = await response.json();
 
-    if ([403, 404, 500].includes(response.status)) {
+    if ([403, 404, 405, 500].includes(response.status)) {
         // symfony error as json
+        // api errors with symfony-like format
         displayErrorHandler && displayErrorHandler(data.detail);
         throw rejectWithValue('check_rwvError', { rwvError: data })
     }
@@ -108,6 +109,20 @@ const mediaChatApi = {
             const localInit = {
                 ...addSignalToFetchInit(fetchInit, signal),
                 method: 'POST',
+                headers: {
+                    ...fetchHeaderAccept,
+                    ...fetchHeaderContentType,
+                },
+                body: JSON.stringify(data)
+            };
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
+            return await processResponse(response, thunkAPI.rejectWithValue);
+        },
+        update: async (data, thunkAPI, customSignal) => {
+            const signal = customSignal ?? thunkAPI.signal;
+            const localInit = {
+                ...addSignalToFetchInit(fetchInit, signal),
+                method: 'PUT',
                 headers: {
                     ...fetchHeaderAccept,
                     ...fetchHeaderContentType,

@@ -30,6 +30,14 @@ export const textRoomCreate = createAsyncThunk(
     }
 )
 
+export const textRoomUpdate = createAsyncThunk(
+    'textRoom/update',
+    async (args, thunkAPI) => {
+        const { data, signal } = args;
+        return await mediaChatApi.textroom.update(data, thunkAPI, signal);
+    }
+)
+
 export const textRoomDelete = createAsyncThunk(
     'textRoom/delete',
     async (arg, thunkAPI) => {

@@ -188,6 +188,10 @@ class TextRoomController extends AbstractController
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
+        if ($roomId == 1234) {
+            throw $this->createAccessDeniedException('This room should stay!');
+        }
+
         // only creator or admin can destroy the room
         $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
         $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';

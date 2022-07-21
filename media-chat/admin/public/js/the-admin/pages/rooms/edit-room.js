@@ -1,15 +1,17 @@
 import { html, useEffect, useLayoutEffect, useRef, useCallback, useMemo, useSelector, useDispatch, useRouter, useAbortController } from '../../imports.js';
 import RoomForm from './room-form.js';
-import { textRoomCreate, textRoomGet } from '../../redux-toolkit/actions/textroom-actions.js';
+import { textRoomUpdate, textRoomGet } from '../../redux-toolkit/actions/textroom-actions.js';
 import { selectTextRoom, selectRoomById } from '../../redux-toolkit/slices/textroom-slice.js';
 import TopError from '../../components/top-error.js';
+import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
 export default function EditRoom({ roomId }) {
-    //console.log('EditRoom', roomId);
     const dispatch = useDispatch();
     const [ routerCtx, route ] = useRouter();
-    const cancelUrl = routerCtx.previous ?? '/';
+    const returnUrl = routerCtx.previous ?? '/';
     const [ getAC, resetAC ] = useAbortController(true);
+    const { updatingError } = useSelector(selectTextRoom);
+    const { addToast } = useToast();
 
     const selectTheRoom = useMemo(() => (state => selectRoomById(state, roomId)), [roomId]);
     const room = useSelector(selectTheRoom);
@@ -26,17 +28,19 @@ export default function EditRoom({ roomId }) {
         }
     }, [roomId])
 
-
-    const onSubmit = useCallback(data => {
-        dispatch(textRoomCreate({ data, signal: getAC().signal })).then(action => {
-            console.log('AddRoom result action', action)
-        })
+    const onSubmit = useCallback(async data => {
+        const action = await dispatch(textRoomUpdate({ data, signal: getAC().signal }));
+        console.log('EditRoom result action', action)
+        if (!action.error) {
+            const roomId = action.payload.meta.data.id;
+            addToast({ message: `Room #${roomId} updated.`});
+        }
     }, []);
 
     const onCancel = useCallback(() => {
         getAC().abort();
         resetAC();
-        route(cancelUrl);
+        route(returnUrl);
     }, []);
 
     const actions = useMemo(() => ({ onSubmit, onCancel }), [onSubmit, onCancel]);
@@ -44,7 +48,14 @@ export default function EditRoom({ roomId }) {
     let content = null;
 
     if (room) {
-        content = html`<${RoomForm} mode="edit" actions=${actions} room=${room} />`;
+        let notUpdated = null;
+        if (updatingError) {
+            notUpdated = TopError({error: updatingError});
+        }
+        content = html`
+            ${notUpdated}
+            <${RoomForm} mode="edit" actions=${actions} room=${room} />
+        `;
     } else {
         if (getting) {
             content = html`

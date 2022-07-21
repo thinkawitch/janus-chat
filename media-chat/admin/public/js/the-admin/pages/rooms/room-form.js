@@ -1,5 +1,6 @@
 import { html, useEffect, useSelector, useDispatch, useCallback, useState, useRef } from '../../imports.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
+import ButtonSpinner from '../../components/button-spinner.js';
 
 export default function RoomForm(props) {
     const { mode, room, actions: { onSubmit, onCancel } } = props;
@@ -73,19 +74,16 @@ export default function RoomForm(props) {
             <div class="row mb-3">
                 <label for="rfPin" class="col-sm-2 col-form-label">Pin</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="rfPin" name="pin" value=${fields.pin} onInput=${onInput} />
+                    <input type="text" class="form-control" id="rfPin" name="pin" value=${fields.pin} onInput=${onInput} maxlength="10" />
                 </div>
             </div>
             <div class="row mb-3">
                 <label for="rfSecret" class="col-sm-2 col-form-label">Secret</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="rfSecret" name="secret" value=${fields.secret} onInput=${onInput} />
+                    <input type="text" class="form-control" id="rfSecret" name="secret" value=${fields.secret} onInput=${onInput} maxlength="16" />
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary" disabled=${pending}>
-                ${pending ? html`<span class="spinner-grow spinner-grow-sm me-2" role="status" aria-hidden="true"></span>`: ''}
-                Submit
-            </button>
+            <${ButtonSpinner} type="submit" class="btn btn-primary" disabled=${pending}>Submit<//>
             <button type="button" class="btn btn-secondary ms-2" onClick=${onFormCancel}>Cancel</button>
         </form>
     `;

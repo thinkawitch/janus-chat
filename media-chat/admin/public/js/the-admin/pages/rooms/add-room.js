@@ -1,8 +1,9 @@
-import {html, useCallback, useMemo, useDispatch, useRouter, useAbortController, useSelector} from '../../imports.js';
+import { html, useCallback, useMemo, useDispatch, useRouter, useAbortController, useSelector } from '../../imports.js';
 import RoomForm from './room-form.js';
 import { textRoomCreate } from '../../redux-toolkit/actions/textroom-actions.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
 import TopError from '../../components/top-error.js';
+import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
 export default function AddRoom() {
     const dispatch = useDispatch();
@@ -10,19 +11,21 @@ export default function AddRoom() {
     const returnUrl = routerCtx.previous ?? '/';
     const [ getAC, resetAC ] = useAbortController(true);
     const { creatingError } = useSelector(selectTextRoom);
+    const { addToast } = useToast();
 
-    const onSubmit = useCallback(data => {
-        dispatch(textRoomCreate({ data, signal: getAC().signal })).then(action => {
-            console.log('AddRoom result action', action);
-            if (!action.error) {
-                route('/rooms');
-            }
-        })
+    const onSubmit = useCallback(async data => {
+        const action = await dispatch(textRoomCreate({ data, signal: getAC().signal }));
+        console.log('AddRoom result action', action);
+        if (!action.error) {
+            const roomId = action.payload.room;
+            addToast({ message: `Room #${roomId} created.`});
+            route('/rooms');
+        }
     }, []);
 
     const onCancel = useCallback(() => {
         getAC().abort();
-        //resetAC(); // no need in add
+        resetAC();
         route(returnUrl);
     }, []);
 
@@ -36,6 +39,6 @@ export default function AddRoom() {
             </ol>
         </nav>
         ${ creatingError ? TopError({error:creatingError}) : null }
-        <${RoomForm} mode="add" actions=${actions}/>
+        <${RoomForm} mode="add" actions=${actions} />
     `;
 }
