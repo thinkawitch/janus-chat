@@ -1,4 +1,12 @@
 {
+    "name": "media-chat/api",
+    "description": "API for media chat",
+    "authors": [
+        {
+            "name": "Andrew Sinkevitch",
+            "email": "andrew.sinkevitch@gmail.com"
+        }
+    ],
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

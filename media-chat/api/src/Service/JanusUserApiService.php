@@ -166,6 +166,39 @@ class JanusUserApiService
         $this->destroySession();
     }
 
+    public function updateRoom(int $roomId, ?string $secret, array $newRoom) : array
+    {
+        $this->createNewSession();
+        $this->attachToTextRoom();
+
+        $body = [
+            'request' => 'edit',
+            'admin_key' => $this->textRoomAdminSecret,
+            'room' => $roomId,
+            'permanent' => false,
+        ];
+
+        if (!empty($secret)) $body['secret'] = $secret;
+        if (!empty($newRoom['secret'])) $body['new_secret'] = $newRoom['secret'];
+        //$body['secret'] = 's';
+//        if (array_key_exists('secret', $newRoom)) {
+//            $body['new_secret'] = $newRoom['secret'];
+//        }
+
+        if (!empty($newRoom['description'])) $body['new_description'] = $newRoom['description'];
+        if (!empty($newRoom['pin'])) $body['new_pin'] = $newRoom['pin'];
+        if (!empty($newRoom['post'])) $body['new_post'] = $newRoom['post'];
+        if (isset($newRoom['number'])) $body['new_number'] = $newRoom['number'];
+//        dd($body);
+        $endpoint = $this->sessionId . '/' . $this->textRoomId;
+        $result = $this->makeTextRoomRequest($body, $endpoint);
+
+        $this->detachFromTextRoom();
+        $this->destroySession();
+
+        return $result;
+    }
+
     public function destroyRoom(int $id, string $secret=null, bool $permanent=false) : array
     {
         $this->createNewSession();

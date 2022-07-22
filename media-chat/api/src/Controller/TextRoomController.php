@@ -40,6 +40,7 @@ class TextRoomController extends AbstractController
         $isAdmin = $this->isGranted('ROLE_ADMIN');
         $sql = 'SELECT * FROM rooms WHERE deleted=0';
         if (!$isAdmin) $sql .= ' AND user_id=' . $user->getId();
+        $sql .= ' ORDER BY id';
 
         // db
         $dbRooms = $conn->fetchAllAssociative($sql);
@@ -178,6 +179,43 @@ class TextRoomController extends AbstractController
         return $this->json($result);
     }
 
+    #[Route('', methods: ['PUT'])]
+    public function update(
+        Request $request,
+        JanusUserApiService $janusUserApi,
+        Connection $conn
+    ) : JsonResponse
+    {
+        $data = $request->toArray();
+        $id = !empty($data['id']) ? intval($data['id']) : 0;
+        if ($id < 1) throw $this->createNotFoundException('No data to update room');
+
+        $newRoom = getGoodRoomDataForUpdate($data);
+
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        // only creator or admin may update the room
+        $sqlParams = ['id' => $id, 'user_id' => $user->getId()];
+        $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
+        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+        $room = $conn->fetchAssociative($sql, $sqlParams);
+        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$id not found"], 404);
+
+        //dd($newRoom);
+        try {
+            $conn->beginTransaction();
+            $result = $janusUserApi->updateRoom($id, $room['secret'], $newRoom);
+            $conn->update('rooms', $newRoom, ['id' => $id]);
+            $conn->commit();
+        } catch (\Exception $e) {
+            $conn->rollBack();
+            throw $e;
+        }
+
+        return $this->json($result);
+    }
+
     #[Route('/{roomId}', requirements: ['roomId' => '\d+'], methods: ['DELETE'])]
     public function destroy(
         int $roomId,
@@ -192,7 +230,7 @@ class TextRoomController extends AbstractController
             throw $this->createAccessDeniedException('This room should stay!');
         }
 
-        // only creator or admin can destroy the room
+        // only creator or admin may destroy the room
         $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
         $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
@@ -236,4 +274,21 @@ function getJanusRoomById($janusRooms, $id) {
         if ($jr['room'] == $id) return $jr;
     }
     return null;
+}
+
+function getGoodRoomDataForUpdate(array $data) {
+    $stringFields = ['description', 'secret', 'pin', 'post'];
+    $numFields = [/*'history'*/];
+    $good = [];
+    foreach ($stringFields as $f) {
+        if (array_key_exists($f, $data)) {
+            $good[$f] = trim($data[$f]);
+        }
+    }
+    foreach ($numFields as $f) {
+        if (array_key_exists($f, $data)) {
+            $good[$f] = intval($data[$f]);
+        }
+    }
+    return $good;
 }

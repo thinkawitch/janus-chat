@@ -29,11 +29,13 @@ export default function EditRoom({ roomId }) {
     }, [roomId])
 
     const onSubmit = useCallback(async data => {
+        data.id = roomId;
         const action = await dispatch(textRoomUpdate({ data, signal: getAC().signal }));
         console.log('EditRoom result action', action)
         if (!action.error) {
-            const roomId = action.payload.meta.data.id;
+            const roomId = action.meta.arg.data.id;
             addToast({ message: `Room #${roomId} updated.`});
+            //route(returnUrl);
         }
     }, []);
 

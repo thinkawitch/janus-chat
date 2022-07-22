@@ -43,6 +43,6 @@ export default function MainLayout() {
         <${DialogConfirm} />
         <${DialogAlert} />
         <${DialogPrompt} />
-        <${ToastHolder} position="bottom-right" />
+        <${ToastHolder} position="top-right" />
     `;
 }
