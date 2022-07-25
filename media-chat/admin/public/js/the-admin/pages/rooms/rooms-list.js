@@ -29,13 +29,13 @@ export default function RoomsList() {
     }, [])
 
     return html`
-        <table class="table">
+        <table class="table rooms-table">
             <thead>
                 <th>#</th>
                 <th>creator</th>
                 <th>description</th>
-                <th>private</th>
                 <th>history</th>
+                <th>private</th>
                 <th>pin</th>
                 <th>secret</th>
                 <th>participants</th>
@@ -47,8 +47,8 @@ export default function RoomsList() {
                     <td>${r.id}</td>
                     <td>${r.user_id}</td>
                     <td>${r.description}</td>
-                    <td>${r.private ? check : ''}</td>
                     <td>${r.history}</td>
+                    <td>${r.private ? check : ''}</td>
                     <td>${r.pin ? check : ''}</td>
                     <td>${r.secret ? check : ''}</td>
                     <td>${r.num_participants}</td>

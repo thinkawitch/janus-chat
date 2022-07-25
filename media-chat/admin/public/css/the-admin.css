@@ -74,3 +74,139 @@
 .toast-container :where(.bg-primary, .bg-secondary, .bg-success, .bg-danger, .bg-dark) .toast-body {
     color: var(--bs-light);
 }
+
+
+.rooms-table {  }
+@media (max-width: 991.98px) {
+    /* reset bootstrap */
+    .table>:not(caption)>*>* {
+        border-bottom-width: 0;
+    }
+    /* sticky header */
+    .rooms-table thead {
+        position: sticky;
+        top: 0;
+        left: 0;
+        background-color: rgb(var(--bs-body-bg-rgb));
+        border-bottom: 2px solid currentColor;
+    }
+    .rooms-table tbody {
+        border-top: transparent !important;
+    }
+    /* */
+    .rooms-table {
+        display: flex;
+        flex-direction: column;
+    }
+    .rooms-table :where(tbody, tr, th, td) {
+        display: block
+    }
+    /*.rooms-table thead, .rooms-table tbody tr  {
+        display: grid;
+        grid-gap: 5px;
+
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        !*grid-template-rows: 1fr 1fr 1fr;*!
+        grid-template-rows: auto;
+        border-bottom: 1px solid var(--bs-gray-600);
+    }*/
+    .rooms-table thead {
+        display: grid;
+        grid-gap: 5px;
+        off-grid-template-areas: "room-id creator description description description"
+                             "history private pin         secret      participants";
+        grid-template:
+            "room-id creator description description description"
+            "history private pin         secret      participants"
+            / 1fr 1fr 1fr 1fr 1fr;
+
+
+    }
+
+
+
+    .rooms-table thead th:nth-child(1) {
+        grid-area: room-id;
+        border-bottom: 1px solid var(--bs-gray-400);
+    }
+    .rooms-table thead th:nth-child(2) {
+        grid-area: creator;
+        border-bottom: 1px solid var(--bs-gray-400);
+    }
+    .rooms-table thead th:nth-child(3) {
+        grid-area: description;
+        border-bottom: 1px solid var(--bs-gray-400);
+    }
+    .rooms-table thead th:nth-child(4) {
+        grid-area: history;
+    }
+    .rooms-table thead th:nth-child(5) {
+        grid-area: private;
+    }
+    .rooms-table thead th:nth-child(6) {
+        grid-area: pin;
+    }
+    .rooms-table thead th:nth-child(7) {
+        grid-area: secret;
+    }
+    .rooms-table thead th:nth-child(8) {
+        grid-area: participants;
+    }
+    .rooms-table thead th:nth-child(9) {
+        grid-area: actions;
+    }
+    .rooms-table thead th:last-child {
+        display: none; /* hide header cell for actions column */
+    }
+
+    .rooms-table tbody tr {
+        display: grid;
+        grid-gap: 5px;
+        /*grid-template-areas: "room-id creator description description description"
+                             "history private pin         secret      participants"
+                             "actions actions actions     actions     actions";*/
+
+        /*grid-template-areas: "room-id creator description description description  description"
+                             "history private pin         secret      participants actions";*/
+
+
+        grid-template:
+            "room-id creator description description description"
+            "history private pin         secret      participants"
+            "actions actions actions     actions     actions"
+            / 1fr 1fr 1fr 1fr 1fr;
+
+        border-bottom: 1px solid var(--bs-gray-600);
+    }
+    .rooms-table tbody td:nth-child(1) {
+        grid-area: room-id;
+    }
+    .rooms-table tbody td:nth-child(2) {
+        grid-area: creator;
+    }
+    .rooms-table tbody td:nth-child(3) {
+        grid-area: description;
+    }
+    .rooms-table tbody td:nth-child(4) {
+        grid-area: history;
+    }
+    .rooms-table tbody td:nth-child(5) {
+        grid-area: private;
+    }
+    .rooms-table tbody td:nth-child(6) {
+        grid-area: pin;
+    }
+    .rooms-table tbody td:nth-child(7) {
+        grid-area: secret;
+    }
+    .rooms-table tbody td:nth-child(8) {
+        grid-area: participants;
+    }
+    .rooms-table tbody td:nth-child(9) {
+        grid-area: actions;
+    }
+
+    .rooms-table tbody td:not(:last-child) {
+        border-bottom: 1px solid var(--bs-gray-400) !important;
+    }
+}

@@ -1,9 +1,12 @@
 import { html, useEffect, useLayoutEffect, useRef, useCallback, useMemo, useSelector, useDispatch, useRouter, useAbortController } from '../../imports.js';
 import RoomForm from './room-form.js';
-import { textRoomUpdate, textRoomGet } from '../../redux-toolkit/actions/textroom-actions.js';
-import { selectTextRoom, selectRoomById } from '../../redux-toolkit/slices/textroom-slice.js';
+import { textRoomUpdate, textRoomGet, textRoomDelete } from '../../redux-toolkit/actions/textroom-actions.js';
+import { selectTextRoom, selectRoomById, cleanUpdatingError } from '../../redux-toolkit/slices/textroom-slice.js';
 import TopError from '../../components/top-error.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
+import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
+import ButtonSpinner from '../../components/button-spinner.js';
+
 
 export default function EditRoom({ roomId }) {
     const dispatch = useDispatch();
@@ -35,6 +38,7 @@ export default function EditRoom({ roomId }) {
         if (!action.error) {
             const roomId = action.meta.arg.data.id;
             addToast({ message: `Room #${roomId} updated.`});
+            dispatch(textRoomGet({ roomId }));  // get fresh data, for correct required fields
             //route(returnUrl);
         }
     }, []);
@@ -42,6 +46,7 @@ export default function EditRoom({ roomId }) {
     const onCancel = useCallback(() => {
         getAC().abort();
         resetAC();
+        dispatch(cleanUpdatingError());
         route(returnUrl);
     }, []);
 
@@ -57,6 +62,7 @@ export default function EditRoom({ roomId }) {
         content = html`
             ${notUpdated}
             <${RoomForm} mode="edit" actions=${actions} room=${room} />
+            <${DeleteRoom} room=${room} />
         `;
     } else {
         if (getting) {
@@ -79,5 +85,30 @@ export default function EditRoom({ roomId }) {
             </ol>
         </nav>
         ${content}
+    `;
+}
+
+
+function DeleteRoom({ room }) {
+    const { id: roomId } = room;
+    const dispatch = useDispatch();
+    const { confirm } = useDialogConfirm();
+    const { addToast } = useToast();
+    const { deleting } = useSelector(selectTextRoom);
+
+    const confirmToDel = useCallback(async () => {
+        const confirmed = await confirm({ message: `Delete room #${roomId}?`});
+        if (confirmed) {
+            const action = await dispatch(textRoomDelete({ roomId }));
+            if (!action.error) {
+                addToast({ message: `Room #${roomId} deleted.` });
+            }
+        }
+    }, [roomId])
+
+    return html`
+        <hr />
+        <p class="text-muted">Delete room #${roomId}</p>
+        <${ButtonSpinner} type="button" class="btn btn-danger mb-3" disabled=${deleting} onclick=${confirmToDel}>Delete<//>
     `;
 }

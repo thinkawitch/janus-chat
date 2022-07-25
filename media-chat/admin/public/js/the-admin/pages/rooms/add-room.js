@@ -1,7 +1,7 @@
 import { html, useCallback, useMemo, useDispatch, useRouter, useAbortController, useSelector } from '../../imports.js';
 import RoomForm from './room-form.js';
 import { textRoomCreate } from '../../redux-toolkit/actions/textroom-actions.js';
-import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
+import { cleanCreatingError, selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
 import TopError from '../../components/top-error.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
@@ -26,6 +26,7 @@ export default function AddRoom() {
     const onCancel = useCallback(() => {
         getAC().abort();
         resetAC();
+        dispatch(cleanCreatingError());
         route(returnUrl);
     }, []);
 

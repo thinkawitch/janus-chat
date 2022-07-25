@@ -29,12 +29,18 @@ export const textRoomSlice = createSlice({
         removeTextRoom: (state, action) => {
             return state.filter(u => u.id !== action.payload);
         },
-        updateTextRoom: (state, action) => {
+        directUpdateTextRoom: (state, action) => {
 
         },
         cleanTextRoom: (state) => {
             return { ...initialState };
         },
+        cleanCreatingError: (state) => {
+            state.creatingError = null;
+        },
+        cleanUpdatingError: (state) => {
+            state.updatingError = null;
+        }
     },
     extraReducers: {
         [userLogout.fulfilled]: (state, action) => {
@@ -105,6 +111,7 @@ export const textRoomSlice = createSlice({
         },
         [textRoomUpdate.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomUpdate.fulfilled')
+            //const roomId = action.payload.room;
             state.updating = false;
         },
         [textRoomUpdate.rejected]: (state, action) => {
@@ -129,7 +136,7 @@ export const textRoomSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addTextRoom, removeTextRoom, updateTextRoom, cleanTextRoom } = textRoomSlice.actions;
+export const { cleanCreatingError, cleanUpdatingError } = textRoomSlice.actions;
 
 export default textRoomSlice.reducer;
 

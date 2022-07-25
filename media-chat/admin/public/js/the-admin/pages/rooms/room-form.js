@@ -45,6 +45,21 @@ export default function RoomForm(props) {
         onCancel();
     }, [onCancel]);
 
+    const propsPin = {};
+    let requiredPin = null;
+    if (modeEdit && room.pin?.length > 0) {
+        propsPin.required = true;
+        propsPin.minlength = '1';
+        requiredPin = '*';
+    }
+    const propsSecret = {};
+    let requiredSecret = null;
+    if (modeEdit && room.secret?.length > 0) {
+        propsSecret.required = true;
+        propsSecret.minlength = '1';
+        requiredSecret = '*';
+    }
+
     const onInput = useCallback(e => {
         const field = e.target.name;
         let val = e.target.value;
@@ -60,33 +75,34 @@ export default function RoomForm(props) {
     return html`
         <form onSubmit=${onFormSubmit}>
             <div class="row mb-3">
-                <label for="rfDescription" class="col-sm-2 col-form-label">Description</label>
+                <label for="rfDescription" class="col-sm-2 col-form-label">Description *</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="rfDescription" name="description" value=${fields.description} onInput=${onInput} />
+                    <input type="text" class="form-control" id="rfDescription" name="description" value=${fields.description} onInput=${onInput} required minlength="1" />
                 </div>
             </div>
             <div class="row mb-3">
                 <label for="rfHistory" class="col-sm-2 col-form-label">History</label>
                 <div class="col-sm-10">
                     <input type="number" class="form-control" id="rfHistory" name="history" min="0" max="500" value=${fields.history} onInput=${onInput} readonly=${modeEdit}/>
-                    ${modeAdd && html`<small class="text-muted">You can not change it later</small>`}
+                    ${modeAdd && html`<small class="text-muted">You can not change it later.</small>`}
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="rfPin" class="col-sm-2 col-form-label">Pin</label>
+                <label for="rfPin" class="col-sm-2 col-form-label">Pin ${requiredPin}</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="rfPin" name="pin" value=${fields.pin} onInput=${onInput} maxlength="10" />
+                    <input type="text" class="form-control" id="rfPin" name="pin" value=${fields.pin} onInput=${onInput} maxlength="10" ...${propsPin} />
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="rfSecret" class="col-sm-2 col-form-label">Secret</label>
+                <label for="rfSecret" class="col-sm-2 col-form-label">Secret ${requiredSecret}</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="rfSecret" name="secret" value=${fields.secret} onInput=${onInput} maxlength="16" />
+                    <input type="text" class="form-control" id="rfSecret" name="secret" value=${fields.secret} onInput=${onInput} maxlength="16" ...${propsSecret} />
                 </div>
             </div>
             <div class="row mb-3">
                 <label class="text-muted">
-                    New values may be set to non-empty, but can't be changed back! You can set secret, change it, but can't turn it off then.
+                    New values may be set to non-empty, but can't be changed back!
+                    You can set secret, change it, but can't turn it off then.
                 </label>
             </div>
             <${ButtonSpinner} type="submit" class="btn btn-primary" disabled=${pending}>Submit<//>
