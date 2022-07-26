@@ -83,8 +83,6 @@ export default function HeaderSideMenu() {
                         <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
                             <li class="dropdown-item">${user.username}</li>
                             <li><hr class="dropdown-divider"/></li>
-                            <li><a class="dropdown-item" href="#" onClick=${getMe}>api user.getMe</a></li>
-                            <li><a class="dropdown-item" href="#" onClick=${getRooms}>api textroom.getAll</a></li>
                             <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li><hr class="dropdown-divider"/></li>
@@ -152,7 +150,7 @@ export default function HeaderSideMenu() {
                         <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
                             <!--<img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2" />-->
                             <svg class="bi me-2" width="32" height="32"><use xlink:href="#bi-person-circle"></use></svg>
-                            <strong class="text-truncate">${user.username}1111111111111111111111111</strong>
+                            <strong class="text-truncate">${user.username}</strong>
                         </a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
                             <li><a class="dropdown-item" href="#">New project...</a></li>

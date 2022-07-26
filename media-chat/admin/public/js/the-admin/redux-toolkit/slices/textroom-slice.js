@@ -4,6 +4,7 @@ import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomUpdate, textRoomDe
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
+const initialFilter = {description: ''};
 const initialState = {
     rooms: [],
     loading: false, // loading all
@@ -16,22 +17,14 @@ const initialState = {
     updatingError: null,
     deleting: false,
     notInitialized: false,
+    filter: {...initialFilter},
+    filteredRooms: [],
 }
 
 export const textRoomSlice = createSlice({
     name: 'textRoom',
     initialState: { ...initialState, notInitialized: true },
     reducers: {
-        addTextRoom: (state, action) => {
-            //state.push(action.payload);
-            //addOrUpdateUser(state, action.payload);
-        },
-        removeTextRoom: (state, action) => {
-            return state.filter(u => u.id !== action.payload);
-        },
-        directUpdateTextRoom: (state, action) => {
-
-        },
         cleanTextRoom: (state) => {
             return { ...initialState };
         },
@@ -40,7 +33,15 @@ export const textRoomSlice = createSlice({
         },
         cleanUpdatingError: (state) => {
             state.updatingError = null;
-        }
+        },
+        setFilter: (state, action) => {
+            state.filter = action.payload;
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
+        },
+        cleanFilter: (state, action) => {
+            state.filter = {...initialFilter};
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
+        },
     },
     extraReducers: {
         [userLogout.fulfilled]: (state, action) => {
@@ -48,17 +49,18 @@ export const textRoomSlice = createSlice({
             return { ...initialState, notInitialized: true };
         },
         [textRoomGetAll.pending]: (state, action) => {
-            console.log('textRoomSlice textRoomGetAll.pending')
-            //return { ...state, loading: true } // this makes hang-up
+            //console.log('textRoomSlice textRoomGetAll.pending')
             state.loadingError = null;
             state.loading = true;
         },
         [textRoomGetAll.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.fulfilled')
-            return { ...state, loading: false, loadingError: null, rooms: action.payload.rooms, notInitialized: false }
-            // state.loading = false;
-            // state.rooms = action.payload.rooms;
-            // state.notInitialized = false;
+            //return { ...state, loading: false, loadingError: null, rooms: action.payload.rooms, notInitialized: false }
+            state.loading = false;
+            state.loadingError = null;
+            state.rooms = action.payload.rooms;
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
+            state.notInitialized = false;
         },
         [textRoomGetAll.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.rejected')
@@ -136,7 +138,7 @@ export const textRoomSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { cleanCreatingError, cleanUpdatingError } = textRoomSlice.actions;
+export const { cleanCreatingError, cleanUpdatingError, setFilter, cleanFilter } = textRoomSlice.actions;
 
 export default textRoomSlice.reducer;
 
@@ -172,3 +174,14 @@ export const selectRoomById = createSelector(
         return found;
     }
 );
+
+
+function filterRooms(rooms, filter) {
+    const { description } = filter;
+    if (description.length < 1) return rooms.slice();
+    const ld = description.toLowerCase();
+
+    return rooms.filter(r => {
+        return r.description?.toLowerCase().includes(ld);
+    })
+}

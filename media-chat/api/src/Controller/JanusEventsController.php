@@ -66,12 +66,13 @@ class JanusEventsController extends AbstractController
                 ';
                 $rooms = $this->conn->fetchAllAssociative($sql);
                 foreach ($rooms as $room) {
-                    $this->logger->info('room ' . json_encode($room));
+                    $this->logger->info('try to launch room ' . json_encode($room));
                 }
                 $this->janusUserApi->createRoomsIgnoreExisting($rooms);
                 break;
             case 'shutdown':
                 $this->logger->info('server_shutdown');
+                $this->conn->update('rooms', ['active' => 0], ['active' => 1]);
                 break;
         }
     }
@@ -82,9 +83,11 @@ class JanusEventsController extends AbstractController
         switch ($eventData['event']) {
             case 'created':
                 $this->logger->info('room_created ' . $roomId);
+                $this->conn->update('rooms', ['active' => 1], ['id' => $roomId]);
                 break;
             case 'destroyed':
                 $this->logger->info('room_destroyed ' . $roomId);
+                $this->conn->update('rooms', ['active' => 0], ['id' => $roomId]);
                 break;
         }
     }

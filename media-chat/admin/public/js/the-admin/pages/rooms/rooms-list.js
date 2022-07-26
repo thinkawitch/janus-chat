@@ -7,7 +7,7 @@ import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-h
 const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
 
 export default function RoomsList() {
-    const { loading, rooms, notInitialized } = useSelector(selectTextRoom);
+    const { loading, rooms, filteredRooms, notInitialized } = useSelector(selectTextRoom);
     const { confirm } = useDialogConfirm();
     const { addToast } = useToast();
     const dispatch = useDispatch();
@@ -42,7 +42,7 @@ export default function RoomsList() {
                 <th></th>
             </thead>
             <tbody>
-            ${rooms.map(r => html`
+            ${filteredRooms.map(r => html`
                 <tr key=${r.id}>
                     <td>${r.id}</td>
                     <td>${r.user_id}</td>

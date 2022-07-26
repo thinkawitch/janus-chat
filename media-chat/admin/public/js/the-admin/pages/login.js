@@ -20,7 +20,8 @@ export default function Login() {
             <!--<h1>Login page</h1>-->
             <div class="form-sign-in">
                 <form action="" class="text-center" onSubmit=${onSubmit}>
-                    <span class="ico-logo mb-4 fs-1"><i class="bi bi-chat-left-text"></i></span>
+                    <!--<span class="ico-logo mb-4 fs-1"><i class="bi bi-chat-left-text"></i></span>-->
+                    <div class="mb-3"><img height="32" src="/apple-touch-icon.png" /></div>
 
                     ${error
                         ? html`<div class="alert alert-danger">${error}</div>`

@@ -12,6 +12,8 @@ import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js'
 import RoomsList from './rooms-list.js';
 import { selectRoomsLoading } from '../../redux-toolkit/slices/textroom-slice.js';
 import ButtonSpinner from '../../components/button-spinner.js';
+import RoomsFilter from './rooms-filter.js';
+
 
 let rvc = 0; // room view counter
 export default function Rooms() {
@@ -38,10 +40,11 @@ export default function Rooms() {
     useSmallTitle('Rooms');
 
     return html`
-        <div class="d-flex flex-row align-items-center">
-            <h1 class="d-none d-lg-block me-3">Rooms</h1>
-            ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary me-3">add room</a>`}
+        <div class="d-flex flex-row flex-wrap align-items-center gap-2">
+            <h1 class="d-none d-lg-block">Rooms</h1>
+            ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary ">add room</a>`}
             <${ButtonSpinner} class="btn btn-secondary btn-sm" onClick=${refresh} disabled=${loading}>refresh<//>
+            <${RoomsFilter} />
         </div>
         <${RoomsList} />
     `;
