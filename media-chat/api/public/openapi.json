@@ -168,71 +168,7 @@
         "description": "",
         "operationId": "createTextRoom",
         "requestBody": {
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "description": {
-                    "type": "string",
-                    "example": "",
-                    "required": false,
-                    "default": null,
-                    "nullable": true
-                  },
-                  "history": {
-                    "type": "number",
-                    "description": "Number of messages to give newcomers",
-                    "required": false,
-                    "default": 0,
-                    "nullable": true,
-                    "example": 10
-                  },
-                  "pin": {
-                    "type": "string",
-                    "description": "Pin/password to join room",
-                    "required": false,
-                    "default": false,
-                    "nullable": true,
-                    "maxLength": 10,
-                    "example": "12345"
-                  },
-                  "secret": {
-                    "type": "string",
-                    "description": "Password to edit/delete room",
-                    "required": false,
-                    "default": null,
-                    "nullable": true,
-                    "maxLength": 16,
-                    "example": "veRYstroNG"
-                  }
-                }
-              },
-              "examples": {
-                "textroom_default": {
-                  "value": {
-                  }
-                },
-                "textroom_pinned": {
-                  "value": {
-                    "description": "room with pin 7891",
-                    "history": 50,
-                    "pin": "7891",
-                    "secret": "Gue11Me"
-                  }
-                },
-                "textroom_nulls": {
-                  "value": {
-                    "description": null,
-                    "history": null,
-                    "pin": null,
-                    "secret": null
-                  }
-                }
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/Textroom",
         },
         "responses": {
           "200": {
@@ -267,6 +203,39 @@
           }
         }
       },
+      "put": {
+        "tags": [
+          "textroom"
+        ],
+        "summary": "Update text room",
+        "description": "",
+        "operationId": "updateTextRoom",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "description": "roomId to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "examples": {
+              "textroom_update": {
+                "value": 1
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Textroom"
+        },
+        "responses": {
+          "200": {
+            "description": "Textroom updated"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "textroom"
@@ -283,6 +252,11 @@
             "schema": {
               "type": "integer",
               "format": "int64"
+            },
+            "examples": {
+              "textroom_delete": {
+                "value": 1
+              }
             }
           }
         ],
@@ -300,10 +274,12 @@
         "type": "object",
         "properties": {
           "username": {
-            "type": "string"
+            "type": "string",
+            "required": true
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         }
       },
@@ -313,6 +289,27 @@
           "user": {
             "type": "string",
             "example": "andrew@cc.lan"
+          }
+        }
+      },
+      "Textroom": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "required": false
+          },
+          "history": {
+            "type": "number",
+            "required": false
+          },
+          "pin": {
+            "type": "string",
+            "required": false
+          },
+          "secret": {
+            "type": "string",
+            "required": false
           }
         }
       }
@@ -330,6 +327,38 @@
                 "value": {
                   "username": "andrew@cc.lan",
                   "password": "andrew"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Textroom": {
+        "description": "Textroom to test",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Textroom"
+            },
+            "examples": {
+              "textroom_test": {
+                "value": {
+                  "description": "new description",
+                  "history": 50,
+                  "pin": "1111",
+                  "secret": "pineapple"
+                }
+              },
+              "textroom_empty": {
+                "value": {
+                }
+              },
+              "textroom_nulls": {
+                "value": {
+                  "description": null,
+                  "history": null,
+                  "pin": null,
+                  "secret": null
                 }
               }
             }

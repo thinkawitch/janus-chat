@@ -33,8 +33,8 @@ export const textRoomCreate = createAsyncThunk(
 export const textRoomUpdate = createAsyncThunk(
     'textRoom/update',
     async (args, thunkAPI) => {
-        const { data, signal } = args;
-        return await mediaChatApi.textroom.update(data, thunkAPI, signal);
+        const { roomId, data, signal } = args;
+        return await mediaChatApi.textroom.update(roomId, data, thunkAPI, signal);
     }
 )
 

@@ -179,34 +179,42 @@ class TextRoomController extends AbstractController
         return $this->json($result);
     }
 
-    #[Route('', methods: ['PUT'])]
+    #[Route('/{roomId}', requirements: ['roomId' => '\d+'],  methods: ['PUT'])]
     public function update(
+        int $roomId,
         Request $request,
         JanusUserApiService $janusUserApi,
         Connection $conn
     ) : JsonResponse
     {
         $data = $request->toArray();
-        $id = !empty($data['id']) ? intval($data['id']) : 0;
-        if ($id < 1) throw $this->createNotFoundException('No data to update room');
-
         $newRoom = getGoodRoomDataForUpdate($data);
+        if (empty($newRoom)) return $this->json(['textroom' => 1, 'status' => 400, 'title' => 'No data to update room', 'detail' => "No data to update room #$roomId"], 400);
 
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
         // only creator or admin may update the room
-        $sqlParams = ['id' => $id, 'user_id' => $user->getId()];
+        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
         $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
         $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$id not found"], 404);
+        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
+
+        // validate
+        foreach (['description', 'pin', 'secret'] as $field) {
+            // janus does not set empty value back, only non-empty values will be updated
+            // this will make room non-editable non-deletable
+            if (!empty($room[$field]) && array_key_exists($field, $newRoom) && strlen($newRoom[$field]) == 0) {
+                return $this->json(['textroom' => 1, 'status' => 400, 'title' => 'Can not make field empty', 'detail' => "Field #$field can not be set empty"], 400);
+            }
+        }
 
         //dd($newRoom);
         try {
             $conn->beginTransaction();
-            $result = $janusUserApi->updateRoom($id, $room['secret'], $newRoom);
-            $conn->update('rooms', $newRoom, ['id' => $id]);
+            $result = $janusUserApi->updateRoom($roomId, $room['secret'], $newRoom);
+            $conn->update('rooms', $newRoom, ['id' => $roomId]);
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
@@ -278,7 +286,7 @@ function getJanusRoomById($janusRooms, $id) {
 
 function getGoodRoomDataForUpdate(array $data) {
     $stringFields = ['description', 'secret', 'pin', 'post'];
-    $numFields = [/*'history'*/];
+    $numFields = [/*'history'*/]; // history can't be changed after creation
     $good = [];
     foreach ($stringFields as $f) {
         if (array_key_exists($f, $data)) {

@@ -181,3 +181,12 @@
         border-bottom: 1px solid var(--bs-gray-400) !important;
     }
 }
+
+
+/* prevent page twitch on scroll hide/show */
+/* makes problem for login, toasts */
+/*@supports (scrollbar-gutter: stable) {
+    html  {
+        scrollbar-gutter: stable both-edges;
+    }
+}*/

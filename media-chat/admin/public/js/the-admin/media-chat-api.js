@@ -41,7 +41,7 @@ async function processResponse(response, rejectWithValue) {
 
     const data = await response.json();
 
-    if ([403, 404, 405, 500].includes(response.status)) {
+    if ([400, 403, 404, 405, 500].includes(response.status)) {
         // symfony error as json
         // api errors with symfony-like format
         displayErrorHandler && displayErrorHandler(data.detail);
@@ -118,7 +118,7 @@ const mediaChatApi = {
             const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
-        update: async (data, thunkAPI, customSignal) => {
+        update: async (roomId, data, thunkAPI, customSignal) => {
             const signal = customSignal ?? thunkAPI.signal;
             const localInit = {
                 ...addSignalToFetchInit(fetchInit, signal),
@@ -129,7 +129,7 @@ const mediaChatApi = {
                 },
                 body: JSON.stringify(data)
             };
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
         delete: async (roomId, thunkAPI) => {
