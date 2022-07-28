@@ -88,10 +88,11 @@
         { id: 2, username: 'user2', displayName: 'User 2' },
         { id: 3, username: 'user3', displayName: 'User 3' },
     ];
-    const userId = parseInt(new URLSearchParams(window.location.search).get('userId')) || 1;
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = parseInt(urlParams.get('userId')) || 1;
     const user = users.find(u => u.id === userId) || users[0];
-    const roomId = 1234;
-    console.log('i am user', user);
+    const roomId = parseInt(urlParams.get('roomId')) || 1234;
+    console.log('i am user', user, 'will try room', roomId);
 
     import { renderApp } from './js/the-app/index.js';
     const externalApi = renderApp(document.getElementById('the-app'), { roomId, user });

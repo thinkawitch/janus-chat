@@ -40,7 +40,7 @@ export default function Rooms() {
     useSmallTitle('Rooms');
 
     return html`
-        <div class="d-flex flex-row flex-wrap align-items-center gap-2">
+        <div class="d-flex flex-row flex-wrap align-items-center gap-2 mb-2 mb-lg-0">
             <h1 class="d-none d-lg-block">Rooms</h1>
             ${mayAdd && html`<a href="/rooms/add" role="button" class="btn btn-sm btn-primary ">add room</a>`}
             <${ButtonSpinner} class="btn btn-secondary btn-sm" onClick=${refresh} disabled=${loading}>refresh<//>

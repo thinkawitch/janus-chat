@@ -143,14 +143,18 @@ const mediaChatApi = {
             const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
+        info: async (thunkAPI) => {
+            const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
+            const response = await fetch(`${mediaChatApiBaseUrl}textroom/info`, localInit);
+            return await processResponse(response, thunkAPI.rejectWithValue);
+        },
     },
 
     test: {
-        get: async (signal) => {
-            const localInit = addSignalToFetchInit(fetchInit, signal);
+        get: async (thunkAPI) => {
+            const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
             const response = await fetch(`${mediaChatApiBaseUrl}me?sleep=5`, localInit);
-            checkResponse(response);
-            return await response.json();
+            return await processResponse(response, thunkAPI.rejectWithValue);
         }
     },
 

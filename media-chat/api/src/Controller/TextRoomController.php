@@ -273,10 +273,44 @@ class TextRoomController extends AbstractController
 
         return $this->json($result);
     }
+
+    #[Route('/info', methods: ['GET'])]
+    public function getInfo(
+        JanusUserApiService $janusUserApi,
+        JanusAdminApiService $janusAdminApi,
+        Connection $conn
+    ) : JsonResponse
+    {
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        $sqlParams = ['user_id' => $user->getId()];
+        // total
+        $sql = 'SELECT COUNT(id) FROM rooms WHERE deleted=0';
+        if (!$isAdmin) $sql .= ' AND user_id = :user_id';
+        [$totalRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
+
+        // active
+        $sql = 'SELECT COUNT(id) FROM rooms WHERE deleted=0 AND active=1';
+        if (!$isAdmin) $sql .= ' AND user_id = :user_id';
+        [$activeRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
+
+        // deleted
+        $sql = 'SELECT COUNT(id) FROM rooms WHERE deleted=1';
+        if (!$isAdmin) $sql .= ' AND user_id = :user_id';
+        [$deletedRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
+
+        return $this->json([
+            'textroom' => 1,
+            'total_rooms' => $totalRooms,
+            'active_rooms' => $activeRooms,
+            'deleted_rooms' => $deletedRooms,
+        ]);
+    }
 }
 
 
-function getJanusRoomById($janusRooms, $id) {
+function getJanusRoomById($janusRooms, $id) : ?array {
     if (!$janusRooms) return null;
     foreach ($janusRooms as $jr) {
         if ($jr['room'] == $id) return $jr;
@@ -284,7 +318,7 @@ function getJanusRoomById($janusRooms, $id) {
     return null;
 }
 
-function getGoodRoomDataForUpdate(array $data) {
+function getGoodRoomDataForUpdate(array $data) : array {
     $stringFields = ['description', 'secret', 'pin', 'post'];
     $numFields = [/*'history'*/]; // history can't be changed after creation
     $good = [];

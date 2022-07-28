@@ -46,6 +46,13 @@ export const textRoomDelete = createAsyncThunk(
 )
 
 
+export const textRoomInfo = createAsyncThunk(
+    'textRoom/info',
+    async (arg, thunkAPI) => {
+        return await mediaChatApi.textroom.info(thunkAPI);
+    }
+)
+
 export const textRoomTestLongRequest = createAsyncThunk(
     'textRoom/testLongRequest',
     async (arg, thunkAPI) => {

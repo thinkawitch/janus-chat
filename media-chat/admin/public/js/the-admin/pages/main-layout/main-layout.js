@@ -5,6 +5,7 @@ import Users from './../users.js';
 import Rooms from './../rooms/rooms.js';
 import AddRoom from './../rooms/add-room.js';
 import EditRoom from './../rooms/edit-room.js';
+import Me from './../me.js';
 import { DialogConfirm, DialogAlert, DialogPrompt } from '../../components/andrew-preact-dialog/dialog-component.js';
 import { ToastHolder } from '../../components/andrew-preact-bootstrap-toast/toast-component.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
@@ -38,6 +39,7 @@ export default function MainLayout() {
                 <${Rooms} path="/rooms" />
                 <${AddRoom} path="/rooms/add" />
                 <${EditRoom} path="/rooms/edit/:roomId" />
+                <${Me} path="/me" />
             </Router>
         </div>
         <${DialogConfirm} />

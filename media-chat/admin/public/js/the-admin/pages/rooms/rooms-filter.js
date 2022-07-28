@@ -1,11 +1,11 @@
-import {html, useSelector, useDispatch, useCallback, useEffect, useState} from '../../imports.js';
+import { html, useSelector, useDispatch, useCallback, useEffect, useState } from '../../imports.js';
 import useDebouncedCallback from '../../components/samuherek-use-debounce-preact.js';
-import {setFilter, cleanFilter, selectTextRoom} from '../../redux-toolkit/slices/textroom-slice.js';
+import { setFilter, cleanFilter, selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
 
 export default function RoomsFilter() {
     const dispatch = useDispatch();
-    const {filter} = useSelector(selectTextRoom);
-    const [fields, setFields] = useState({description: ''});
+    const { filter } = useSelector(selectTextRoom);
+    const [ fields, setFields ] = useState({ description: '' });
 
     useEffect(() => {
         const updateFields = {};

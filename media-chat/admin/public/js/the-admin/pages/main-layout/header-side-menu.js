@@ -1,7 +1,5 @@
 import { html, useCallback, useDispatch, useSelector, useRouter, useLayoutEffect } from '../../imports.js';
 import { userLogout } from '../../redux-toolkit/actions/auth-actions.js';
-import { userGetMe } from '../../redux-toolkit/actions/user-actions.js';
-import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
 
 
 /*function updateTopSmallTitle() {
@@ -15,6 +13,9 @@ export default function HeaderSideMenu() {
     const dispatch = useDispatch();
     const logout = useCallback(e => {
         e && e.preventDefault();
+        const psm = document.getElementById('pageSideMenu');
+        const offcanvas = bootstrap.Offcanvas.getInstance(psm);
+        offcanvas?.hide();
         dispatch(userLogout());
     });
     const { user, /*router: { url }*/ } = useSelector(store => store);
@@ -28,16 +29,7 @@ export default function HeaderSideMenu() {
     const class2HomeActive = url === '/' ? 'active' : 'link-dark';
     const class2RoomsActive = url === '/rooms' ? 'active' : 'link-dark';
     const class2UsersActive = url === '/users' ? 'active' : 'link-dark';
-
-    const getMe = useCallback(e => {
-        e && e.preventDefault();
-        dispatch(userGetMe());
-    });
-
-    const getRooms = useCallback(e => {
-        e && e.preventDefault();
-        dispatch(textRoomGetAll());
-    })
+    const class2MeActive = url === '/me' ? 'active' : 'link-dark';
 
     /*useLayoutEffect(() => {
         const resizeHandler = () => {
@@ -83,8 +75,7 @@ export default function HeaderSideMenu() {
                         <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
                             <li class="dropdown-item">${user.username}</li>
                             <li><hr class="dropdown-divider"/></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="/me">My account</a></li>
                             <li><hr class="dropdown-divider"/></li>
                             <li><a class="dropdown-item" href="#" onClick=${logout}>Sign out</a></li>
                         </ul>
@@ -146,20 +137,35 @@ export default function HeaderSideMenu() {
                         </li>
                     </ul>
                     <hr />
+                    <ul class="nav nav-pills flex-column mb-auto flex-grow-0">
+                        <li class="nav-item fw-bold ps-3 mb-2" style="max-width: 100%">
+                            <div class="text-truncate">${user.username}</div>
+                        </li>
+                        <li>
+                            <a href="/me" class="nav-link ${class2MeActive}">
+                                <svg class="bi mb-1 me-2" width="16" height="16"><use xlink:href="#bi-people-circle"></use></svg>
+                                My account
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link link-dark" onClick=${logout}>
+                                <svg class="bi mb-1 me-2" width="16" height="16"><use xlink:href="#bi-box-arrow-right"></use></svg>
+                                Sign out
+                            </a>
+                        </li>
+                    </ul>
+                    <!--<hr />
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-                            <!--<img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2" />-->
                             <svg class="bi me-2" width="32" height="32"><use xlink:href="#bi-person-circle"></use></svg>
                             <strong class="text-truncate">${user.username}</strong>
                         </a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
-                            <li><a class="dropdown-item" href="#">New project...</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="/me">My account</a></li>
                             <li><hr class="dropdown-divider" /></li>
                             <li><a class="dropdown-item" href="#" onClick=${logout}>Sign out</a></li>
                         </ul>
-                    </div>
+                    </div>-->
                     
                 </div>
 

@@ -15,7 +15,7 @@ server {
     root  /var/www/admin/public;
 
     # rule for app urls
-    location ~ ^/(login|users|rooms) {
+    location ~ ^/(login|users|rooms|me) {
         try_files /index.html =404;
     }
 }

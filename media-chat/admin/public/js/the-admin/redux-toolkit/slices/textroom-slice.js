@@ -1,6 +1,8 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
-import { textRoomGetAll, textRoomGet, textRoomCreate, textRoomUpdate, textRoomDelete } from '../actions/textroom-actions.js';
+import {
+    textRoomGetAll, textRoomGet, textRoomCreate, textRoomUpdate, textRoomDelete, textRoomInfo
+} from '../actions/textroom-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
@@ -19,6 +21,12 @@ const initialState = {
     notInitialized: false,
     filter: {...initialFilter},
     filteredRooms: [],
+    info: {
+        loading: false,
+        totalRooms: 0,
+        activeRooms: 0,
+        deletedRooms: 0,
+    },
 }
 
 export const textRoomSlice = createSlice({
@@ -83,6 +91,7 @@ export const textRoomSlice = createSlice({
                 // add
                 state.rooms.push(action.payload.room)
             }
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
             state.getting = false;
         },
         [textRoomGet.rejected]: (state, action) => {
@@ -129,10 +138,23 @@ export const textRoomSlice = createSlice({
         [textRoomDelete.fulfilled]: (state, action) => {
             const roomId = parseInt(action.meta.arg.roomId);
             state.rooms = state.rooms.filter(r => r.id !== roomId);
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
             state.deleting = false;
         },
         [textRoomDelete.rejected]: (state, action) => {
             state.deleting = false;
+        },
+        [textRoomInfo.pending]: (state, action) => {
+            state.info.loading = true;
+        },
+        [textRoomInfo.fulfilled]: (state, action) => {
+            state.info.loading = false;
+            state.info.activeRooms = action.payload.active_rooms;
+            state.info.totalRooms = action.payload.total_rooms;
+            state.info.deletedRooms = action.payload.deleted_rooms;
+        },
+        [textRoomInfo.rejected]: (state, action) => {
+            state.info.loading = false;
         },
     }
 });
@@ -155,6 +177,8 @@ export const selectRoomsLoading = createSelector(selectTextRoom, textRoom => {
     console.log('[selector] selectRoomsLoading', textRoom.loading)
     return textRoom.loading
 });
+
+export const selectTextRoomInfo = (state) => state.textRoom.info;
 
 
 export const selectRoomById = createSelector(
