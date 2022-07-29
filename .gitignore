@@ -3,8 +3,8 @@ docker/logs/*
 docker/containers/ssl-certs/*
 !docker/containers/ssl-certs/.gitkeep
 .idea/
-/.env
-/make.env
+.env
+make.env
 janus-gateway/
 media-chat/app/public/js/vendor
 media-chat/app/public/js/the-app/config-ice-servers.js
