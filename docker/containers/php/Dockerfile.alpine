@@ -1,0 +1,41 @@
+FROM php:8.1.9-fpm-alpine3.16 AS target-php
+
+# https://github.com/satyadeep/docker-php-fpm-alpine-with-extensions/tree/master/php-81-fpm-alpine-with-ext
+#ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
+
+RUN apk add --no-cache htop mc tree pv nano mlocate
+
+# php extensions
+RUN docker-php-ext-configure pdo_mysql
+RUN docker-php-ext-install pdo_mysql
+
+# php settings
+RUN cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+RUN echo "html_errors = Off" >> /usr/local/etc/php/php.ini
+RUN echo "log_errors = On" >> /usr/local/etc/php/php.ini
+RUN echo "error_log = /var/log/php/php_errors.log" >> /usr/local/etc/php/php.ini
+
+# composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+
+#
+COPY php_entry.sh /usr/php_entry.sh
+
+WORKDIR /usr/src
+
+# files are linked via volume in dev mode
+
+
+ENTRYPOINT ["/bin/sh", "/usr/php_entry.sh", "php-fpm"]
+#ENTRYPOINT ["php-fpm"]
+
+
+
+FROM target-php AS target-symfony
+
+
+WORKDIR /usr/src/symfony
+
+
+ENTRYPOINT ["/bin/sh", "/usr/php_entry.sh", "php-fpm"]
+

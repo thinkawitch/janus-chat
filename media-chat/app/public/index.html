@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Media chat</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.1.1/adapter.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/janus.js"></script>
+    <style>
+        /* page styles */
+        html, body {
+            height: 100%;
+            /*background-color: #000;*/ /* for ios side areas */
+        }
+        header {
+            background: lightsteelblue;
+        }
+        main {
+            background: aliceblue;
+            min-height: 250px;
+        }
+        footer {
+            background: lightsteelblue;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/bs-in-pocket.css" crossorigin="anonymous" media="screen">
+    <link rel="stylesheet" href="css/the-app.css?a1" crossorigin="anonymous" media="screen">
+    <script>
+        function switchToTailwind() {
+            window.location = '/in-tailwind.html' + window.location.search;
+        }
+    </script>
+</head>
+<body>
+
+<!-- bootstrap page and the-app inside it -->
+<div class="container-md d-flex flex-column h-100">
+    <header class="d-flex align-items-center justify-content-center">
+        <img height="30px" src="/apple-touch-icon.png" />
+        <h1 class="ms-3">Media chat</h1>
+    </header>
+    <main class="flex-grow-1 p-2">
+
+        <div class="d-flex h-100">
+            <div class="card flex-grow-1">
+                <div class="card-header">
+                    Chat on bootstrap page
+                    <button class="btn btn-sm btn-info py-0 px-1" style="font-size:0.9rem" onclick="switchToTailwind()">to tailwind</button>
+                </div>
+                <div class="card-body bs-in-pocket" id="the-app">
+
+                    <!-- place app here -->
+                    <!-- loader spinner as placeholder -->
+                    <div class="d-flex flex-row d-flex justify-content-center h-100">
+                        <div class="d-flex align-items-center text-secondary">
+                            <span>Loading...</span>
+                            <div class="spinner-border ms-2" role="status" aria-hidden="true"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card ms-2 flex-shrink-0">
+                <div class="card-header">Other page content</div>
+                <ul class="list-group list-group-flush overflow-auto">
+                    <li class="list-group-item">An item</li>
+                    <li class="list-group-item">A second item</li>
+                    <li class="list-group-item">A third item</li>
+                    <li class="list-group-item">Facilisis placerat</li>
+                    <li class="list-group-item">Quis commodo</li>
+                    <li class="list-group-item">Integer eu feugiat</li>
+                    <li class="list-group-item">Nam tempor massa</li>
+                    <li class="list-group-item">Maecenas luctus</li>
+                    <li class="list-group-item">Nunc nec neque</li>
+                </ul>
+
+            </div>
+        </div>
+    </main>
+    <footer class="text-center">
+        Some footer text
+    </footer>
+</div>
+
+
+<script type="module">
+
+    const users = [
+        { id: 1, username: 'user1', displayName: 'User 1' },
+        { id: 2, username: 'user2', displayName: 'User 2' },
+        { id: 3, username: 'user3', displayName: 'User 3' },
+    ];
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = parseInt(urlParams.get('userId')) || 1;
+    const user = users.find(u => u.id === userId) || users[0];
+    const roomId = parseInt(urlParams.get('roomId')) || 1234;
+    console.log('i am user', user, 'will try room', roomId);
+
+    import { renderApp } from './js/the-app/index.js';
+    const externalApi = renderApp(document.getElementById('the-app'), { roomId, user });
+
+    externalApi.setUserResolver(userResolver);
+
+    // how to get full app user
+    async function userResolver(username) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log('external_getUserResolver', username);
+                const user = users.find(u => u.username === username);
+                user ? resolve(user) : reject();
+            }, 1500);
+        });
+    }
+
+</script>
+</body>
+</html>

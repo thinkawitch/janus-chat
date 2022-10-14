@@ -1,0 +1,82 @@
+
+server {
+
+    ssl_certificate deploy/ssl-certs/ssl_media_chat.crt;
+    ssl_certificate_key deploy/ssl-certs/ssl_media_chat.key;
+
+    listen 443 ssl http2;
+    resolver  127.0.0.11 valid=3s;
+    resolver_timeout 3s;
+
+    server_name old.${ADMIN_DOMAIN};
+
+    access_log  /var/log/nginx/admin.access.log;
+    error_log  /var/log/nginx/admin.error.log info; #debug;
+
+    # the root dir in nginx and in php-fpm should be the same, for simplicity
+    root  /var/www/admin/public;
+
+    set $admin_upstream media-chat-admin:9000;
+    set $admin_root /usr/src/symfony/public; # root inside of symfony container
+
+    location / {
+        try_files $uri @symfony;
+        add_header X-andrew-handler-admin-root-location "true";
+    }
+
+    # do not pass to php-fpm
+    location /css/ {}
+    location /js/ {}
+
+    location @symfony {
+        # rewrite all to index.php
+        rewrite ^(.*)$ /index.php/$1 last;
+    }
+
+    # symfony handler
+    location ~ ^/index\.php(/|$) {
+        root $admin_root;
+        error_page 502 = @maintenance;
+
+        fastcgi_pass $admin_upstream;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $document_root;
+
+        add_header X-andrew-handler-admin-symfony "true";
+        add_header X-andrew-document-root "$document_root";
+
+        # Prevents URIs that include the front controller. This will 404:
+        # http://domain.tld/index.php/some-path
+        # Remove the internal directive to allow URIs like this
+        # andrew: this also disables direct access to index.php file
+        internal;
+    }
+
+    # regular php files
+    location ~ \.php(/|$) {
+        root $admin_root;
+        error_page 502 = @maintenance;
+
+        fastcgi_pass $admin_upstream;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $document_root;
+
+        add_header X-andrew-handler-admin-php-fpm "true";
+        #add_header X-andrew-uri "$uri";
+        #add_header X-andrew-document-root "$document_root";
+        #add_header X-andrew-fastcgi-script-name "$fastcgi_script_name";
+    }
+
+    # maintenance page while symfony container is in update/restart
+    location @maintenance {
+        #try_files $uri /maintenance.html =502; # when all symfony files are in own container
+        try_files /maintenance.html =502; # when symfony files mixed with others in nginx root
+        add_header X-andrew-handler-admin-maintenance "true";
+    }
+
+}

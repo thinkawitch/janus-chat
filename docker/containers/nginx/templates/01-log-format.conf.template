@@ -1,0 +1,7 @@
+
+# log format from Oleg
+
+#log_format monitored '$status\t$upstream_status\t$request_time\t$remote_addr\$upstream_addr\t"$request"$bytes_sent\t"$http_referer"\t"$http_user_agent"';
+
+log_format monitored '$status\t$upstream_status\t$request_time\t$remote_addr->$upstream_addr\t"$http_host"\t"$request"$bytes_sent\t"$http_referer"\t"$http_user_agent"\t[$time_local]';
+

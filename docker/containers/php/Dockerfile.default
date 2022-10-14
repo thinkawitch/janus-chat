@@ -1,0 +1,47 @@
+FROM php:8.1.9-fpm AS target-php
+
+RUN apt-get update
+RUN apt-get install -y net-tools dnsutils iputils-ping netcat-openbsd htop mc tree lnav curl pv nano mlocate locales
+
+# Set the locale
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# php extensions
+RUN docker-php-ext-install -j$(nproc) pdo_mysql
+
+# custom php settings
+RUN echo "html_errors = Off" >> /usr/local/etc/php/php.ini
+RUN echo "log_errors = On" >> /usr/local/etc/php/php.ini
+RUN echo "error_log = /var/log/php/php_errors.log" >> /usr/local/etc/php/php.ini
+
+# custom fpm settings
+#RUN echo 'pm.max_children = 15' >> /usr/local/etc/php-fpm.d/zz-docker.conf
+#RUN echo 'pm.max_requests = 500' >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
+# composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+
+#
+COPY php_entry.sh /usr/php_entry.sh
+
+WORKDIR /usr/src
+
+# files are linked via volume in dev mode
+
+
+ENTRYPOINT ["/bin/bash", "/usr/php_entry.sh", "php-fpm"]
+#ENTRYPOINT ["php-fpm"]
+
+
+
+FROM target-php AS target-symfony
+
+
+WORKDIR /usr/src/symfony
+
+
+ENTRYPOINT ["/bin/bash", "/usr/php_entry.sh", "php-fpm"]
+#ENTRYPOINT ["php-fpm"]

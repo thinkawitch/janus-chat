@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body>
+
+    <button class="sign-in">Sign in</button>
+    <button class="sign-out">Sign out</button>
+
+<script type="module">
+    async function postData(url = '', data = {}) {
+        // Default options are marked with *
+        const response = await fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'include', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *client
+            body: JSON.stringify(data) // body data type must match "Content-Type" header
+        });
+        return await response.json(); // parses JSON response into native JavaScript objects
+    }
+
+    async function signIn() {
+        const data = { username: 'andrew@cc.lan', password: 'andrew' };
+        const result = await postData('https://jc-api-a91.cc.lan/login', data);
+        console.log('result', result)
+    }
+
+    document.querySelector('.sign-in').addEventListener('click', signIn);
+    document.querySelector('.sign-out').addEventListener('click', () => {
+        fetch('https://jc-api-a91.cc.lan/logout');
+    });
+
+</script>
+</body>
+</html>

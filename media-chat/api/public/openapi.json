@@ -1,0 +1,431 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Media chat - OpenAPI 3.0",
+    "description": "Some description about media chat and its api.",
+    "off-termsOfService": "http://swagger.io/terms/",
+    "off-contact": {
+      "email": "apiteam@swagger.io"
+    },
+    "off-license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "0.2"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "this server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Authorization"
+    },
+    {
+      "name": "me",
+      "description": "User (me)"
+    },
+    {
+      "name": "textroom",
+      "description": "Janus textroom plugin"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Logs user into the system",
+        "description": "",
+        "operationId": "authLogin",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserLogin"
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Set user session cookie",
+                "schema": {
+                  "type": "string",
+                  "example": "PHPSESSID=c9a3a6005e0abe245421d0de6eed18c6; path=/; secure; httponly; samesite=lax"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Logs out user",
+        "description": "",
+        "operationId": "authLogout",
+        "responses": {
+          "401": {
+            "description": "User logged out"
+          },
+          "302": {
+            "description": "Redirect to is_logged_out, with user status"
+          }
+        }
+      }
+    },
+    "/auth/is_logged_out": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Check if user is logged out",
+        "description": "",
+        "operationId": "authIsLoggedOut",
+        "requestBody": {
+          "content": {
+            "application/json": {
+            },
+            "text/html": {
+
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User still logged in"
+          },
+          "401": {
+            "description": "User logged out"
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": ["me"],
+        "summary": "Get current user",
+        "description": "",
+        "operationId": "meGet",
+        "requestBody": {
+          "content": {
+            "application/json": {
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user (me)"
+          },
+          "401": {
+            "description": "User logged out"
+          }
+        }
+      }
+    },
+    "/me/password": {
+      "put": {
+        "tags": ["me"],
+        "summary": "Update password",
+        "description": "",
+        "operationId": "meUpdatePassword",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserPassword"
+        },
+        "responses": {
+          "200": {
+            "description": "The user (me)"
+          },
+          "401": {
+            "description": "User logged out"
+          }
+        }
+      }
+    },
+    "/textroom": {
+      "get": {
+        "tags": ["textroom"],
+        "summary": "Get list of text rooms",
+        "description": "",
+        "operationId": "textroomList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of text rooms"
+          }
+        }
+      },
+      "post": {
+        "tags": ["textroom"],
+        "summary": "Create new text room",
+        "description": "",
+        "operationId": "textroomCreate",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Textroom"
+        },
+        "responses": {
+          "200": {
+            "description": "Textroom created"
+          }
+        }
+      }
+    },
+    "/textroom/{roomId}": {
+      "get": {
+        "tags": ["textroom"],
+        "summary": "Get text room",
+        "description": "",
+        "operationId": "textroomGet",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "description": "roomId to get",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Text room"
+          }
+        }
+      },
+      "put": {
+        "tags": ["textroom"],
+        "summary": "Update text room",
+        "description": "",
+        "operationId": "textroomUpdate",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "description": "roomId to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "examples": {
+              "textroom_update": {
+                "value": 1
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Textroom"
+        },
+        "responses": {
+          "200": {
+            "description": "Textroom updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["textroom"],
+        "summary": "Delete text room",
+        "description": "",
+        "operationId": "textroomDelete",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "description": "roomId to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "examples": {
+              "textroom_delete": {
+                "value": 1
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Text room deleted"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "UserLoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "string",
+            "example": "andrew@cc.lan"
+          }
+        }
+      },
+      "Textroom": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "required": false
+          },
+          "history": {
+            "type": "number",
+            "required": false
+          },
+          "pin": {
+            "type": "string",
+            "required": false
+          },
+          "secret": {
+            "type": "string",
+            "required": false
+          }
+        }
+      },
+      "UserPassword": {
+        "type": "object",
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "required": true
+          },
+          "new_password": {
+            "type": "string",
+            "required": true
+          },
+          "confirm_new": {
+            "type": "string",
+            "required": true
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "UserLogin": {
+        "description": "User data to login",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserLogin"
+            },
+            "examples": {
+              "andrew@cc.lan": {
+                "value": {
+                  "username": "andrew@cc.lan",
+                  "password": "andrew"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Textroom": {
+        "description": "Textroom to test",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Textroom"
+            },
+            "examples": {
+              "textroom_test": {
+                "value": {
+                  "description": "new description",
+                  "history": 50,
+                  "pin": "1111",
+                  "secret": "pineapple"
+                }
+              },
+              "textroom_empty": {
+                "value": {
+                }
+              },
+              "textroom_nulls": {
+                "value": {
+                  "description": null,
+                  "history": null,
+                  "pin": null,
+                  "secret": null
+                }
+              }
+            }
+          }
+        }
+      },
+      "UserPassword": {
+        "description": "Change password",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserPassword"
+            },
+            "examples": {
+              "password_test": {
+                "value": {
+                  "current_password": "test",
+                  "new_password": "newtest",
+                  "confirm_new": "newtest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "off-securitySchemes": {
+      "cookie_auth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "PHPSESSID"
+      },
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    },
+    "off-security": [
+      {
+        "cookie_auth": []
+      },
+      {
+        "api_key": []
+      }
+    ]
+  }
+}

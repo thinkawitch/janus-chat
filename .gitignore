@@ -1,1 +1,11 @@
+docker/logs/*
+!docker/logs/.gitkeep
+docker/containers/ssl-certs/*
+!docker/containers/ssl-certs/.gitkeep
 .idea/
+.env
+make.env
+janus-gateway/
+media-chat/app/public/js/vendor
+media-chat/app/public/js/the-app/config-ice-servers.js
+media-chat/admin/public/js/vendor

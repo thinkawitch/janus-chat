@@ -1,0 +1,111 @@
+version: '3.8'
+
+# start order
+# 1. mysql
+# 2. nginx - for domain names to work
+# 3. media-chat-api
+# 4. janus-gateway - it sends events to media-chat-api, mca creates the rooms
+
+
+services:
+  #
+  # janus-gateway
+  janus-gateway:
+    image: canyan/janus-gateway:master_a10bf8c6a9dbc1f21645db64f12d934b9cc33f0e # Oct 13, 2022 at 7:10 am
+    command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
+    ports:
+      #- "${EXPOSE_IP}:8088:8088" # http
+      #- "${EXPOSE_IP}:8089:8089" # https
+      #- "${EXPOSE_IP}:8188:8188" # ws
+      - "${EXPOSE_IP}:8989:8989" # wss
+      - "${EXPOSE_IP}:8000:8000"
+      #- "${EXPOSE_IP}:7088:7088" # http admin
+      #- "${EXPOSE_IP}:7889:7889" # https admin
+    depends_on:
+      media-chat-api:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+    volumes:
+      - ./docker/containers/ssl-certs:/usr/local/etc/ssl-certs
+      - ./docker/containers/janus/janus.jcfg:/usr/local/etc/janus/janus.jcfg
+      - ./docker/containers/janus/janus.eventhandler.sampleevh.jcfg:/usr/local/etc/janus/janus.eventhandler.sampleevh.jcfg
+      - ./docker/containers/janus/janus.plugin.textroom.jcfg:/usr/local/etc/janus/janus.plugin.textroom.jcfg
+      - ./docker/containers/janus/janus.transport.http.jcfg:/usr/local/etc/janus/janus.transport.http.jcfg
+      - ./docker/containers/janus/janus.transport.websockets.jcfg:/usr/local/etc/janus/janus.transport.websockets.jcfg
+      - ./docker/logs/janus/log:/var/log
+  #
+  # nginx
+  # with static apps: chat app, admin app
+  nginx:
+    image: nginx:1.21-alpine
+    ports:
+      - "${EXPOSE_IP}:80:80"
+      - "${EXPOSE_IP}:443:443"
+    environment:
+      - API_DOMAIN
+      - APP_DOMAIN
+      - ADMIN_DOMAIN
+    volumes:
+      # media-chat-api, backend
+      - "./media-chat/api/public:/var/www/api/public"
+      # media-chat-app, end user
+      - "./media-chat/app/public:/var/www/app/public"
+      - "./media-chat/common/js/vendor:/var/www/app/public/js/vendor" # janus.js, preact
+      # media-chat-admin
+      - "./media-chat/admin/public:/var/www/admin/public"
+      - "./media-chat/common/js/vendor:/var/www/admin/public/js/vendor" # janus.js, preact
+      # nginx
+      - ./docker/containers/ssl-certs:/etc/nginx/deploy/ssl-certs
+      - ./docker/containers/nginx/api-inner.conf:/etc/nginx/api-inner.conf
+      - ./docker/containers/nginx/wildcard-cors.conf:/etc/nginx/wildcard-cors.conf
+      - ./docker/containers/nginx/templates:/etc/nginx/templates
+      - ./docker/logs/nginx/log:/var/log/nginx
+  #
+  #
+  media-chat-api:
+    build:
+      context: docker/containers/php
+      dockerfile: Dockerfile.alpine # alpine:450mb default:509mb
+      target: target-symfony
+    volumes:
+      - ./media-chat/api:/usr/src/symfony
+      - ./docker/logs/php/api:/var/log/php
+    environment:
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:3306/${MYSQL_DATABASE}
+      - JANUS_SERVER_NAME
+      - JANUS_USER_API_URL
+      - JANUS_ADMIN_API_URL
+      - JANUS_ADMIN_SECRET
+      - JANUS_TEXTROOM_ADMIN_SECRET
+    depends_on:
+      - mysql
+      - nginx
+    healthcheck:
+      test: ["CMD", "./bin/console", "app:docker-healthcheck"]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+  #
+  #
+  mysql:
+    image: mysql:5.7.22
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/containers/mysql/initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    command: [
+      '--sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION',
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci'
+    ]
+    ports:
+      - "${EXPOSE_IP}:${EXPOSE_MYSQL_PORT}:3306"
+
+volumes:
+  mysql_data:

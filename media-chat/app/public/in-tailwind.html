@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Media chat</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.1.1/adapter.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/janus.js"></script>
+
+    <style>
+        /* page styles */
+        html, body {
+            height: 100%;
+            /*background-color: #000;*/ /* for ios side areas */
+        }
+        header {
+            background: lightsteelblue;
+        }
+        main {
+            background: aliceblue;
+            min-height: 250px;
+        }
+        footer {
+            background: lightsteelblue;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/bs-in-pocket.css" crossorigin="anonymous" media="screen">
+    <link rel="stylesheet" href="css/the-app.css?a1" crossorigin="anonymous" media="screen">
+    <script>
+        function switchToBootstrap() {
+            window.location = '/index.html' + window.location.search;
+        }
+    </script>
+</head>
+<body>
+
+<!-- tailwind page and the-app inside it -->
+<div class="md:container md:mx-auto flex flex-col h-full">
+    <header class="flex items-center justify-center">
+        <img height="30px" width="30px" src="/apple-touch-icon.png" />
+        <h1 class="ml-3 text-5xl">Media chat</h1>
+    </header>
+    <main class="grow p-2">
+        <div class="flex h-full">
+            <div class="grow flex flex-col">
+                <div class="border-solid border-2 border-gray-400 rounded-t bg-slate-50 p-1">
+                    Chat on tailwind page <button class="bg-purple-500 text-slate-50 rounded p-1 text-xs" onclick="switchToBootstrap()">to bootstrap</button>
+                </div>
+                <div class="border-solid border-2 border-gray-400 rounded-b bg-white p-1 grow bs-in-pocket" id="the-app">
+                        Loading...
+                </div>
+            </div>
+            <div class="shrink-0 ml-3 flex flex-col">
+                <div class="border-solid border-2 border-gray-400 rounded-t bg-slate-50 p-1">
+                    Other page content
+                </div>
+                <div class="border-solid border-2 border-gray-400 rounded-b bg-white p-1 grow overflow-auto">
+                    <ul class="list-none">
+                        <li>An item</li>
+                        <li>A second item</li>
+                        <li>A third item</li>
+                        <li>Facilisis placerat</li>
+                        <li>Quis commodo</li>
+                        <li>Integer eu feugiat</li>
+                        <li>Nam tempor massa</li>
+                        <li>Maecenas luctus</li>
+                        <li>Nunc nec neque</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="text-center">
+        Some footer text
+    </footer>
+</div>
+
+
+
+<script type="module">
+
+    const users = [
+        { id: 1, username: 'user1', displayName: 'User 1' },
+        { id: 2, username: 'user2', displayName: 'User 2' },
+        { id: 3, username: 'user3', displayName: 'User 3' },
+    ];
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = parseInt(urlParams.get('userId')) || 1;
+    const user = users.find(u => u.id === userId) || users[0];
+    const roomId = parseInt(urlParams.get('roomId')) || 1234;
+    console.log('i am user', user, 'will try room', roomId);
+
+    import { renderApp } from './js/the-app/index.js';
+    const externalApi = renderApp(document.getElementById('the-app'), { roomId, user });
+
+    externalApi.setUserResolver(userResolver);
+
+    // how to get full app user
+    async function userResolver(username) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log('external_getUserResolver', username);
+                const user = users.find(u => u.username === username);
+                user ? resolve(user) : reject();
+            }, 1500);
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+
+:root {
+    --send-message-height: 5rem;
+    --users-width: 15rem;
+}
+
+#the-app {
+    display: flex;
+    flex-direction: column;
+    off-height: 100%; /* for what it was set? */
+    position: relative;
+}
+
+.chat-layout {
+    display: grid;
+    height: 100%;
+    grid-template-areas:
+        "cl-messages     cl-users"
+        "cl-send-message cl-users";
+    grid-template-rows: auto var(--send-message-height);
+    grid-template-columns: auto var(--users-width);
+    background: bisque;
+}
+
+.cl-messages {
+    grid-area: cl-messages;
+    position: relative;
+    min-height: 5rem;
+    background: darkseagreen;
+}
+
+.cl-users {
+    grid-area: cl-users;
+    position: relative;
+    background: coral;
+}
+
+.cl-send-message {
+    grid-area: cl-send-message;
+    background: lightblue;
+}
+
+/* messages list */
+.cl-messages .messages-list {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.cl-messages .messages-list .ml-message {
+    margin: 0.2rem 0.5rem 0 0.5rem;
+}
+
+.cl-messages .messages-list .ml-message .date {
+    margin: 0 0.2rem 0 0;
+    color: var(--bs-gray-600);
+}
+
+.cl-messages .messages-list .ml-message .from {
+    margin: 0 0.2rem 0 0;
+    font-weight: bold;
+}
+
+.cl-messages .messages-list .ml-message .text {
+    word-break: break-all;
+}
+.cl-messages .messages-list .ml-message.system-message .text {
+    color: var(--bs-gray-600);
+}
+
+    /* users list */
+.cl-users .users-list {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.cl-users .users-list .ul-user {
+    margin: 0.2rem 0 0 0.5rem;
+}
+
+    /* send message */
+.cl-send-message .send-message {
+    position: relative;
+    height: 100%;
+}
+
+.cl-send-message .send-message form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    height: 100%;
+    margin: 0;
+}
+
+.cl-send-message .send-message form textarea {
+    flex-grow: 1;
+    resize: none;
+    /*outline: none;*/
+    margin: 4px; /* temp, to see bg */
+}
+
+.cl-send-message .send-message form button {
+    flex-shrink: 0;
+    margin: 4px; /* temp, to see bg */
+}
+
+
+
+/* janus-status */
+.janus-status {
+    position: absolute;
+    bottom: 0;
+    right: 5px;
+    z-index: 200;
+    /*border: 1px solid red;*/
+}
+.janus-status .janus-status-errors {
+    position: absolute;
+    right: 0;
+    bottom: 1.8rem;
+    width: 400px;
+}
+.janus-status .janus-status-errors .card {
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+}
