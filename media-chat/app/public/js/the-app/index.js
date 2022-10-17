@@ -6,13 +6,14 @@ import { startJanus, joinTextRoom } from './janus-api/janus-api.js';
 import { startExternalApi } from './external-api.js';
 import { selectJanus, setTextRoomPinValue } from './redux-toolkit/slices/janus-slice.js';
 import { setUser } from './redux-toolkit/slices/user-slice.js';
-import { addUser } from './redux-toolkit/slices/users-slice.js';
+import { addUser, setUserOnline } from './redux-toolkit/slices/users-slice.js';
 import { selectTextRoom, setRoomId } from './redux-toolkit/slices/text-room-slice.js';
 
 
 export function renderApp(node, { roomId, user }) {
     store.dispatch(setUser(user)); // set me
-    store.dispatch(addUser(user)); // add me to participants
+    store.dispatch(addUser(user)); // add me to all users list: online & offline
+    store.dispatch(setUserOnline(user));
     store.dispatch(setRoomId(roomId));
     startJanus(store);
     const externalApi = startExternalApi(store);
@@ -42,7 +43,7 @@ function App() {
 
     if ((!textRoomFailed && disconnected) || restoringConnect) {
         // (!textRoomFailed && disconnected) - to display final error when the initial first connect is failed
-        // quick reconnect and new clean connect
+        // quick reconnect and new clean connect (after big error)
         let disconnectedOverlay;
         let pinOverlay;
         let disLabel = 'Disconnected';

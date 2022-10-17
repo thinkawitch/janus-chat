@@ -1,8 +1,10 @@
 import { createSlice } from '../../imports.js';
 import { askExternalUser } from '../actions/users-actions.js';
+import { USER_STATUS_ONLINE, USER_STATUS_OFFLINE } from '../../constants.js';
 
 // all app users, full objects from outside world
-const initialState = []
+// {id, username, displayName, status:{online,offline}}
+const initialState = [];
 
 export const usersSlice = createSlice({
     name: 'users',
@@ -12,11 +14,29 @@ export const usersSlice = createSlice({
             //state.push(action.payload);
             addOrUpdateUser(state, action.payload);
         },
-        removeUser: (state, action) => {
-            return state.filter(u => u.id !== action.payload);
-        },
         updateUser: (state, action) => {
 
+        },
+        setUserOnline: (state, action) => {
+            const user = action.payload;
+            state.some((u, idx) => {
+                if (u.id === user.id) {
+                    state[idx].status = USER_STATUS_ONLINE;
+                    return true;
+                }
+            })
+        },
+        setUserOffline: (state, action) => {
+            const user = action.payload;
+            state.some((u, idx) => {
+                if (u.id === user.id) {
+                    state[idx].status = USER_STATUS_OFFLINE;
+                    return true;
+                }
+            })
+        },
+        removeUser: (state, action) => {
+            return state.filter(u => u.id !== action.payload);
         },
         cleanUsers: (state) => {
             state = [];
@@ -31,7 +51,7 @@ export const usersSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addUser, updateUser, removeUser, cleanUsers } = usersSlice.actions;
+export const { addUser, updateUser, setUserOnline, setUserOffline, removeUser, cleanUsers } = usersSlice.actions;
 
 export default usersSlice.reducer;
 
@@ -52,11 +72,11 @@ export const selectUserByFrom = (state, from) => {
 function addOrUpdateUser(state, user) {
     const updated = state.some((u, idx) => {
         if (u.id === user.id) {
-            state[idx] = {...u, ...user};
+            state[idx] = { ...u, ...user };
             return true;
         }
     });
     if (!updated) {
-        state.push(user);
+        state.push({ ...user, status: USER_STATUS_OFFLINE });
     }
 }

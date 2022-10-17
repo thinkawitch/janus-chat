@@ -14,7 +14,7 @@ import {
     removeParticipant,
     selectParticipantByFrom
 } from '../redux-toolkit/slices/text-room-slice.js';
-import { selectUserByFrom } from '../redux-toolkit/slices/users-slice.js';
+import { setUserOnline, setUserOffline, selectUserByFrom } from '../redux-toolkit/slices/users-slice.js';
 import { askExternalUser } from '../redux-toolkit/actions/users-actions.js';
 
 
@@ -365,8 +365,8 @@ function attachToTextRoomPlugin() {
             }
             const what = json['textroom'];
             switch (what) {
-                case 'message':
-                    const message = { type: MESSAGE_TYPE_GENERAL, text: json.text, from: json.from, date: json.date };
+                case 'message': {
+                    const message = {type: MESSAGE_TYPE_GENERAL, text: json.text, from: json.from, date: json.date};
                     const state = getState();
                     const participant = selectParticipantByFrom(state, json.from);
                     if (participant) message.display = participant.display;
@@ -378,22 +378,42 @@ function attachToTextRoomPlugin() {
                     }
                     dispatch(addMessage(message));
                     break;
+                }
                 case 'announcement':
                     break;
-                case 'join':
-                    const p1 = { username: json.username, display: json.display };
-                    dispatch(addParticipant(p1));
-                    dispatch(addMessage({ type: MESSAGE_TYPE_SYSTEM, text: json.display + ' joined', date: new Date().toISOString() }));
-                    dispatch(askExternalUser(json.username));
+                case 'join': {
+                    const participant = { username: json.username, display: json.display };
+                    dispatch(addParticipant(participant));
+                    dispatch(addMessage({
+                        type: MESSAGE_TYPE_SYSTEM,
+                        text: json.display + ' joined',
+                        date: new Date().toISOString()
+                    }));
+                    dispatch(askExternalUser(json.username)).then(() => {
+                        const user = selectUserByFrom(getState(), json.username);
+                        if (user) {
+                            dispatch(setUserOnline(user));
+                        }
+                    });
                     break;
-                case 'leave':
-                    const found = selectParticipantByFrom(getState(), json.username);
-                    if (found) {
-                        dispatch(addMessage({ type: MESSAGE_TYPE_SYSTEM, text: found.display + ' left', date: new Date().toISOString() }))
+                }
+                case 'leave': {
+                    const participant = selectParticipantByFrom(getState(), json.username);
+                    if (participant) {
+                        dispatch(addMessage({
+                            type: MESSAGE_TYPE_SYSTEM,
+                            text: participant.display + ' left',
+                            date: new Date().toISOString()
+                        }))
                     }
                     const p2 = { username: json.username };
                     dispatch(removeParticipant(p2));
+                    const user = selectUserByFrom(getState(), json.username);
+                    if (user) {
+                        dispatch(setUserOffline(user));
+                    }
                     break;
+                }
                 case 'kicked':
                     break;
                 case 'destroyed':

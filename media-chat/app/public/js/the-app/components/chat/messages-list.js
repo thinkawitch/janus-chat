@@ -18,7 +18,7 @@ export default function MessagesList() {
         const lastMessage = messages.length > 1 ? messages[messages.length - 1] : null;
         const username = user.username;
         const panel = panelRef.current;
-        console.log('[ML][effect] shouldScrollBottom', shouldScrollBottom)
+        // console.log('[ML][effect] shouldScrollBottom', shouldScrollBottom)
         // scroll to bottom only if this is my owm message, or I did not change the scroll position
         if (shouldScrollBottom || (lastMessage && lastMessage.type === MESSAGE_TYPE_GENERAL && lastMessage.from == username)) {
             panel.scrollTop = panel.scrollHeight;
