@@ -89,6 +89,7 @@ export {
     useCallback,
     useRef,
     useEffect,
+    useLayoutEffect,
     // react-redux
     Provider,
     useSelector,
