@@ -32,7 +32,7 @@
         }
     </style>
     <link rel="stylesheet" href="/css/bs-in-pocket.css" crossorigin="anonymous" media="screen">
-    <link rel="stylesheet" href="css/the-app.css?a1" crossorigin="anonymous" media="screen">
+    <link rel="stylesheet" href="css/the-app.css?a2" crossorigin="anonymous" media="screen">
     <script>
         function switchToBootstrap() {
             window.location = '/index.html' + window.location.search;
@@ -53,7 +53,7 @@
                 <div class="border-solid border-2 border-gray-400 rounded-t bg-slate-50 p-1">
                     Chat on tailwind page <button class="bg-purple-500 text-slate-50 rounded p-1 text-xs" onclick="switchToBootstrap()">to bootstrap</button>
                 </div>
-                <div class="border-solid border-2 border-gray-400 rounded-b bg-white p-1 grow bs-in-pocket" id="the-app">
+                <div class="border-solid border-2 border-gray-400 rounded-b bg-white p-1 grow bs-in-pocket" id="the-media-chat">
                         Loading...
                 </div>
             </div>
@@ -87,9 +87,9 @@
 <script type="module">
 
     const users = [
-        { id: 1, username: 'user1', displayName: 'User 1' },
-        { id: 2, username: 'user2', displayName: 'User 2' },
-        { id: 3, username: 'user3', displayName: 'User 3' },
+        { id: 1, username: 'user1', displayName: 'Andrew' },
+        { id: 2, username: 'user2', displayName: 'John Black' },
+        { id: 3, username: 'user3', displayName: 'Vladimir' },
     ];
     const urlParams = new URLSearchParams(window.location.search);
     const userId = parseInt(urlParams.get('userId')) || 1;
@@ -98,7 +98,7 @@
     console.log('i am user', user, 'will try room', roomId);
 
     import { renderApp } from './js/the-app/index.js';
-    const externalApi = renderApp(document.getElementById('the-app'), { roomId, user });
+    const externalApi = renderApp(document.getElementById('the-media-chat'), { roomId, user });
 
     externalApi.setUserResolver(userResolver);
 

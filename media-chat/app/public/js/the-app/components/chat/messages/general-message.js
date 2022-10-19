@@ -8,8 +8,10 @@ export default function GeneralMessage(props) {
 
     return html`
         <div class="ml-message general-message">
-            <span class="date">[${formatMessageDate(date)}]</span>
-            <span class="from">${theName}:</span>
+            <span class="date-from">
+                <span class="date">[${formatMessageDate(date)}]</span>
+                <span class="from">${theName}:</span>
+            </span>
             <span class="text">${text}</span>
         </div>
     `;

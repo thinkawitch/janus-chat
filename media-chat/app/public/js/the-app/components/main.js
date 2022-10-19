@@ -6,14 +6,14 @@ import SendMessage from './chat/send-message.js';
 
 export default function Main() {
     return html`
-        <div class="chat-layout">
-            <div class="cl-messages">
+        <div class="mc-chat-layout">
+            <div class="mc-cl-messages">
                 <${MessagesList} />
             </div>
-            <div class="cl-users">
+            <div class="mc-cl-users">
                 <${UsersList} />
             </div>
-            <div class="cl-send-message">
+            <div class="mc-cl-send-message">
                 <${SendMessage} />
             </div>
         </div>

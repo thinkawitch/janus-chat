@@ -1,47 +1,49 @@
 
 :root {
-    --send-message-height: 5rem;
-    --users-width: 15rem;
+    --mc-send-message-height: 5rem;
+    --mc-users-width: 15rem;
+    --mc-cl-messages-bg: darkseagreen;
+    --mc-cl-users-bg: coral;
+    --mc-cl-send-message-bg: lightblue;
 }
 
-#the-app {
+#the-media-chat {
     display: flex;
     flex-direction: column;
     off-height: 100%; /* for what it was set? */
     position: relative;
 }
 
-.chat-layout {
+.mc-chat-layout {
     display: grid;
     height: 100%;
     grid-template-areas:
         "cl-messages     cl-users"
         "cl-send-message cl-users";
-    grid-template-rows: auto var(--send-message-height);
-    grid-template-columns: auto var(--users-width);
-    background: bisque;
+    grid-template-rows: auto var(--mc-send-message-height);
+    grid-template-columns: auto var(--mc-users-width);
 }
 
-.cl-messages {
+.mc-cl-messages {
     grid-area: cl-messages;
     position: relative;
     min-height: 5rem;
-    background: darkseagreen;
+    background: var(--mc-cl-messages-bg);
 }
 
-.cl-users {
+.mc-cl-users {
     grid-area: cl-users;
     position: relative;
-    background: coral;
+    background: var(--mc-cl-users-bg);
 }
 
-.cl-send-message {
+.mc-cl-send-message {
     grid-area: cl-send-message;
-    background: lightblue;
+    background: var(--mc-cl-send-message-bg);
 }
 
 /* messages list */
-.cl-messages .messages-list {
+.mc-cl-messages .messages-list {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -51,29 +53,41 @@
     overflow-y: auto;
 }
 
-.cl-messages .messages-list .ml-message {
+.mc-cl-messages .messages-list .ml-message {
     margin: 0.2rem 0.5rem 0 0.5rem;
 }
 
-.cl-messages .messages-list .ml-message .date {
-    margin: 0 0.2rem 0 0;
-    color: var(--bs-gray-600);
+.mc-cl-messages .messages-list .ml-message .date-from {
+    display: inline-flex;
+    align-items: center;
+    transform: translate(0, -4px); /* still vertical align not fine */
 }
 
-.cl-messages .messages-list .ml-message .from {
+.mc-cl-messages .messages-list .ml-message .date {
+    margin: 0 0.2rem 0 0;
+    color: var(--jca-gray-600);
+    font-size: 70%;
+}
+
+.mc-cl-messages .messages-list .ml-message .from {
     margin: 0 0.2rem 0 0;
     font-weight: bold;
 }
 
-.cl-messages .messages-list .ml-message .text {
+.mc-cl-messages .messages-list .ml-message .text {
     word-break: break-all;
 }
-.cl-messages .messages-list .ml-message.system-message .text {
-    color: var(--bs-gray-600);
+
+.mc-cl-messages .messages-list .ml-message.system-message {
+    line-height: 1rem;
+}
+.mc-cl-messages .messages-list .ml-message.system-message .text {
+    color: var(--jca-gray-600);
+    font-size: 70%;
 }
 
-    /* users list */
-.cl-users .users-list {
+/* users list */
+.mc-cl-users .users-list {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -83,17 +97,17 @@
     overflow-y: auto;
 }
 
-.cl-users .users-list .ul-user {
+.mc-cl-users .users-list .ul-user {
     margin: 0.2rem 0 0 0.5rem;
 }
 
-    /* send message */
-.cl-send-message .send-message {
+/* send message */
+.mc-cl-send-message .send-message {
     position: relative;
     height: 100%;
 }
 
-.cl-send-message .send-message form {
+.mc-cl-send-message .send-message form {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -101,7 +115,7 @@
     margin: 0;
 }
 
-.cl-send-message .send-message form textarea {
+.mc-cl-send-message .send-message form textarea {
     flex-grow: 1;
     resize: none;
     /*outline: none;*/
