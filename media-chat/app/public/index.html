@@ -112,7 +112,7 @@
     async function userResolver(username) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                console.log('external_getUserResolver', username);
+                console.log('external_userResolver', username);
                 const user = users.find(u => u.username === username);
                 user ? resolve(user) : reject();
             }, 1500);

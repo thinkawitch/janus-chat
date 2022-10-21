@@ -1,3 +1,4 @@
+import { showTime, showJoinLeave, cutLongUsername } from './redux-toolkit/slices/settings-slice.js';
 
 let store = null;
 let dispatch = null;
@@ -8,16 +9,21 @@ export function startExternalApi(theStore) {
     store = theStore;
     dispatch = theStore.dispatch;
 
-
     return {
-        setUserResolver,
+        setUserResolver: (handler) => {
+            userResolver = handler;
+        },
+        showTime: (value) => {
+            dispatch(showTime(value));
+        },
+        showJoinLeave: (value) => {
+            dispatch(showJoinLeave(value));
+        },
+        cutLongUsername: (value) => {
+            dispatch(cutLongUsername(value));
+        },
     }
 }
-
-function setUserResolver(handler) {
-    userResolver = handler;
-}
-
 
 export function getExternalUserResolver() {
     return userResolver;

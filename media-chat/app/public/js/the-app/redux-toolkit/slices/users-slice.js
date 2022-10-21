@@ -10,6 +10,8 @@ const initialState = [
     { username: 'User300', displayName: 'User 300', status: 'offline' },
     { username: 'User400', displayName: 'User 400', status: 'offline' },
     { username: 'User500', displayName: 'User 500', status: 'offline' },
+    { username: 'User600', displayName: 'User 600', status: 'offline' },
+    { username: 'User700', displayName: 'User 700', status: 'offline' },
 ];
 
 export const usersSlice = createSlice({

@@ -4,9 +4,11 @@ import SystemMessage from './messages/system-message.js';
 import GeneralMessage from './messages/general-message.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/text-room-slice.js';
 import { selectUser } from '../../redux-toolkit/slices/user-slice.js';
+import { selectSettings } from '../../redux-toolkit/slices/settings-slice.js';
 
 export default function MessagesList() {
     const { messages } = useSelector(selectTextRoom);
+    const { showTime, cutLongUsername } = useSelector(selectSettings);
     const user = useSelector(selectUser);
     const panelRef = useRef(null);
 
@@ -30,9 +32,9 @@ export default function MessagesList() {
             ${messages.map((message,key) => {
                 switch (message.type) {
                     case MESSAGE_TYPE_SYSTEM:
-                        return html`<${SystemMessage} key=${'msk-'+key} message=${message} />`;
+                        return html`<${SystemMessage} key=${'msk-'+key} message=${message} showTime=${showTime} />`;
                     case MESSAGE_TYPE_GENERAL:
-                        return html`<${GeneralMessage} key=${'mgk-'+key} message=${message} />`;
+                        return html`<${GeneralMessage} key=${'mgk-'+key} message=${message} showTime=${showTime} cutLongUsername=${cutLongUsername} />`;
                 }
             })}
         </div>

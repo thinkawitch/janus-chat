@@ -8,22 +8,34 @@ import { selectJanus, setTextRoomPinValue } from './redux-toolkit/slices/janus-s
 import { setUser } from './redux-toolkit/slices/user-slice.js';
 import { addUser, setUserOnline } from './redux-toolkit/slices/users-slice.js';
 import { selectTextRoom, setRoomId } from './redux-toolkit/slices/text-room-slice.js';
+import { settings as defaultSettings } from './config.js';
 
 
-export function renderApp(node, { roomId, user }) {
+export function renderApp(node, { roomId, user, settings }) {
     store.dispatch(setUser(user)); // set me
+    store.dispatch(setRoomId(roomId)); // room to join
     store.dispatch(addUser(user)); // add me to all users list: online & offline
-    store.dispatch(setUserOnline(user));
-    store.dispatch(setRoomId(roomId));
-    startJanus(store);
+    store.dispatch(setUserOnline(user)); // i'm online
+
     const externalApi = startExternalApi(store);
-    //console.log('ea1', externalApi);
-    node.innerHTML = ''; // clear the place
+
+    // apply settings
+    const appSettings = { ...defaultSettings, ...settings };
+    externalApi.showTime(appSettings.showTime);
+    externalApi.showJoinLeave(appSettings.showJoinLeave);
+    externalApi.cutLongUsername(appSettings.cutLongUsername);
+
+    node.innerHTML = ''; // clean the place
     render(html`
         <${Provider} store=${store}>
             <${App} />
         </Provider>
     `, node);
+
+    startJanus(store);
+
+//TODO: redux plugin in browser gets reset/clean after connection, lost some history, need fix.
+
     return externalApi;
 }
 

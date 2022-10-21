@@ -73,6 +73,12 @@
     margin: 0 0.2rem 0 0;
     font-weight: bold;
 }
+.mc-cl-messages .messages-list .ml-message .from.cut-long-username {
+    max-width: 20ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 .mc-cl-messages .messages-list .ml-message .text {
     word-break: break-all;

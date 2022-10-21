@@ -97,8 +97,13 @@
     const roomId = parseInt(urlParams.get('roomId')) || 1234;
     console.log('i am user', user, 'will try room', roomId);
 
+    const settings = {
+        showTime: false,
+        cutLongUsername: false,
+    }
+
     import { renderApp } from './js/the-app/index.js';
-    const externalApi = renderApp(document.getElementById('the-media-chat'), { roomId, user });
+    const externalApi = renderApp(document.getElementById('the-media-chat'), { roomId, user, settings });
 
     externalApi.setUserResolver(userResolver);
 
@@ -106,7 +111,7 @@
     async function userResolver(username) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                console.log('external_getUserResolver', username);
+                console.log('external_userResolver', username);
                 const user = users.find(u => u.username === username);
                 user ? resolve(user) : reject();
             }, 1500);
