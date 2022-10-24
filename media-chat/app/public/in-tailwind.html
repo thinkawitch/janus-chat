@@ -11,7 +11,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.1.1/adapter.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/8.2.0/adapter.min.js"></script>
     <script type="text/javascript" src="/js/vendor/janus.js"></script>
 
     <style>
@@ -99,6 +99,7 @@
 
     const settings = {
         showTime: false,
+        showJoinLeave: true,
         cutLongUsername: false,
     }
 
@@ -106,6 +107,7 @@
     const externalApi = renderApp(document.getElementById('the-media-chat'), { roomId, user, settings });
 
     externalApi.setUserResolver(userResolver);
+    window.chatApi = externalApi;
 
     // how to get full app user
     async function userResolver(username) {

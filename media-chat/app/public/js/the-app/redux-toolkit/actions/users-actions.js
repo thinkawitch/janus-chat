@@ -12,12 +12,10 @@ export const askExternalUser = createAsyncThunk(
         }
 
         const resolver = getExternalUserResolver();
-        if (resolver) {
-            return await resolver(username);
+        if (!resolver) {
+            return thunkAPI.rejectWithValue('no_external_user_resolver');
         }
 
-        return thunkAPI.rejectWithValue('no_external_user_resolver');
-        //const response = await userAPI.fetchById(userId)
-        //return response.data
+        return await resolver(username);
     }
 )

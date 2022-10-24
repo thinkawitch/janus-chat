@@ -16,6 +16,7 @@ import {
 } from '../redux-toolkit/slices/text-room-slice.js';
 import { setUserOnline, setUserOffline, selectUserByFrom } from '../redux-toolkit/slices/users-slice.js';
 import { askExternalUser } from '../redux-toolkit/actions/users-actions.js';
+import { selectSettings } from '../redux-toolkit/slices/settings-slice.js';
 
 
 let janus = null;
@@ -167,10 +168,12 @@ export function startJanus(theStore) {
         }
     }
 
+    //setTimeout(() => {
     janusMachineService = createJanusMachineService(serverConfig, textRoomConfig);
     janusMachineService.start();
     janusMachineService.send({ type: 'ROOM_ID', payload: getState().textRoom.roomId });
     janusMachineService.send('CONNECT');
+    //},5000)
 }
 
 function stopJanus() {
@@ -366,6 +369,10 @@ function attachToTextRoomPlugin() {
             const what = json['textroom'];
             switch (what) {
                 case 'message': {
+                    // redux devtool actions are lost, or overwritten, limit messages to see them
+                    /*window.c1 = window.c1 || 0;
+                    window.c1++;
+                    if (window.c1 > 32) break;*/
                     const message = {type: MESSAGE_TYPE_GENERAL, text: json.text, from: json.from, date: json.date};
                     const state = getState();
                     const participant = selectParticipantByFrom(state, json.from);
@@ -382,6 +389,8 @@ function attachToTextRoomPlugin() {
                 case 'announcement':
                     break;
                 case 'join': {
+                    const settings = selectSettings(getState());
+                    if (!settings.showJoinLeave) return;
                     const participant = { username: json.username, display: json.display };
                     dispatch(addParticipant(participant));
                     dispatch(addMessage({
@@ -398,6 +407,8 @@ function attachToTextRoomPlugin() {
                     break;
                 }
                 case 'leave': {
+                    const settings = selectSettings(getState());
+                    if (!settings.showJoinLeave) return;
                     const participant = selectParticipantByFrom(getState(), json.username);
                     if (participant) {
                         dispatch(addMessage({

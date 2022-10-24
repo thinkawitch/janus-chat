@@ -35,6 +35,7 @@ export function renderApp(node, { roomId, user, settings }) {
     startJanus(store);
 
 //TODO: redux plugin in browser gets reset/clean after connection, lost some history, need fix.
+//nothing found
 
     return externalApi;
 }

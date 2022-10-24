@@ -5,6 +5,12 @@ import usersReducer from './slices/users-slice.js';
 import textRoomReducer from './slices/text-room-slice.js';
 import settingsReducer  from './slices/settings-slice.js';
 
+
+const customLogMiddleWare = store => next => action => {
+    console.log('middleware_:', action);
+    next(action);
+};
+
 export const store = configureStore({
     reducer: {
         janus: janusReducer,
@@ -13,5 +19,6 @@ export const store = configureStore({
         textRoom: textRoomReducer, // textroom plugin
         settings: settingsReducer,
     }
+    //middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(customLogMiddleWare),
 });
 
