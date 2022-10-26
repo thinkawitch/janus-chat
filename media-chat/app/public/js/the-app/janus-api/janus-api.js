@@ -128,6 +128,7 @@ export function startJanus(theStore) {
             onTextRoomPluginAttachFailed: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginAttachFailed', context, event);
                 dispatch(textRoomFailed());
+                janusMachineService.send({ type: 'DISCONNECT' }); // full stop
             },
             onTextRoomPluginAttachSuccess: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginAttachSuccess', context, event);
@@ -140,6 +141,7 @@ export function startJanus(theStore) {
             onTextRoomPluginSetupFailed: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginSetupFailed', context, event);
                 dispatch(textRoomFailed());
+                janusMachineService.send({ type: 'DISCONNECT' }); // full stop
             },
             onTextRoomPluginSetupSuccess: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginSetupSuccess', context, event);
@@ -160,6 +162,7 @@ export function startJanus(theStore) {
                     dispatch(textRoomFailed());
                 }*/
                 dispatch(textRoomFailed());
+                janusMachineService.send({ type: 'DISCONNECT' }); // full stop
             },
             onTextRoomPluginJoinSuccess: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginJoinSuccess', context, event);
@@ -491,6 +494,7 @@ export function joinTextRoom() {
                 case 416: // already setup
                     break;
                 case 417: // unknown room
+                    sendToTextRoomService({ type: 'ERROR', error: errorMessage });
                     break;
                 case 418: // room already exists
                     break;
@@ -499,9 +503,9 @@ export function joinTextRoom() {
                     break;
                 case 420: // username already taken
                     // in firefox we get here when ice failed and do new connect
-                    if (restoringConnect) {
+                    //if (restoringConnect) {
                         sendToTextRoomService({ type: 'ERROR', error: errorMessage });
-                    }
+                    //} // why only in restoring? should be always
                     break;
                 case 421: // already in room
                     break;
@@ -518,12 +522,12 @@ export function joinTextRoom() {
         if (response.participants && response.participants.length > 0) {
             dispatch(addParticipants(response.participants));
             response.participants.forEach(p => {
-                /*dispatch(askExternalUser(p.username)).then(() => {
+                dispatch(askExternalUser(p.username)).then(() => {
                     const user = selectUserByFrom(getState(), p.username);
                     if (user) {
                         dispatch(setUserOnline(user));
                     }
-                });*/
+                });
             })
         }
     }
