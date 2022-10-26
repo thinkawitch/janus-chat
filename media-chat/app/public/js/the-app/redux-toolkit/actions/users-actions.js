@@ -2,6 +2,8 @@ import { createAction, createAsyncThunk } from '../../imports.js';
 import { getExternalUserResolver } from '../../external-api.js';
 import { selectUserByFrom } from '../slices/users-slice.js';
 
+//export const askExternalUser = createAction('test/synchronized/askExternalUser');
+
 export const askExternalUser = createAsyncThunk(
     'users/askExternalUserStatus',
     async (username, thunkAPI) => {
@@ -17,5 +19,13 @@ export const askExternalUser = createAsyncThunk(
         }
 
         return await resolver(username);
+    }, {
+        condition: (username, thunkAPI) => {
+            const { usersRequests } = thunkAPI.getState();
+            const fetchStatus = usersRequests[username];
+            if (fetchStatus && fetchStatus === 'pending') {
+                return false;
+            }
+        }
     }
 )

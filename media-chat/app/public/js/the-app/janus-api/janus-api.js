@@ -518,12 +518,12 @@ export function joinTextRoom() {
         if (response.participants && response.participants.length > 0) {
             dispatch(addParticipants(response.participants));
             response.participants.forEach(p => {
-                dispatch(askExternalUser(p.username)).then(() => {
+                /*dispatch(askExternalUser(p.username)).then(() => {
                     const user = selectUserByFrom(getState(), p.username);
                     if (user) {
                         dispatch(setUserOnline(user));
                     }
-                });
+                });*/
             })
         }
     }
