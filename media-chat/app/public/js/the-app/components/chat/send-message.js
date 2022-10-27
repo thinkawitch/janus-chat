@@ -1,5 +1,4 @@
-import { html, useRef, useEffect, useCallback, useSelector, useDispatch } from '../../imports.js';
-//import { sendMessage } from '../../janus-api.js';
+import { html, useRef, useEffect, useCallback, useSelector, useDispatch, useState } from '../../imports.js';
 import { sendMessage } from '../../janus-api/janus-api.js';
 import { selectJanus } from '../../redux-toolkit/slices/janus-slice.js';
 
@@ -7,6 +6,7 @@ import { selectJanus } from '../../redux-toolkit/slices/janus-slice.js';
 export default function SendMessage() {
 
     const inputRef = useRef(null);
+    const [to, setTo] = useState(null); // whisper (private) message to username
 
     const onSubmit = useCallback((e) => {
         e.preventDefault();
@@ -14,17 +14,17 @@ export default function SendMessage() {
         const input = inputRef.current;
         const message = String(input.value).trim();
         if (message === '') return;
-        //console.log('message', message);
-        //this.props.actions.sendMessage(message);
-        sendMessage(message);
+        //console.log('message', message, to);
+        sendMessage(message, to);
         input.value = '';
+        setTo(null);
         if (!(input === document.activeElement)) {
             input.focus();
         }
-    }, [inputRef.current]);
+    }, [inputRef.current, to]);
 
     useEffect(() => {
-        inputRef.current.onkeydown = (e) => {
+        function handleSubmit(e) {
             if (e.key !== 'Enter') return;
 
             if (!e.shiftKey && !e.altKey && !e.ctrlKey) {
@@ -39,7 +39,27 @@ export default function SendMessage() {
                 inputRef.current.scrollTop = 999999; // move to the end
             }
         }
-        inputRef.current.focus();
+
+        inputRef.current.addEventListener('keydown', handleSubmit);
+        inputRef.current.focus(); // may be set focus one time only? on first render?
+
+        return () => {
+            inputRef.current.removeEventListener('keydown', handleSubmit);
+        }
+    }, [onSubmit]);
+
+    useEffect(() => {
+        function handleMentions(e) {
+            if (e.key === '@') {
+                console.log('@');
+                // show popover with users list to select
+                setTo('user1');
+            }
+        }
+        inputRef.current.addEventListener('keydown', handleMentions);
+        return () => {
+            inputRef.current.removeEventListener('keydown', handleMentions);
+        }
     }, []);
 
     const { textRoomJoined } = useSelector(selectJanus);

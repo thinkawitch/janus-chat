@@ -60,8 +60,14 @@
 .mc-cl-messages .messages-list .ml-message .date-from {
     display: inline-flex;
     align-items: center;
-    transform: translate(0, -4px); /* still vertical align not fine */
+    transform: translate(0, -4px); /* still vertical align not fine, with/without time vertical align differs */
 }
+/*@supports (-moz-appearance:button) and (contain:paint) {
+    !* firefox only *!
+    .mc-cl-messages .messages-list .ml-message .date-from {
+        transform: translate(0, -4px);
+    }
+}*/
 
 .mc-cl-messages .messages-list .ml-message .date {
     margin: 0 0.2rem 0 0;

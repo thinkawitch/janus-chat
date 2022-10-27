@@ -107,6 +107,7 @@
     const externalApi = renderApp(document.getElementById('the-media-chat'), { roomId, user });
 
     externalApi.setUserResolver(userResolver);
+    window.chatApi = externalApi;
 
     // how to get full app user
     async function userResolver(username) {

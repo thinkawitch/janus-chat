@@ -541,14 +541,24 @@ export function joinTextRoom() {
 }
 
 
-export function sendMessage(text) {
-    console.log('sendMessage');
+export function sendMessage(text,  to) {
+    //console.log('sendMessage', text, to);
     const message = {
         textroom: 'message',
         transaction: randomString(12),
         room: getState().textRoom.roomId,
         text: text,
     };
+    if (to) {
+        // option 1: good
+        //message.to = to;
+        // add my own messages to list
+
+        // option 2: fast
+        // send to other user and to me as a whisper message (private)
+        const me = getState().user.username;
+        message.tos = [me, to];
+    }
     textRoom.data({
         text: JSON.stringify(message),
         /*success: () => {
