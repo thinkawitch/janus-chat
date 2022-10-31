@@ -148,6 +148,20 @@
     margin: 4px; /* temp, to see bg */
 }
 
+.mc-cl-send-message .send-message .select-one-from-list {
+    position: absolute;
+    left: 4px;
+    bottom: var(--mc-send-message-height);
+    max-height: 300px;
+    overflow: auto;
+    border: var(--jca-border-width) var(--jca-border-style) var(--jca-border-color);
+    border-radius: var(--jca-border-radius);
+}
+.mc-cl-send-message .send-message .select-one-from-list .list-group {
+    border: none;
+    border-radius: 0;
+}
+
 
 
 /* janus-status */

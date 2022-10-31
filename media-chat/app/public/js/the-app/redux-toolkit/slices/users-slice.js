@@ -77,6 +77,14 @@ export const selectUserByFrom = (state, from) => {
 }
 
 export const selectUsers = (state) => state.users;
+export const selectUsersForMentionList = state => {
+    const list =  [];
+    const sortedUsers = sortUsers(state.users);
+    sortedUsers.forEach(u => {
+        list.push({ id: u.username, name: u.displayName });
+    })
+    return list;
+}
 
 function addOrUpdateUser(state, user) {
     const updated = state.some((u, idx) => {

@@ -1,12 +1,16 @@
 import { html, useRef, useEffect, useCallback, useSelector, useDispatch, useState } from '../../imports.js';
 import { sendMessage } from '../../janus-api/janus-api.js';
 import { selectJanus } from '../../redux-toolkit/slices/janus-slice.js';
+import SelectOneFromList from '../select-one-from-list.js';
+import { selectUsersForMentionList } from '../../redux-toolkit/slices/users-slice.js';
 
 
 export default function SendMessage() {
 
     const inputRef = useRef(null);
     const [to, setTo] = useState(null); // whisper (private) message to username
+    const [showSelectUser, setShowSelectUser] = useState(false);
+    const usersForMentionList = useSelector(selectUsersForMentionList);
 
     const onSubmit = useCallback((e) => {
         e.preventDefault();
@@ -53,7 +57,14 @@ export default function SendMessage() {
             if (e.key === '@') {
                 console.log('@');
                 // show popover with users list to select
-                setTo('user1');
+                //setTo('user1');
+                setShowSelectUser(true);
+                //
+                //console.log('caret coordinates', getCaretCoordinates());
+                //console.log('textarea rec', inputRef.current.getBoundingClientRect());
+            }
+            if (e.key === 'Escape') {
+                setShowSelectUser(false);
             }
         }
         inputRef.current.addEventListener('keydown', handleMentions);
@@ -72,6 +83,40 @@ export default function SendMessage() {
                 <textarea ref=${inputRef} disabled=${disabled} placeholder=${placeholder}></textarea>
                 <button type="submit" class="btn btn-primary ms-0" disabled=${disabled}>Send</button>
             </form>
+            ${showSelectUser && html`<${SelectOneFromList} items=${usersForMentionList} />`}
         </div>
     `;
+}
+
+// https://javascript.plainenglish.io/how-to-find-the-caret-inside-a-contenteditable-element-955a5ad9bf81
+// does not work as expected
+function getCaretCoordinates() {
+    let x = 0,
+        y = 0;
+    const isSupported = typeof window.getSelection !== "undefined";
+    if (isSupported) {
+        const selection = window.getSelection();
+        if (selection.rangeCount !== 0) {
+            const range = selection.getRangeAt(0).cloneRange();
+            range.collapse(true);
+            /*const rect = range.getClientRects()[0];
+            if (rect) {
+                x = rect.left;
+                y = rect.top;
+            }*/
+            // my
+            const div = document.createElement('div')
+            div.style.width = '1px';
+            div.style.height = '1px';
+            range.insertNode(div);
+            //const rect = div.getClientRects()[0];
+            const rect = div.getBoundingClientRect();
+            if (rect) {
+                x = rect.left;
+                y = rect.top;
+            }
+            range.deleteContents();
+        }
+    }
+    return { x, y };
 }
