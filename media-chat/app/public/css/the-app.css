@@ -141,11 +141,52 @@
     resize: none;
     /*outline: none;*/
     margin: 4px; /* temp, to see bg */
+    padding: 0 0 0 3px;
 }
 
 .cl-send-message .send-message form button {
     flex-shrink: 0;
     margin: 4px; /* temp, to see bg */
+}
+/* highlighter try #1 */
+.mc-cl-send-message .send-message form .message-with-highlight {
+    flex-grow: 1;
+    position: relative;
+}
+
+.mc-cl-send-message .send-message form .message-with-highlight .message-backdrop {
+    overflow: auto;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background-color: var(--jca-body-bg);
+}
+.mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter {
+    height: 100%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    off-color: transparent;
+    off-font-size: 20px;
+    color: red;
+    padding-left: 3px;
+}
+.mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter mark {
+    color: transparent;
+    background-color: indianred;
+    border-radius: 3px;
+    margin: 0;
+    padding: 0;
+}
+.mc-cl-send-message .send-message form .message-with-highlight textarea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    off-font-size: 20px;
 }
 
 .mc-cl-send-message .send-message .select-one-from-list {

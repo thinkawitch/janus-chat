@@ -542,7 +542,7 @@ export function joinTextRoom() {
 
 
 export function sendMessage(text,  to) {
-    //console.log('sendMessage', text, to);
+    console.log('sendMessage', text, to);
     const message = {
         textroom: 'message',
         transaction: randomString(12),

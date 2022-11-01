@@ -6,11 +6,20 @@ import { selectUsersForMentionList } from '../../redux-toolkit/slices/users-slic
 
 
 export default function SendMessage() {
-
     const inputRef = useRef(null);
+    const highlighterRef = useRef(null);
     const [to, setTo] = useState(null); // whisper (private) message to username
     const [showSelectUser, setShowSelectUser] = useState(false);
     const usersForMentionList = useSelector(selectUsersForMentionList);
+
+    const onSelectUser = useCallback((username) => {
+        setTo(username);
+        setShowSelectUser(false);
+    }, []);
+
+    const onCancelUser = useCallback(() => {
+        setShowSelectUser(false);
+    }, []);
 
     const onSubmit = useCallback((e) => {
         e.preventDefault();
@@ -30,6 +39,10 @@ export default function SendMessage() {
     useEffect(() => {
         function handleSubmit(e) {
             if (e.key !== 'Enter') return;
+            if (showSelectUser) { // just select user
+                e.preventDefault();
+                return false;
+            }
 
             if (!e.shiftKey && !e.altKey && !e.ctrlKey) {
                 onSubmit(e); // submit by single ENTER key without modifiers
@@ -50,7 +63,7 @@ export default function SendMessage() {
         return () => {
             inputRef.current.removeEventListener('keydown', handleSubmit);
         }
-    }, [onSubmit]);
+    }, [onSubmit, showSelectUser, inputRef.current]);
 
     useEffect(() => {
         function handleMentions(e) {
@@ -73,6 +86,18 @@ export default function SendMessage() {
         }
     }, []);
 
+    useEffect(() => {
+        function handleHighlight() {
+            const text = inputRef.current.value;
+            const highlightedText = applyHighlights(text);
+            highlighterRef.current.innerHTML = highlightedText; // danger!
+        }
+        inputRef.current.addEventListener('keyup', handleHighlight);
+        return () => {
+            inputRef.current.removeEventListener('keyup', handleHighlight);
+        }
+    }, [])
+
     const { textRoomJoined } = useSelector(selectJanus);
     const disabled = !textRoomJoined;
     const placeholder = !textRoomJoined ? 'Loading ...' : 'Enter message';
@@ -80,10 +105,15 @@ export default function SendMessage() {
     return html`
         <div class="send-message">
             <form onSubmit=${onSubmit}>
-                <textarea ref=${inputRef} disabled=${disabled} placeholder=${placeholder}></textarea>
+                <div class="message-with-highlight">
+                    <div class="message-backdrop">
+                        <div class="message-highlighter" ref=${highlighterRef}></div>
+                    </div>
+                    <textarea ref=${inputRef} disabled=${disabled} placeholder=${placeholder}></textarea>
+                </div>
                 <button type="submit" class="btn btn-primary ms-0" disabled=${disabled}>Send</button>
             </form>
-            ${showSelectUser && html`<${SelectOneFromList} items=${usersForMentionList} />`}
+            ${showSelectUser && html`<${SelectOneFromList} items=${usersForMentionList} selected=${to} onSelect=${onSelectUser} onCancel=${onCancelUser} />`}
         </div>
     `;
 }
@@ -119,4 +149,19 @@ function getCaretCoordinates() {
         }
     }
     return { x, y };
+}
+
+
+// https://codersblock.com/blog/highlight-text-inside-a-textarea/
+function applyHighlights(text) {
+    return text
+        .replace(/\n$/g, '\n\n')
+        //.replace(/[A-Z].*?\b/g, '<mark>$&</mark>');
+        //.replace(/@[^.\s].*?\b/g, '<mark>$&</mark>'); //my
+        .replace(/@(\w+)(?!\w)/g, '<mark>$&</mark>'); // https://stackoverflow.com/questions/13554208/javascript-regex-match-any-word-that-starts-with-in-a-string
+}
+
+function handleScroll(textarea, backdrop) {
+    const scrollTop = textarea.scrollTop();
+    backdrop.scrollTop(scrollTop);
 }
