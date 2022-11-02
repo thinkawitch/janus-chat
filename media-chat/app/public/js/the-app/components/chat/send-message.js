@@ -7,15 +7,28 @@ import { selectUsersForMentionList } from '../../redux-toolkit/slices/users-slic
 
 export default function SendMessage() {
     const inputRef = useRef(null);
+    const backdropRef = useRef(null);
     const highlighterRef = useRef(null);
+
     const [to, setTo] = useState(null); // whisper (private) message to username
+    const [tos, setTos] = useState([]); // whisper (private) message to usernames
+
     const [showSelectUser, setShowSelectUser] = useState(false);
     const usersForMentionList = useSelector(selectUsersForMentionList);
 
     const onSelectUser = useCallback((username) => {
+        console.log('onSelectUser', username); // not username, but full user required
         setTo(username);
+        setTos([...tos, username]);
         setShowSelectUser(false);
-    }, []);
+        //inputRef.current.insertAdjacentText('afterbegin', username)
+        inputRef.current.setRangeText(
+            username + ' ',
+            inputRef.current.selectionStart,
+            inputRef.current.selectionEnd,
+            'end'
+        )
+    }, [tos]);
 
     const onCancelUser = useCallback(() => {
         setShowSelectUser(false);
@@ -28,13 +41,14 @@ export default function SendMessage() {
         const message = String(input.value).trim();
         if (message === '') return;
         //console.log('message', message, to);
-        sendMessage(message, to);
+        sendMessage(message, to, tos);
         input.value = '';
         setTo(null);
+        setTos([]);
         if (!(input === document.activeElement)) {
             input.focus();
         }
-    }, [inputRef.current, to]);
+    }, [inputRef.current, to, tos]);
 
     useEffect(() => {
         function handleSubmit(e) {
@@ -67,6 +81,10 @@ export default function SendMessage() {
 
     useEffect(() => {
         function handleMentions(e) {
+            if (showSelectUser && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+                e.preventDefault();
+                return;
+            }
             if (e.key === '@') {
                 console.log('@');
                 // show popover with users list to select
@@ -84,16 +102,28 @@ export default function SendMessage() {
         return () => {
             inputRef.current.removeEventListener('keydown', handleMentions);
         }
-    }, []);
+    }, [showSelectUser]);
 
     useEffect(() => {
-        function handleHighlight() {
+        function handleHighlight(e) {
             const text = inputRef.current.value;
             const highlightedText = applyHighlights(text);
             highlighterRef.current.innerHTML = highlightedText; // danger!
+            handleScroll();
+        }
+        function handleScroll() {
+            const backdrop = backdropRef.current;
+            const textarea = inputRef.current;
+            //console.log('textarea scrollTop', textarea.scrollTop)
+            backdrop.scrollTop = textarea.scrollTop;
+            backdrop.scrollLeft = textarea.scrollLeft;
+            //console.log('backdrop scrollTop', backdrop.scrollTop)
         }
         inputRef.current.addEventListener('keyup', handleHighlight);
+        inputRef.current.addEventListener('beforeinput', handleHighlight);
+        inputRef.current.addEventListener('scroll', handleScroll);
         return () => {
+            inputRef.current.removeEventListener('scroll', handleScroll);
             inputRef.current.removeEventListener('keyup', handleHighlight);
         }
     }, [])
@@ -106,10 +136,12 @@ export default function SendMessage() {
         <div class="send-message">
             <form onSubmit=${onSubmit}>
                 <div class="message-with-highlight">
-                    <div class="message-backdrop">
+                    <div class="message-backdrop" ref=${backdropRef}>
                         <div class="message-highlighter" ref=${highlighterRef}></div>
                     </div>
-                    <textarea ref=${inputRef} disabled=${disabled} placeholder=${placeholder}></textarea>
+                    <div class="message-textarea">
+                        <textarea ref=${inputRef} disabled=${disabled} placeholder=${placeholder}></textarea>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary ms-0" disabled=${disabled}>Send</button>
             </form>
@@ -159,9 +191,4 @@ function applyHighlights(text) {
         //.replace(/[A-Z].*?\b/g, '<mark>$&</mark>');
         //.replace(/@[^.\s].*?\b/g, '<mark>$&</mark>'); //my
         .replace(/@(\w+)(?!\w)/g, '<mark>$&</mark>'); // https://stackoverflow.com/questions/13554208/javascript-regex-match-any-word-that-starts-with-in-a-string
-}
-
-function handleScroll(textarea, backdrop) {
-    const scrollTop = textarea.scrollTop();
-    backdrop.scrollTop(scrollTop);
 }

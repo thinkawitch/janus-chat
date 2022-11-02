@@ -541,15 +541,17 @@ export function joinTextRoom() {
 }
 
 
-export function sendMessage(text,  to) {
-    console.log('sendMessage', text, to);
+export function sendMessage(text, to, tos) {
+    console.log('sendMessage', text, to, tos);
     const message = {
         textroom: 'message',
         transaction: randomString(12),
         room: getState().textRoom.roomId,
         text: text,
     };
-    if (to) {
+    if (tos && tos.length > 0) {
+        message.tos = tos;
+    } else if (to) {
         // option 1: good
         //message.to = to;
         // add my own messages to list

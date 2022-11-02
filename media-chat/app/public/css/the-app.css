@@ -1,6 +1,6 @@
 
 :root {
-    --mc-send-message-height: 5rem;
+    --mc-send-message-height: 8rem;
     --mc-users-width: 15rem;
     --mc-cl-messages-bg: darkseagreen;
     --mc-cl-users-bg: coral;
@@ -152,24 +152,26 @@
 .mc-cl-send-message .send-message form .message-with-highlight {
     flex-grow: 1;
     position: relative;
+    off-transform: translateZ(0); /* for what ? */
+    -webkit-text-size-adjust: none;
 }
 
 .mc-cl-send-message .send-message form .message-with-highlight .message-backdrop {
-    overflow: auto;
+    overflow: hidden;
     position: absolute;
+    z-index: 1;
     top: 4px;
     left: 4px;
     right: 4px;
     bottom: 4px;
     background-color: var(--jca-body-bg);
+    pointer-events: none;
 }
 .mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter {
-    height: 100%;
+    off-height: 100%;
     white-space: pre-wrap;
     word-wrap: break-word;
-    off-color: transparent;
-    off-font-size: 20px;
-    color: red;
+    color: transparent;
     padding-left: 3px;
 }
 .mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter mark {
@@ -179,14 +181,18 @@
     margin: 0;
     padding: 0;
 }
-.mc-cl-send-message .send-message form .message-with-highlight textarea {
+.mc-cl-send-message .send-message form .message-with-highlight .message-textarea {
     position: absolute;
+    z-index: 2;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    display: flex;
+}
+.mc-cl-send-message .send-message form .message-with-highlight .message-textarea textarea {
+    overflow: auto;
     background-color: transparent;
-    off-font-size: 20px;
 }
 
 .mc-cl-send-message .send-message .select-one-from-list {
