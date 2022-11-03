@@ -198,23 +198,6 @@ function stopJanus() {
 
 function connectToJanusServer() {
     console.log('connectToJanusServer');
-    const initOptions = {
-        debug: 'all',
-        callback: initDone,
-    };
-
-    function initDone() {
-        console.log('[connectToJanusServer] initDone');
-        janus = new Janus(gatewayCallbacks);
-    }
-
-    const gatewayCallbacks = {
-        server,
-        iceServers,
-        success: gwcSuccess,
-        error: gwcError,
-        destroyed: gwcDestroyed,
-    };
 
     function gwcSuccess() {
         console.log('[connectToJanusServer] gwcSuccess');
@@ -239,6 +222,24 @@ function connectToJanusServer() {
         console.warn('[connectToJanusServer] gwcDestroyed');
     }
 
+    const gatewayCallbacks = {
+        server,
+        iceServers,
+        success: gwcSuccess,
+        error: gwcError,
+        destroyed: gwcDestroyed,
+        //destroyOnUnload: false, // true by default
+    };
+
+    function initDone() {
+        console.log('[connectToJanusServer] initDone');
+        janus = new Janus(gatewayCallbacks);
+    }
+
+    const initOptions = {
+        debug: 'all',
+        callback: initDone,
+    };
     Janus.init(initOptions);
 }
 
