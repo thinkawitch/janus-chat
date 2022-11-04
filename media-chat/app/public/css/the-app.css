@@ -175,8 +175,8 @@
     padding-left: 3px;
 }
 .mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter mark {
-    color: transparent;
-    background-color: indianred;
+    off-background-color: var(--jca-primary);
+    off-color: var(--jca-white); /* some undefined black shadow or what? */
     border-radius: 3px;
     margin: 0;
     padding: 0;
