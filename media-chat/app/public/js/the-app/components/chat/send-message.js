@@ -1,22 +1,35 @@
-import { html, useRef, useEffect, useCallback, useSelector, useDispatch, useState } from '../../imports.js';
+import { html, useRef, useEffect, useCallback, useSelector, useState, useMemo } from '../../imports.js';
 import { sendMessage } from '../../janus-api/janus-api.js';
 import { selectJanus } from '../../redux-toolkit/slices/janus-slice.js';
 import SelectOneFromList from '../select-one-from-list.js';
 import { selectUsers, selectUsersForMentionList } from '../../redux-toolkit/slices/users-slice.js';
 
+// const ua = window.navigator.userAgent.toLowerCase();
+// const isFirefox = ua.indexOf('firefox') !== -1;
+// const isIos = !!ua.match(/ipad|iphone|ipod/) && ua.indexOf('windows phone') === -1;
 
 export default function SendMessage() {
     const inputRef = useRef(null);
     const backdropRef = useRef(null);
     const highlighterRef = useRef(null);
 
-    const [to, setTo] = useState(null); // whisper (private) message to username
     const [tos, setTos] = useState([]); // whisper (private) message to usernames
-    const [mentions, setMentions] = useState([]); // users selected to mention, replace with set for unique
-
-    const [showSelectUser, setShowSelectUser] = useState(false);
+    const [showSelectUser, setShowSelectUser] = useState(false); // show panel with users to select
     const usersForMentionList = useSelector(selectUsersForMentionList);
     const users = useSelector(selectUsers);
+
+    const mentions = useMemo(() => {
+        const list = [];
+        tos.forEach(username => {
+            const user = users.find(u => u.username === username);
+            if (user) list.push(user);
+        });
+        return list;
+    }, [users, tos]);
+    const lastMentioned = useMemo(() => {
+        if (tos.length > 0) return tos[tos.length-1];
+        return null;
+    }, [tos]);
 
     const updateScrollForHighlights = useCallback(() => {
         const backdrop = backdropRef.current;
@@ -37,9 +50,10 @@ export default function SendMessage() {
         const user = users.find(u => u.username === username);
         if (!user) return;
         console.log('@user', user);
-        setTo(username);
-        setTos([...tos, username]);
-        setMentions([...mentions, user])
+        setTos(prevTos => {
+            if (prevTos.includes(username)) return prevTos;
+            return [...prevTos, username];
+        });
         setShowSelectUser(false);
         inputRef.current.setRangeText(
             user.displayName + ' ',
@@ -51,8 +65,9 @@ export default function SendMessage() {
         //window.requestAnimationFrame(() =>{
             inputRef.current.dispatchEvent(new Event('input', {'bubbles': true, 'cancelable': true}));
         }, 100)*/
+        inputRef.current.focus();
         highlightMentionedUsers();
-    }, [tos, mentions, highlightMentionedUsers]);
+    }, [tos, highlightMentionedUsers]);
 
     const onCancelUser = useCallback(() => {
         setShowSelectUser(false);
@@ -64,7 +79,7 @@ export default function SendMessage() {
             //inputRef.current.dispatchEvent(new Event('input', {'bubbles': true, 'cancelable': true}));
             highlightMentionedUsers();
         })
-    }, [/*mentions*/highlightMentionedUsers]);
+    }, [highlightMentionedUsers]);
 
 
     const onSubmit = useCallback((e) => {
@@ -74,15 +89,13 @@ export default function SendMessage() {
         const message = String(input.value).trim();
         if (message === '') return;
         //console.log('message', message, to);
-        sendMessage(message, to, tos);
+        sendMessage(message, tos);
         input.value = '';
-        setTo(null);
         setTos([]);
-        setMentions([]);
         if (!(input === document.activeElement)) {
             input.focus();
         }
-    }, [inputRef.current, to, tos, mentions]);
+    }, [inputRef.current, tos, mentions]);
 
     useEffect(() => {
         function handleSubmit(e) {
@@ -122,7 +135,6 @@ export default function SendMessage() {
             if (e.key === '@') {
                 console.log('@');
                 // show popover with users list to select
-                //setTo('user1');
                 setShowSelectUser(true);
                 //
                 //console.log('caret coordinates', getCaretCoordinates());
@@ -176,9 +188,9 @@ export default function SendMessage() {
                         <textarea ref=${inputRef} disabled=${disabled} placeholder=${placeholder}></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary ms-0" disabled=${disabled}>Send</button>
+                <button type="submit" class="btn btn-primary" disabled=${disabled}>Send</button>
             </form>
-            ${showSelectUser && html`<${SelectOneFromList} items=${usersForMentionList} selected=${to} onSelect=${onSelectUser} onCancel=${onCancelUser} />`}
+            ${showSelectUser && html`<${SelectOneFromList} items=${usersForMentionList} selected=${lastMentioned} onSelect=${onSelectUser} onCancel=${onCancelUser} />`}
         </div>
     `;
 }

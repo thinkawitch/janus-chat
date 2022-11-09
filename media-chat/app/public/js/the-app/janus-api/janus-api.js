@@ -383,9 +383,12 @@ function attachToTextRoomPlugin() {
                     if (participant) message.display = participant.display;
                     const user = selectUserByFrom(state, json.from);
                     if (user) {
-                        message.user = user;
+                        message.fromUser = user;
                     } else {
                         dispatch(askExternalUser(json.from));
+                    }
+                    if (json.whisper) {
+                        message.whisper = true;
                     }
                     dispatch(addMessage(message));
                     break;
@@ -542,8 +545,8 @@ export function joinTextRoom() {
 }
 
 
-export function sendMessage(text, to, tos) {
-    console.log('sendMessage', text, to, tos);
+export function sendMessage(text, tos) {
+    console.log('sendMessage', text, tos);
     const message = {
         textroom: 'message',
         transaction: randomString(12),
@@ -552,7 +555,6 @@ export function sendMessage(text, to, tos) {
     };
     if (tos && tos.length > 0) {
         message.tos = tos;
-    } else if (to) {
         // option 1: good
         //message.to = to;
         // add my own messages to list
@@ -560,7 +562,7 @@ export function sendMessage(text, to, tos) {
         // option 2: fast
         // send to other user and to me as a whisper message (private)
         const me = getState().user.username;
-        message.tos = [me, to];
+        message.tos = Array.from(new Set([me, ...tos]));
     }
     textRoom.data({
         text: JSON.stringify(message),

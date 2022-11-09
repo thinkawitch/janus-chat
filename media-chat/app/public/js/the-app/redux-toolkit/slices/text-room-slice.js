@@ -49,7 +49,7 @@ export const textRoomSlice = createSlice({
             const user = action.payload;
             state.messages.forEach(m => {
                 if (!isUserFull(m.user) && m.from === user.username) {
-                    m.user = user;
+                    m.fromUser = user;
                 }
             })
         },

@@ -10,6 +10,11 @@ export default function SelectOneFromList({ items, selected, onSelect, onCancel 
         if (!itemId) setItemId(items[0].id); // select first by default
     }, [])
 
+    const onItemClick = useCallback(e => {
+        e.preventDefault();
+        onSelect(e.target.dataset.mention);
+    }, []);
+
     //console.log('SelectOneFromList items', items);
     useEffect(() => {
         const handleSelect = e => {
@@ -43,13 +48,13 @@ export default function SelectOneFromList({ items, selected, onSelect, onCancel 
 
     return html`
         <div class="select-one-from-list"  ref=${refContainer}>
-            <ul class="list-group list-group-flush flex-grow-1">
+            <div class="list-group list-group-flush flex-grow-1">
                 ${items.map(item => {
                     const ca = item.id === itemId ? 'active' : '';
                     const refProp = item.id === itemId ? {'ref': refActive} : {};
-                    return html`<li class="list-group-item ${ca}" key=${item.id} ...${refProp}>${item.name}</li>`
+                    return html`<a href="#" data-mention="${item.id}" class="list-group-item ${ca}" key=${item.id} ...${refProp} onclick=${onItemClick}>${item.name}</a>`
                 })}
-            </ul>
+            </div>
         </div>
     `;
 }

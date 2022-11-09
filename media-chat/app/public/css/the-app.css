@@ -1,10 +1,12 @@
 
 :root {
     --mc-send-message-height: 8rem;
+    --mc-send-message-padding: 0 0 0 3px;
+    --mc-send-message-border-width: 2px; /* textarea border width, highlight fix */
     --mc-users-width: 15rem;
-    --mc-cl-messages-bg: darkseagreen;
+    --mc-cl-messages-bg: none/*darkseagreen*/;
     --mc-cl-users-bg: coral;
-    --mc-cl-send-message-bg: lightblue;
+    --mc-cl-send-message-bg: none;
 }
 
 #the-media-chat {
@@ -98,6 +100,10 @@
     font-size: 70%;
 }
 
+.mc-cl-messages .messages-list .ml-message.general-message.whisper {
+    background-color: var(--jca-highlight-bg);
+}
+
 /* users list */
 .mc-cl-users .users-list {
     position: absolute;
@@ -140,13 +146,15 @@
     flex-grow: 1;
     resize: none;
     /*outline: none;*/
-    margin: 4px; /* temp, to see bg */
-    padding: 0 0 0 3px;
+    margin: 0;
+    padding: var(--mc-send-message-padding);
+    border: var(--mc-send-message-border-width) solid var(--jca-gray-600);
+    border-radius: var(--jca-border-radius-sm);
 }
 
-.cl-send-message .send-message form button {
+.mc-cl-send-message .send-message form button {
     flex-shrink: 0;
-    margin: 4px; /* temp, to see bg */
+    margin: var(--mc-send-message-border-width);
 }
 /* highlighter try #1 */
 .mc-cl-send-message .send-message form .message-with-highlight {
@@ -160,10 +168,10 @@
     overflow: hidden;
     position: absolute;
     z-index: 1;
-    top: 4px;
-    left: 4px;
-    right: 4px;
-    bottom: 4px;
+    top: var(--mc-send-message-border-width);
+    left: var(--mc-send-message-border-width);
+    right: var(--mc-send-message-border-width);
+    bottom: var(--mc-send-message-border-width);
     background-color: var(--jca-body-bg);
     pointer-events: none;
 }
@@ -172,7 +180,7 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     color: transparent;
-    padding-left: 3px;
+    padding: var(--mc-send-message-padding);
 }
 .mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter mark {
     off-background-color: var(--jca-primary);
@@ -180,6 +188,12 @@
     border-radius: 3px;
     margin: 0;
     padding: 0;
+}
+/* firefox only */
+@-moz-document url-prefix() {
+    .mc-cl-send-message .send-message form .message-with-highlight .message-backdrop .message-highlighter {
+        /*padding: 2px 0 0 5px;*/
+    }
 }
 .mc-cl-send-message .send-message form .message-with-highlight .message-textarea {
     position: absolute;
