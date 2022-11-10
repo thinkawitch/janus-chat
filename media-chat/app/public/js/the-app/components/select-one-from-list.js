@@ -18,7 +18,7 @@ export default function SelectOneFromList({ items, selected, onSelect, onCancel 
     //console.log('SelectOneFromList items', items);
     useEffect(() => {
         const handleSelect = e => {
-            console.log('handleSelect', e);
+            //console.log('handleSelect', e);
             switch (e.key) {
                 case 'ArrowUp':
                     setItemId(getPrevItemId(items, itemId));

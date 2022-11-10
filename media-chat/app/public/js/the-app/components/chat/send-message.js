@@ -31,6 +31,38 @@ export default function SendMessage() {
         return null;
     }, [tos]);
 
+    const addUserToMentioned = useCallback(() => {
+        // when typing character one by one
+        const text = String(inputRef.current.value);
+        users.forEach(u => {
+           if (text.includes(`@${u.displayName} `)) {
+               setTos(prevTos => {
+                   if (prevTos.includes(u.username)) return prevTos;
+                   return [...prevTos, u.username];
+               })
+           }
+        });
+    }, [inputRef.current, users]);
+
+    const cleanUnmentionedUsers = useCallback(() => {
+        // when deleting chars
+        // check if mentioned are still in text, clean otherwise
+        // false flashy, maybe should check by textarea value ?
+        const html = highlighterRef.current.innerHTML;
+        const existingTos = [];
+        let changed = false;
+        mentions.forEach(u => {
+            if (html.includes(`data-username="${u.username}"`)) {
+                existingTos.push(u.username);
+            } else {
+                changed = true;
+            }
+        })
+        if (changed) {
+            setTos(existingTos);
+        }
+    }, [highlighterRef.current, mentions]);
+
     const updateScrollForHighlights = useCallback(() => {
         const backdrop = backdropRef.current;
         const textarea = inputRef.current;
@@ -61,13 +93,9 @@ export default function SendMessage() {
             inputRef.current.selectionEnd,
             'end'
         );
-        /*setTimeout(() => {
-        //window.requestAnimationFrame(() =>{
-            inputRef.current.dispatchEvent(new Event('input', {'bubbles': true, 'cancelable': true}));
-        }, 100)*/
         inputRef.current.focus();
         highlightMentionedUsers();
-    }, [tos, highlightMentionedUsers]);
+    }, [users, highlightMentionedUsers]);
 
     const onCancelUser = useCallback(() => {
         setShowSelectUser(false);
@@ -88,14 +116,13 @@ export default function SendMessage() {
         const input = inputRef.current;
         const message = String(input.value).trim();
         if (message === '') return;
-        //console.log('message', message, to);
         sendMessage(message, tos);
         input.value = '';
         setTos([]);
         if (!(input === document.activeElement)) {
             input.focus();
         }
-    }, [inputRef.current, tos, mentions]);
+    }, [inputRef.current, tos]);
 
     useEffect(() => {
         function handleSubmit(e) {
@@ -127,13 +154,12 @@ export default function SendMessage() {
     }, [onSubmit, showSelectUser, inputRef.current]);
 
     useEffect(() => {
-        function handleMentions(e) {
+        function handlePanelWithUsers(e) {
             if (showSelectUser && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
                 e.preventDefault();
                 return;
             }
             if (e.key === '@') {
-                console.log('@');
                 // show popover with users list to select
                 setShowSelectUser(true);
                 //
@@ -144,34 +170,25 @@ export default function SendMessage() {
                 setShowSelectUser(false);
             }
         }
-        inputRef.current.addEventListener('keydown', handleMentions);
+        inputRef.current.addEventListener('keydown', handlePanelWithUsers);
         return () => {
-            inputRef.current.removeEventListener('keydown', handleMentions);
+            inputRef.current.removeEventListener('keydown', handlePanelWithUsers);
         }
     }, [showSelectUser]);
 
     useEffect(() => {
-        /*function handleHighlight(e) {
-            const text = inputRef.current.value;
-            //const highlightedText = applyHighlights(text);
-            const highlightedText = applyHighlightsForMentionedUsers(text, mentions);
-            console.log('highlightedText', JSON.stringify(highlightedText))
-            highlighterRef.current.innerHTML = highlightedText; // danger!
-            handleScroll();
-        }
-        function handleScroll() {
-            const backdrop = backdropRef.current;
-            const textarea = inputRef.current;
-            backdrop.scrollTop = textarea.scrollTop;
-            backdrop.scrollLeft = textarea.scrollLeft;
-        }*/
+        inputRef.current.addEventListener('input', addUserToMentioned);
+        inputRef.current.addEventListener('input', cleanUnmentionedUsers);
         inputRef.current.addEventListener('input', highlightMentionedUsers);
         inputRef.current.addEventListener('scroll', updateScrollForHighlights);
         return () => {
             inputRef.current.removeEventListener('scroll', updateScrollForHighlights);
             inputRef.current.removeEventListener('input', highlightMentionedUsers);
+            inputRef.current.removeEventListener('input', cleanUnmentionedUsers);
+            inputRef.current.removeEventListener('input', addUserToMentioned);
+
         }
-    }, [mentions])
+    }, [mentions]);
 
     const { textRoomJoined } = useSelector(selectJanus);
     const disabled = !textRoomJoined;
