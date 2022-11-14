@@ -43,6 +43,10 @@ function sendToTextRoomService(...args) {
     }
 }
 
+const ua = window.navigator.userAgent.toLowerCase();
+const isFirefox = ua.indexOf('firefox') !== -1;
+// const isIos = !!ua.match(/ipad|iphone|ipod/) && ua.indexOf('windows phone') === -1;
+
 window.getJMS = () => janusMachineService;
 window.xsServer = () => {
     return janusMachineService.getSnapshot();
@@ -75,6 +79,8 @@ export function startJanus(theStore) {
                         janus.destroy({ cleanupHandles: true });
                     }
                     connectToJanusServer();
+                    // crutch for firefox, user still here, crutch not working
+                    //isFirefox ? setTimeout(connectToJanusServer, 500) : connectToJanusServer();
                 }
             },
             onJanusServerConnectFailed: (context, event, actionMeta) => {
@@ -150,6 +156,8 @@ export function startJanus(theStore) {
             joinTextRoom: (context, event) => {
                 console.log('[startJanus] joinTextRoom', context, event);
                 joinTextRoom();
+                // crutch for firefox, to minify user already in room when doing page reload, not fixes the problem full
+                //isFirefox ? setTimeout(joinTextRoom, 500) : joinTextRoom();
             },
             onTextRoomPluginJoinFailed: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginJoinFailed', context, event);
@@ -229,6 +237,7 @@ function connectToJanusServer() {
         error: gwcError,
         destroyed: gwcDestroyed,
         //destroyOnUnload: false, // true by default
+        //keepAlivePeriod: 25000,
     };
 
     function initDone() {
