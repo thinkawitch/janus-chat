@@ -238,6 +238,7 @@ function connectToJanusServer() {
         destroyed: gwcDestroyed,
         //destroyOnUnload: false, // true by default
         //keepAlivePeriod: 25000,
+        //notifyDestroyed: true, // true by default
     };
 
     function initDone() {

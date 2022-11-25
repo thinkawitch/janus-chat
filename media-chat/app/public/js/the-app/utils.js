@@ -34,7 +34,7 @@ export function getDateString(jsonDate) {
 
 export function formatMessageDate(date) {
     const d = dayjs(date);
-    let format = 'HH:mm'
+    let format = 'HH:mm:ss'
     if (!d.isToday()) {
         format = 'MMM D, HH:mm';
     }
