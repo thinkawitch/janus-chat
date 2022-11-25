@@ -52,7 +52,7 @@ export default function SelectOneFromList({ items, selected, onSelect, onCancel 
                 ${items.map(item => {
                     const ca = item.id === itemId ? 'active' : '';
                     const refProp = item.id === itemId ? {'ref': refActive} : {};
-                    return html`<a href="#" data-mention="${item.id}" class="list-group-item ${ca}" key=${item.id} ...${refProp} onclick=${onItemClick}>${item.name}</a>`
+                    return html`<a href="#" data-mention="${item.id}" class="list-group-item text-nowrap text-truncate ${ca}" key=${item.id} ...${refProp} onclick=${onItemClick}>${item.name}</a>`
                 })}
             </div>
         </div>

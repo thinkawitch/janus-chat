@@ -154,7 +154,7 @@
 
 .mc-cl-send-message .send-message form button {
     flex-shrink: 0;
-    margin: var(--mc-send-message-border-width);
+    margin: 0 var(--mc-send-message-border-width);
 }
 /* highlighter try #1 */
 .mc-cl-send-message .send-message form .message-with-highlight {
@@ -214,6 +214,7 @@
     left: 4px;
     bottom: var(--mc-send-message-height);
     max-height: 300px;
+    max-width: 300px;
     overflow: auto;
     border: var(--jca-border-width) var(--jca-border-style) var(--jca-border-color);
     border-radius: var(--jca-border-radius);
