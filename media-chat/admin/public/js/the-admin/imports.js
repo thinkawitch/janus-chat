@@ -1,30 +1,29 @@
-// preact 10.11.1 put into local dir, unpkg.com have not-correct builds
+// preact 10.11.3 put into local dir, unpkg.com have not-correct builds
 
 
 const shouldLoadDT = true; //new URLSearchParams(window.location.search).has('dev');
 console.log('should load devtool?', shouldLoadDT);
 if (shouldLoadDT) {
-    //await import('https://unpkg.com/preact@10.11.1/devtools/dist/devtools.module.js?module');
-    await import('/js/vendor/preact/devtools.module.js');
-
+    //await import('https://unpkg.com/preact@10.11.3/devtools/dist/devtools.module.js?module');
+    await import('/js/vendor/preact/preact.devtools.js');
 }
 
-//import { h, render, createContext, createElement } from 'https://unpkg.com/preact@10.11.1?module';
-import { h, render, createContext, createElement, createRef, Component } from '/js/vendor/preact/preact.module.js';
+//import { h, render, createContext, createElement } from 'https://unpkg.com/preact@10.11.3?module';
+import { h, render, createContext, createElement, createRef, Component } from '/js/vendor/preact/preact.js';
 
 //import { useContext, useState, useReducer, useMemo } from 'https://unpkg.com/preact@latest/hooks/dist/hooks.module.js?module';
 import {
     useContext, useState, useReducer,
     useMemo, useCallback, useRef, useDebugValue,
     useEffect, useLayoutEffect
-} from '/js/vendor/preact/hooks.module.js';
+} from '/js/vendor/preact/preact.hooks.js';
 
 // has wrong path to hooks
-//import { memo, forwardRef, unstable_batchedUpdates } from 'https://unpkg.com/preact@10.11.1/compat/dist/compat.module.js?module';
-import { memo, forwardRef, unstable_batchedUpdates } from '/js/vendor/preact/compat.module.js';
+//import { memo, forwardRef, unstable_batchedUpdates } from 'https://unpkg.com/preact@10.11.3/compat/dist/compat.module.js?module';
+import { memo, forwardRef, unstable_batchedUpdates } from '/js/vendor/preact/preact.compat.js';
 
 //import htm from 'https://unpkg.com/htm@latest/dist/htm.module.js?module';
-import htm from 'https://unpkg.com/htm@3.1.1/dist/htm.module.js?module';
+import htm from '/js/vendor/htm/htm.js';
 const html = htm.bind(h);
 
 // preact-router
