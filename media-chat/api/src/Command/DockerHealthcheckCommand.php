@@ -30,7 +30,7 @@ class DockerHealthcheckCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->conn->fetchAllAssociative('SELECT * FROM rooms WHERE id=1234');
+            $this->conn->fetchAllAssociative('SELECT * FROM text_rooms WHERE id=1234');
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             $output->writeln('Check failure.');

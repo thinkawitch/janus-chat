@@ -32,6 +32,7 @@ services:
       - ./docker/containers/janus/janus.jcfg:/usr/local/etc/janus/janus.jcfg
       - ./docker/containers/janus/janus.eventhandler.sampleevh.jcfg:/usr/local/etc/janus/janus.eventhandler.sampleevh.jcfg
       - ./docker/containers/janus/janus.plugin.textroom.jcfg:/usr/local/etc/janus/janus.plugin.textroom.jcfg
+      - ./docker/containers/janus/janus.plugin.videoroom.jcfg:/usr/local/etc/janus/janus.plugin.videoroom.jcfg
       - ./docker/containers/janus/janus.transport.http.jcfg:/usr/local/etc/janus/janus.transport.http.jcfg
       - ./docker/containers/janus/janus.transport.websockets.jcfg:/usr/local/etc/janus/janus.transport.websockets.jcfg
       - ./docker/logs/janus/log:/var/log

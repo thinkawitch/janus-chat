@@ -62,7 +62,7 @@ class JanusEventsController extends AbstractController
                 // connect to server
                 // create absent rooms
                 $sql = '
-                    SELECT * FROM rooms WHERE deleted=0
+                    SELECT * FROM text_rooms WHERE deleted=0
                 ';
                 $rooms = $this->conn->fetchAllAssociative($sql);
                 foreach ($rooms as $room) {
@@ -72,7 +72,7 @@ class JanusEventsController extends AbstractController
                 break;
             case 'shutdown':
                 $this->logger->info('server_shutdown');
-                $this->conn->update('rooms', ['active' => 0], ['active' => 1]);
+                $this->conn->update('text_rooms', ['active' => 0], ['active' => 1]);
                 break;
         }
     }
@@ -83,11 +83,11 @@ class JanusEventsController extends AbstractController
         switch ($eventData['event']) {
             case 'created':
                 $this->logger->info('room_created ' . $roomId);
-                $this->conn->update('rooms', ['active' => 1], ['id' => $roomId]);
+                $this->conn->update('text_rooms', ['active' => 1], ['id' => $roomId]);
                 break;
             case 'destroyed':
                 $this->logger->info('room_destroyed ' . $roomId);
-                $this->conn->update('rooms', ['active' => 0], ['id' => $roomId]);
+                $this->conn->update('text_rooms', ['active' => 0], ['id' => $roomId]);
                 break;
         }
     }

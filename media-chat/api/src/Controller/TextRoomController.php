@@ -38,7 +38,7 @@ class TextRoomController extends AbstractController
 
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
-        $sql = 'SELECT * FROM rooms WHERE deleted=0';
+        $sql = 'SELECT * FROM text_rooms WHERE deleted=0';
         if (!$isAdmin) $sql .= ' AND user_id=' . $user->getId();
         $sql .= ' ORDER BY id';
 
@@ -99,7 +99,7 @@ class TextRoomController extends AbstractController
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
         $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
-        $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
+        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
 
         $room = $conn->fetchAssociative($sql, $sqlParams);
@@ -144,7 +144,7 @@ class TextRoomController extends AbstractController
 
         try {
             $conn->beginTransaction();
-            $conn->insert('rooms', [
+            $conn->insert('text_rooms', [
                 //'id' => $roomId,
                 'user_id' => $this->getUser()->getId(),
                 'created' => date('Y-m-d H:i:s'),
@@ -196,7 +196,7 @@ class TextRoomController extends AbstractController
 
         // only creator or admin may update the room
         $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
-        $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
+        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
         $room = $conn->fetchAssociative($sql, $sqlParams);
         if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
@@ -214,7 +214,7 @@ class TextRoomController extends AbstractController
         try {
             $conn->beginTransaction();
             $result = $janusUserApi->updateRoom($roomId, $room['secret'], $newRoom);
-            $conn->update('rooms', $newRoom, ['id' => $roomId]);
+            $conn->update('text_rooms', $newRoom, ['id' => $roomId]);
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
@@ -240,7 +240,7 @@ class TextRoomController extends AbstractController
 
         // only creator or admin may destroy the room
         $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
-        $sql = 'SELECT * FROM rooms WHERE deleted=0 AND id=:id';
+        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
         $room = $conn->fetchAssociative($sql, $sqlParams);
         if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
@@ -267,8 +267,8 @@ class TextRoomController extends AbstractController
         }
 
         if ($deleteFromDb) {
-            //$conn->delete('rooms', ['id' => $roomId]);
-            $conn->update('rooms', ['deleted' => 1], ['id' => $roomId]);
+            //$conn->delete('text_rooms', ['id' => $roomId]);
+            $conn->update('text_rooms', ['deleted' => 1], ['id' => $roomId]);
         }
 
         return $this->json($result);
@@ -286,17 +286,17 @@ class TextRoomController extends AbstractController
 
         $sqlParams = ['user_id' => $user->getId()];
         // total
-        $sql = 'SELECT COUNT(id) FROM rooms WHERE deleted=0';
+        $sql = 'SELECT COUNT(id) FROM text_rooms WHERE deleted=0';
         if (!$isAdmin) $sql .= ' AND user_id = :user_id';
         [$totalRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
 
         // active
-        $sql = 'SELECT COUNT(id) FROM rooms WHERE deleted=0 AND active=1';
+        $sql = 'SELECT COUNT(id) FROM text_rooms WHERE deleted=0 AND active=1';
         if (!$isAdmin) $sql .= ' AND user_id = :user_id';
         [$activeRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
 
         // deleted
-        $sql = 'SELECT COUNT(id) FROM rooms WHERE deleted=1';
+        $sql = 'SELECT COUNT(id) FROM text_rooms WHERE deleted=1';
         if (!$isAdmin) $sql .= ' AND user_id = :user_id';
         [$deletedRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
 

@@ -9,7 +9,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `rooms`
 --
 
-CREATE TABLE `rooms` (
+CREATE TABLE `text_rooms` (
      `id` int(10) UNSIGNED NOT NULL,
      `user_id` int(11) NOT NULL,
      `created` datetime NOT NULL,
@@ -52,9 +52,9 @@ INSERT INTO `users` (`id`, `created`, `username`, `password`, `type`, `disabled`
 --
 
 --
--- Indexes for table `rooms`
+-- Indexes for table `text_rooms`
 --
-ALTER TABLE `rooms`
+ALTER TABLE `text_rooms`
     ADD PRIMARY KEY (`id`),
     ADD KEY `idx_user_id` (`user_id`),
     ADD KEY `idx_deleted` (`deleted`) USING BTREE;
@@ -71,9 +71,9 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `rooms`
+-- AUTO_INCREMENT for table `text_rooms`
 --
-ALTER TABLE `rooms`
+ALTER TABLE `text_rooms`
     MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -87,10 +87,10 @@ ALTER TABLE `users`
 --
 
 --
--- Constraints for table `rooms`
+-- Constraints for table `text_rooms`
 --
-ALTER TABLE `rooms`
-    ADD CONSTRAINT `rooms_ibfk_userid` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+ALTER TABLE `text_rooms`
+    ADD CONSTRAINT `text_rooms_ibfk_userid` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 
 
