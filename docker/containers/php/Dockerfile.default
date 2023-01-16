@@ -1,4 +1,4 @@
-FROM php:8.1.9-fpm AS target-php
+FROM php:8.1.14-fpm AS target-php
 
 RUN apt-get update
 RUN apt-get install -y net-tools dnsutils iputils-ping netcat-openbsd htop mc tree lnav curl pv nano mlocate locales

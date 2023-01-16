@@ -10,6 +10,11 @@ echo "*** Set /var/log/php permissions"
 chown www-data:www-data -R /var/log/php
 chmod gu+rw,o-w -R /var/log/php
 
+echo "*** Set ./var/log permissions"
+# fix symfony var/log permissions
+chown www-data:www-data -R ./var/log/
+chmod gu+rw,o-w -R ./var/log/
+
 echo "*** Install symfony vendors"
 composer install
 

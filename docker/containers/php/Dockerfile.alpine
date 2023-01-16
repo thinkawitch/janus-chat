@@ -1,4 +1,4 @@
-FROM php:8.1.9-fpm-alpine3.16 AS target-php
+FROM php:8.1.14-fpm-alpine3.16 AS target-php
 
 # https://github.com/satyadeep/docker-php-fpm-alpine-with-extensions/tree/master/php-81-fpm-alpine-with-ext
 #ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
