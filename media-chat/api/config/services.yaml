@@ -5,10 +5,12 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.janus_server_name: '%env(resolve:JANUS_SERVER_NAME)%'
-    app.janus_user_api_url: '%env(resolve:JANUS_USER_API_URL)%'
-    app.janus_admin_api_url: '%env(resolve:JANUS_ADMIN_API_URL)%'
+    app.janus_api_url: '%env(resolve:JANUS_API_URL)%'
+    app.janus_api_secret: '%env(resolve:JANUS_API_URL)%'
+    app.janus_admin_url: '%env(resolve:JANUS_ADMIN_URL)%'
     app.janus_admin_secret: '%env(resolve:JANUS_ADMIN_SECRET)%'
-    app.janus_textroom_admin_secret: '%env(resolve:JANUS_TEXTROOM_ADMIN_SECRET)%'
+    app.janus_textroom_admin_key: '%env(resolve:JANUS_TEXTROOM_ADMIN_KEY)%'
+    app.janus_videoroom_admin_key: '%env(resolve:JANUS_VIDEOROOM_ADMIN_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -32,9 +34,24 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    Thinkawitch\JanusApi\JanusHttpAdminClient:
+        arguments:
+            $url: '%app.janus_admin_url%'
+            $adminSecret: '%app.janus_admin_secret%'
+    Thinkawitch\JanusApi\Plugin\JanusHttpTextRoomClient:
+        arguments:
+            $url: '%app.janus_api_url%'
+            $apiSecret: '%app.janus_api_secret%'
+            $textRoomAdminKey: '%app.janus_textroom_admin_key%'
+    Thinkawitch\JanusApi\Plugin\JanusHttpVideoRoomClient:
+        arguments:
+            $url: '%app.janus_api_url%'
+            $apiSecret: '%app.janus_api_secret%'
+            $videoRoomAdminKey: '%app.janus_videoroom_admin_key%'
+
     App\Service\JanusAdminApiService:
         arguments:
             $adminSecret: '%app.janus_admin_secret%'
     App\Service\JanusUserApiService:
         arguments:
-            $textRoomAdminSecret: '%app.janus_textroom_admin_secret%'
+            $textRoomAdminSecret: '%app.janus_textroom_admin_key%'

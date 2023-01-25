@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Thinkawitch\JanusApi\JanusHttpClient;
+use Thinkawitch\JanusApi\JanusHttpAdminClient;
 
 #[Route(path: '/textroom', format: 'json')]
 class TextRoomController extends AbstractController
@@ -18,6 +20,7 @@ class TextRoomController extends AbstractController
     public function getRooms(
         JanusUserApiService $janusUserApi,
         JanusAdminApiService $janusAdminApi,
+        JanusHttpAdminClient $janusAdmin,
         Connection $conn
     ) : JsonResponse
     {
@@ -35,6 +38,17 @@ class TextRoomController extends AbstractController
                 $handlesInfo[$handleId] = $janusAdminApi->getHandleInfo($sessionId, $handleId);
             }
         }*/
+
+        //$ac = new JanusHttpClient('', '');
+        $status = $janusAdmin->getStatus();
+        $sessions = $janusAdmin->getSessions();
+        foreach ($sessions as $sessionId) {
+            $handles[$sessionId] = $janusAdmin->getHandles($sessionId);
+            foreach ($handles[$sessionId] as $handleId) {
+                $handlesInfo[$handleId] = $janusAdmin->getHandleInfo($sessionId, $handleId);
+            }
+        }
+
 
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
@@ -68,7 +82,7 @@ class TextRoomController extends AbstractController
             'janusRooms' => $janusRooms,
         ];
 
-        return $this->json($result);
+//        return $this->json($result);
 
         return $this->json([
             'textroom' => 1,
@@ -127,7 +141,7 @@ class TextRoomController extends AbstractController
         //$roomId = 22;
         $secret = null;
         $pin = null;
-        $private = true; // true
+        $isPrivate = true; // true
         $history = 25;
         $post = null;
         $permanent = false; // false
@@ -150,7 +164,7 @@ class TextRoomController extends AbstractController
                 'created' => date('Y-m-d H:i:s'),
                 'secret' => $secret,
                 'pin' => $pin,
-                'private' => $private ? 1 : 0,
+                'is_private' => $isPrivate ? 1 : 0,
                 'history' => $history,
                 'post' => $post,
                 'permanent' => $permanent ? 1 : 0,

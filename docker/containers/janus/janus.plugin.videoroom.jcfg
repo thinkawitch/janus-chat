@@ -55,7 +55,7 @@
 #}
 
 general: {
-	admin_key = "wHb3mc3fXZ8m3RSc"		# If set, rooms can be created via API only
+	admin_key = "v53HTkAbVs62HJDQ"		# If set, rooms can be created via API only
 									# if this key is provided in the request
 	#lock_rtp_forward = true		# Whether the admin_key above should be
 									# enforced for RTP forwarding requests too

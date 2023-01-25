@@ -21,9 +21,9 @@ framework:
     http_client:
         scoped_clients:
             janus.user.client:
-                base_uri: '%app.janus_user_api_url%'
+                base_uri: '%app.janus_api_url%'
             janus.admin.client:
-                base_uri: '%app.janus_admin_api_url%'
+                base_uri: '%app.janus_admin_url%'
 
 when@test:
     framework:

@@ -15,12 +15,12 @@ services:
     image: canyan/janus-gateway:master_ef984223dd0cfbaa07445c18748f506899678305 # Mon Nov 14 04:07:05 UTC 2022
     command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     ports:
-      #- "${EXPOSE_IP}:8088:8088" # http
+      - "${EXPOSE_IP}:8088:8088" # http  temp for thinkawitch-janus-php-api
       #- "${EXPOSE_IP}:8089:8089" # https
       #- "${EXPOSE_IP}:8188:8188" # ws
       - "${EXPOSE_IP}:8989:8989" # wss
       - "${EXPOSE_IP}:8000:8000"
-      #- "${EXPOSE_IP}:7088:7088" # http admin
+      - "${EXPOSE_IP}:7088:7088" # http admin temp for thinkawitch-janus-php-api
       #- "${EXPOSE_IP}:7889:7889" # https admin
     depends_on:
       media-chat-api:
@@ -76,10 +76,12 @@ services:
     environment:
       - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:3306/${MYSQL_DATABASE}
       - JANUS_SERVER_NAME
-      - JANUS_USER_API_URL
-      - JANUS_ADMIN_API_URL
+      - JANUS_API_URL
+      - JANUS_API_SECRET
+      - JANUS_ADMIN_URL
       - JANUS_ADMIN_SECRET
-      - JANUS_TEXTROOM_ADMIN_SECRET
+      - JANUS_TEXTROOM_ADMIN_KEY
+      - JANUS_VIDEOROOM_ADMIN_KEY
     depends_on:
       - mysql
       - nginx

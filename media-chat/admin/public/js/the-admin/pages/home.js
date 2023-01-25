@@ -33,8 +33,9 @@ export default function Home() {
                 <div class="card-body">
                     <div class="mb-2">
                         <h5 class="card-title">Rooms</h5>
-                        active: <span class="fw-bold me-2">${activeRooms}</span>
                         total: <span class="fw-bold me-2">${totalRooms}</span>
+                        active: <span class="fw-bold me-2">${activeRooms}</span>
+                        <br/>
                         deleted: <span class="fw-bold">${deletedRooms}</span>
                     </div>
                     <a href="/rooms/add" class="btn btn-primary">Add room</a>

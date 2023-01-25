@@ -84,7 +84,7 @@ export default function RoomForm(props) {
                 <label for="rfHistory" class="col-sm-2 col-form-label">History</label>
                 <div class="col-sm-10">
                     <input type="number" class="form-control" id="rfHistory" name="history" min="0" max="500" value=${fields.history} onInput=${onInput} readonly=${modeEdit}/>
-                    ${modeAdd && html`<small class="text-muted">You can not change it later.</small>`}
+                    ${modeAdd && html`<small class="text-muted">Can not be changed later.</small>`}
                 </div>
             </div>
             <div class="row mb-3">

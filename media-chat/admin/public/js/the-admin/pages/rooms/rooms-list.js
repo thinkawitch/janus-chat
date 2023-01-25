@@ -36,6 +36,7 @@ export default function RoomsList() {
                 <th>description</th>
                 <th>history</th>
                 <th>private</th>
+                <th>active</th>
                 <th>pin</th>
                 <th>secret</th>
                 <th>participants</th>
@@ -48,11 +49,16 @@ export default function RoomsList() {
                     <td>${r.user_id}</td>
                     <td>${r.description}</td>
                     <td>${r.history}</td>
-                    <td>${r.private ? check : ''}</td>
+                    <td>${r.is_private ? check : ''}</td>
+                    <td>${r.active ? check : ''}</td>
                     <td>${r.pin ? check : ''}</td>
                     <td>${r.secret ? check : ''}</td>
                     <td>${r.num_participants}</td>
                     <td>
+                        ${r.active 
+                            ? html`<a href="/rooms/turn-off/${r.id}" class="btn btn-sm btn-outline-secondary me-2" title="Turn off"><svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg> stop</a>` 
+                            : html`<a href="/rooms/turn-on/${r.id}" class="btn btn-sm btn-outline-secondary me-2" title="Turn on"><svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg> activate</a>`
+                        }
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
                         <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger" rel=${r.id} onClick=${confirmToDel} data-native>del</a>
                     </td>

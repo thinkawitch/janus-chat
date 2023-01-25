@@ -105,9 +105,9 @@
         display: grid;
         grid-gap: 5px;
         grid-template:
-            "room-id creator description description description"
-            "history private pin         secret      participants"
-            / 1fr 1fr 1fr 1fr 1fr;
+            "room-id creator description description description description"
+            "history private active pin secret participants"
+            / 1fr 1fr 1fr 1fr 1fr 1fr;
     }
     .rooms-table thead th:nth-child(1) {
         grid-area: room-id;
@@ -128,15 +128,18 @@
         grid-area: private;
     }
     .rooms-table thead th:nth-child(6) {
-        grid-area: pin;
+        grid-area: active;
     }
     .rooms-table thead th:nth-child(7) {
-        grid-area: secret;
+        grid-area: pin;
     }
     .rooms-table thead th:nth-child(8) {
-        grid-area: participants;
+        grid-area: secret;
     }
     .rooms-table thead th:nth-child(9) {
+        grid-area: participants;
+    }
+    .rooms-table thead th:nth-child(10) {
         display: none; /* hide header cell for actions column */
     }
 
@@ -144,10 +147,10 @@
         display: grid;
         grid-gap: 5px;
         grid-template:
-            "room-id creator description description description"
-            "history private pin         secret      participants"
-            "actions actions actions     actions     actions"
-            / 1fr 1fr 1fr 1fr 1fr;
+            "room-id creator description description description description"
+            "history private  active pin secret participants"
+            "actions actions actions actions actions actions"
+            / 1fr 1fr 1fr 1fr 1fr 1fr;
         border-bottom: 1px solid var(--bs-gray-600);
     }
     .rooms-table tbody td:nth-child(1) {
@@ -166,15 +169,18 @@
         grid-area: private;
     }
     .rooms-table tbody td:nth-child(6) {
-        grid-area: pin;
+        grid-area: active;
     }
     .rooms-table tbody td:nth-child(7) {
-        grid-area: secret;
+        grid-area: pin;
     }
     .rooms-table tbody td:nth-child(8) {
-        grid-area: participants;
+        grid-area: secret;
     }
     .rooms-table tbody td:nth-child(9) {
+        grid-area: participants;
+    }
+    .rooms-table tbody td:nth-child(10) {
         grid-area: actions;
     }
     .rooms-table tbody td:not(:last-child) {
