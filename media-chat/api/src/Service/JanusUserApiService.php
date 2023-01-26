@@ -96,7 +96,7 @@ class JanusUserApiService
         ?string $description=null,
         ?string $secret=null,
         ?string $pin=null,
-        bool $private=true,
+        bool $isPrivate=true,
         int $history=0,
         ?string $post=null,
         bool $permanent=false,
@@ -109,7 +109,7 @@ class JanusUserApiService
             'request' => 'create',
             'admin_key' => $this->textRoomAdminSecret,
             'room' => $id,
-            'is_private' => $private,
+            'is_private' => $isPrivate,
             'history' => $history,
             'permanent' => $permanent,
         ];
@@ -138,7 +138,7 @@ class JanusUserApiService
                 'request' => 'create',
                 'admin_key' => $this->textRoomAdminSecret,
                 'room' => $room['id'],
-                'is_private' => $room['private'] === 1,
+                'is_private' => $room['is_private'] === 1,
                 'history' => $room['history'],
                 'permanent' => $room['permanent'] === 1,
             ];

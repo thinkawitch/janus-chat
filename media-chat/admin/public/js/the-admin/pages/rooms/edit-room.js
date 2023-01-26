@@ -1,7 +1,7 @@
 import { html, useEffect, useLayoutEffect, useRef, useCallback, useMemo, useSelector, useDispatch, useRouter, useAbortController } from '../../imports.js';
 import RoomForm from './room-form.js';
-import { textRoomUpdate, textRoomGet, textRoomDelete } from '../../redux-toolkit/actions/textroom-actions.js';
-import { selectTextRoom, selectRoomById, cleanUpdatingError } from '../../redux-toolkit/slices/textroom-slice.js';
+import { getRoom, updateRoom, deleteRoom } from '../../redux-toolkit/actions/rooms-actions.js';
+import { selectTextRoom, selectRoomById, cleanUpdatingError } from '../../redux-toolkit/slices/rooms-slice.js';
 import TopError from '../../components/top-error.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
@@ -24,7 +24,7 @@ export default function EditRoom({ roomId }) {
     useLayoutEffect(() => {
         let promise;
         if (!room || alwaysGetFresh) {
-            promise = dispatch(textRoomGet({ roomId }))
+            promise = dispatch(getRoom({ roomId }))
         }
         return () => {
             promise?.abort();
@@ -32,12 +32,12 @@ export default function EditRoom({ roomId }) {
     }, [roomId])
 
     const onSubmit = useCallback(async data => {
-        const action = await dispatch(textRoomUpdate({ roomId, data, signal: getAC().signal }));
+        const action = await dispatch(updateRoom({ roomId, data, signal: getAC().signal }));
         console.log('EditRoom result action', action)
         if (!action.error) {
             const roomId = action.meta.arg.roomId;
             addToast({ message: `Room #${roomId} updated.`});
-            dispatch(textRoomGet({ roomId }));  // get fresh data, for correct required fields
+            dispatch(getRoom({ roomId }));  // get fresh data, for correct required fields
             //route(returnUrl);
         }
     }, []);
@@ -98,7 +98,7 @@ function DeleteRoom({ room }) {
     const confirmToDel = useCallback(async () => {
         const confirmed = await confirm({ message: `Delete room #${roomId}?`});
         if (confirmed) {
-            const action = await dispatch(textRoomDelete({ roomId }));
+            const action = await dispatch(deleteRoom({ roomId }));
             if (!action.error) {
                 addToast({ message: `Room #${roomId} deleted.` });
             }

@@ -1,5 +1,5 @@
 import { html, useEffect, useSelector, useDispatch, useCallback, useState, useRef } from '../../imports.js';
-import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
+import { selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
 import ButtonSpinner from '../../components/button-spinner.js';
 
 export default function RoomForm(props) {
@@ -84,7 +84,8 @@ export default function RoomForm(props) {
                 <label for="rfHistory" class="col-sm-2 col-form-label">History</label>
                 <div class="col-sm-10">
                     <input type="number" class="form-control" id="rfHistory" name="history" min="0" max="500" value=${fields.history} onInput=${onInput} readonly=${modeEdit}/>
-                    ${modeAdd && html`<small class="text-muted">Can not be changed later.</small>`}
+                    ${modeAdd && html`<small class="text-muted">Can not be changed later</small>`}
+                    ${modeEdit && html`<small class="text-muted">Can not be changed</small>`}
                 </div>
             </div>
             <div class="row mb-3">

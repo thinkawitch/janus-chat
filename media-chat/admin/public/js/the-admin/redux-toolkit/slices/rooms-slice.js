@@ -1,8 +1,8 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
 import {
-    textRoomGetAll, textRoomGet, textRoomCreate, textRoomUpdate, textRoomDelete, textRoomInfo
-} from '../actions/textroom-actions.js';
+    getRooms, getRoom, createRoom, updateRoom, deleteRoom, getRoomsStats
+} from '../actions/rooms-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
 // all text room, full objects from outside world
@@ -29,8 +29,8 @@ const initialState = {
     },
 }
 
-export const textRoomSlice = createSlice({
-    name: 'textRoom',
+export const roomsSlice = createSlice({
+    name: 'rooms',
     initialState: { ...initialState, notInitialized: true },
     reducers: {
         cleanTextRoom: (state) => {
@@ -56,12 +56,12 @@ export const textRoomSlice = createSlice({
             // reset slice on user leave
             return { ...initialState, notInitialized: true };
         },
-        [textRoomGetAll.pending]: (state, action) => {
+        [getRooms.pending]: (state, action) => {
             //console.log('textRoomSlice textRoomGetAll.pending')
             state.loadingError = null;
             state.loading = true;
         },
-        [textRoomGetAll.fulfilled]: (state, action) => {
+        [getRooms.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.fulfilled')
             //return { ...state, loading: false, loadingError: null, rooms: action.payload.rooms, notInitialized: false }
             state.loading = false;
@@ -70,16 +70,16 @@ export const textRoomSlice = createSlice({
             state.filteredRooms = filterRooms(state.rooms, state.filter);
             state.notInitialized = false;
         },
-        [textRoomGetAll.rejected]: (state, action) => {
+        [getRooms.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomGetAll.rejected')
             state.loadingError = action.error;
             state.loading = false;
         },
-        [textRoomGet.pending]: (state) => {
+        [getRoom.pending]: (state) => {
             state.gettingError = null;
             state.getting = true;
         },
-        [textRoomGet.fulfilled]: (state, action) => {
+        [getRoom.fulfilled]: (state, action) => {
             const room = action.payload.room;
             const roomIdx = state.rooms.findIndex(r => {
                 if (r.id == room.id) return true;
@@ -94,96 +94,96 @@ export const textRoomSlice = createSlice({
             state.filteredRooms = filterRooms(state.rooms, state.filter);
             state.getting = false;
         },
-        [textRoomGet.rejected]: (state, action) => {
+        [getRoom.rejected]: (state, action) => {
             //console.log('textRoomSlice textRoomGet.rejected', action.error);
             if (action.payload === 'check_rwvError') {
                 state.gettingError = action.meta.rwvError;
             }
             state.getting = false;
         },
-        [textRoomCreate.pending]: (state, action) => {
+        [createRoom.pending]: (state, action) => {
             state.creatingError = null;
             state.creating = true;
         },
-        [textRoomCreate.fulfilled]: (state, action) => {
+        [createRoom.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomCreate.fulfilled')
             state.creating = false;
         },
-        [textRoomCreate.rejected]: (state, action) => {
+        [createRoom.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomCreate.rejected')
             if (action.payload === 'check_rwvError') {
                 state.creatingError = action.meta.rwvError;
             }
             state.creating = false;
         },
-        [textRoomUpdate.pending]: (state, action) => {
+        [updateRoom.pending]: (state, action) => {
             state.updatingError = null;
             state.updating = true;
         },
-        [textRoomUpdate.fulfilled]: (state, action) => {
+        [updateRoom.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomUpdate.fulfilled')
             //const roomId = action.payload.room;
             state.updating = false;
         },
-        [textRoomUpdate.rejected]: (state, action) => {
+        [updateRoom.rejected]: (state, action) => {
             console.log('textRoomSlice textRoomUpdate.rejected')
             if (action.payload === 'check_rwvError') {
                 state.updatingError = action.meta.rwvError;
             }
             state.updating = false;
         },
-        [textRoomDelete.pending]: (state, action) => {
+        [deleteRoom.pending]: (state, action) => {
             state.deleting = true;
         },
-        [textRoomDelete.fulfilled]: (state, action) => {
+        [deleteRoom.fulfilled]: (state, action) => {
             const roomId = parseInt(action.meta.arg.roomId);
             state.rooms = state.rooms.filter(r => r.id !== roomId);
             state.filteredRooms = filterRooms(state.rooms, state.filter);
             state.deleting = false;
         },
-        [textRoomDelete.rejected]: (state, action) => {
+        [deleteRoom.rejected]: (state, action) => {
             state.deleting = false;
         },
-        [textRoomInfo.pending]: (state, action) => {
+        [deleteRoom.pending]: (state, action) => {
             state.info.loading = true;
         },
-        [textRoomInfo.fulfilled]: (state, action) => {
+        [getRoomsStats.fulfilled]: (state, action) => {
             state.info.loading = false;
             state.info.activeRooms = action.payload.active_rooms;
             state.info.totalRooms = action.payload.total_rooms;
             state.info.deletedRooms = action.payload.deleted_rooms;
         },
-        [textRoomInfo.rejected]: (state, action) => {
+        [getRoomsStats.rejected]: (state, action) => {
             state.info.loading = false;
         },
     }
 });
 
 // Action creators are generated for each case reducer function
-export const { cleanCreatingError, cleanUpdatingError, setFilter, cleanFilter } = textRoomSlice.actions;
+export const { cleanCreatingError, cleanUpdatingError, setFilter, cleanFilter } = roomsSlice.actions;
 
-export default textRoomSlice.reducer;
+export default roomsSlice.reducer;
 
 
 // Export a reusable selectors
 
 export const selectRooms = (state) => {
-    return state.textRoom.rooms;
+    return state.rooms.rooms;
 }
 
-export const selectTextRoom = (state) => state.textRoom;
+export const selectTextRoom = (state) => state.rooms;
 
-export const selectRoomsLoading = createSelector(selectTextRoom, textRoom => {
-    console.log('[selector] selectRoomsLoading', textRoom.loading)
-    return textRoom.loading
+export const selectRoomsLoading = createSelector(selectTextRoom, rooms => {
+    console.log('[selector] selectRoomsLoading', rooms.loading)
+    return rooms.loading
 });
 
-export const selectTextRoomInfo = (state) => state.textRoom.info;
+export const selectTextRoomInfo = (state) => state.rooms.info;
 
 
 export const selectRoomById = createSelector(
     [
-        state => state.textRoom.rooms,
+        state => state.rooms.rooms,
         (_, roomId) => roomId,
     ],
     (rooms, roomId) => {

@@ -1,7 +1,7 @@
 import { html, useSelector, useDispatch, useCallback } from '../../imports.js';
-import { selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
+import { selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
 import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
-import { textRoomDelete } from '../../redux-toolkit/actions/textroom-actions.js';
+import { deleteRoom } from '../../redux-toolkit/actions/rooms-actions.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
 const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
@@ -20,13 +20,39 @@ export default function RoomsList() {
         const roomId = e.target.rel;
         const confirmed = await confirm({ message: `Delete room #${roomId}?`});
         if (confirmed) {
-            const action = await dispatch(textRoomDelete({ roomId }));
+            const action = await dispatch(deleteRoom({ roomId }));
             console.log('result action', action)
             if (!action.error) {
                 addToast({ message: `Room #${roomId} deleted.` });
             }
         }
-    }, [])
+    }, []);
+
+    const confirmToStart = useCallback(async (e) => {
+        e.preventDefault();
+        const roomId = e.target.rel;
+        const confirmed = await confirm({ message: `Activate room #${roomId}?`});
+        if (confirmed) {
+            /*const action = await dispatch(deleteRoom({ roomId }));
+            console.log('result action', action)
+            if (!action.error) {
+                addToast({ message: `Room #${roomId} deleted.` });
+            }*/
+        }
+    }, []);
+
+    const confirmToStop = useCallback(async (e) => {
+        e.preventDefault();
+        const roomId = e.target.rel;
+        const confirmed = await confirm({ message: `Stop room #${roomId}?`});
+        if (confirmed) {
+            /*const action = await dispatch(deleteRoom({ roomId }));
+            console.log('result action', action)
+            if (!action.error) {
+                addToast({ message: `Room #${roomId} deleted.` });
+            }*/
+        }
+    }, []);
 
     return html`
         <table class="table rooms-table">
@@ -56,8 +82,8 @@ export default function RoomsList() {
                     <td>${r.num_participants}</td>
                     <td>
                         ${r.active 
-                            ? html`<a href="/rooms/turn-off/${r.id}" class="btn btn-sm btn-outline-secondary me-2" title="Turn off"><svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg> stop</a>` 
-                            : html`<a href="/rooms/turn-on/${r.id}" class="btn btn-sm btn-outline-secondary me-2" title="Turn on"><svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg> activate</a>`
+                            ? html`<a href="/rooms/stop/${r.id}" class="btn btn-sm btn-outline-secondary me-2" onClick=${confirmToStop} data-native off-title="Turn off"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg-->stop</a>` 
+                            : html`<a href="/rooms/start/${r.id}" class="btn btn-sm btn-outline-secondary me-2" onClick=${confirmToStart} data-native off-title="Turn on"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg-->activate</a>`
                         }
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
                         <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger" rel=${r.id} onClick=${confirmToDel} data-native>del</a>

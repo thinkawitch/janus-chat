@@ -1,7 +1,7 @@
 import { html, useSelector, useDispatch, useMemo, useSmallTitle, useCallback, useLayoutEffect } from '../imports.js';
-import { textRoomInfo } from '../redux-toolkit/actions/textroom-actions.js';
+import { getRoomsStats } from '../redux-toolkit/actions/rooms-actions.js';
 import ButtonSpinner from '../components/button-spinner.js';
-import { selectTextRoomInfo } from '../redux-toolkit/slices/textroom-slice.js';
+import { selectTextRoomInfo } from '../redux-toolkit/slices/rooms-slice.js';
 
 // value=useSelector() and action to change the value inside useEffect() - may lead to infinite loop
 
@@ -11,7 +11,7 @@ export default function Home() {
     const { loading, totalRooms, activeRooms, deletedRooms } = useSelector(selectTextRoomInfo);
 
     useLayoutEffect(() => {
-        const promise = dispatch(textRoomInfo());
+        const promise = dispatch(getRoomsStats());
         return () => {
             promise.abort();
             console.log(`Home_layout_out`);
@@ -19,7 +19,7 @@ export default function Home() {
     }, [])
 
     const refreshRooms = useCallback(() => {
-        dispatch(textRoomInfo());
+        dispatch(getRoomsStats());
     }, [])
 
     return html`

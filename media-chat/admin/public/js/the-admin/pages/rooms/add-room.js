@@ -1,7 +1,7 @@
 import { html, useCallback, useMemo, useDispatch, useRouter, useAbortController, useSelector } from '../../imports.js';
 import RoomForm from './room-form.js';
-import { textRoomCreate } from '../../redux-toolkit/actions/textroom-actions.js';
-import { cleanCreatingError, selectTextRoom } from '../../redux-toolkit/slices/textroom-slice.js';
+import { createRoom } from '../../redux-toolkit/actions/rooms-actions.js';
+import { cleanCreatingError, selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
 import TopError from '../../components/top-error.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
@@ -14,7 +14,7 @@ export default function AddRoom() {
     const { addToast } = useToast();
 
     const onSubmit = useCallback(async data => {
-        const action = await dispatch(textRoomCreate({ data, signal: getAC().signal }));
+        const action = await dispatch(createRoom({ data, signal: getAC().signal }));
         console.log('AddRoom result action', action);
         if (!action.error) {
             const roomId = action.payload.room;

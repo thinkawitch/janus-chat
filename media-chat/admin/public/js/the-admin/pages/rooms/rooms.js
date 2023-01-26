@@ -8,9 +8,9 @@ import {
     useAbortController,
     useSmallTitle
 } from '../../imports.js';
-import { textRoomGetAll } from '../../redux-toolkit/actions/textroom-actions.js';
+import { getRooms } from '../../redux-toolkit/actions/rooms-actions.js';
 import RoomsList from './rooms-list.js';
-import { selectRoomsLoading } from '../../redux-toolkit/slices/textroom-slice.js';
+import { selectRoomsLoading } from '../../redux-toolkit/slices/rooms-slice.js';
 import ButtonSpinner from '../../components/button-spinner.js';
 import RoomsFilter from './rooms-filter.js';
 
@@ -26,7 +26,7 @@ export default function Rooms() {
     useLayoutEffect(() => {
         const lrvc = ++rvc;
         console.log(`Rooms[${lrvc}]_layout_in`, loading)
-        const promise = dispatch(textRoomGetAll());
+        const promise = dispatch(getRooms());
         return () => {
             promise.abort();
             console.log(`Rooms[${lrvc}]_layout_out`);
@@ -34,7 +34,7 @@ export default function Rooms() {
     }, [])
 
     const refresh = useCallback(() => {
-        dispatch(textRoomGetAll());
+        dispatch(getRooms());
     }, [])
 
     useSmallTitle('Rooms');

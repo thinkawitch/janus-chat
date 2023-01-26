@@ -10,14 +10,9 @@ import {
     useSmallTitle,
 } from '../imports.js';
 import {
-    textRoomGetAll,
-    textRoomTestLongRequest,
-} from "../redux-toolkit/actions/textroom-actions.js";
-import {
     selectRoomsLoading,
-} from "../redux-toolkit/slices/textroom-slice.js";
+} from '../redux-toolkit/slices/rooms-slice.js';
 
-const makeSelectRoomsLoading = () => createSelector(state => state.textRoom, textRoom => textRoom.loading);
 
 
 export default function Users() {

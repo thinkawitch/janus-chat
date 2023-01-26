@@ -32,9 +32,9 @@ class JanusEventsController extends AbstractController
     {
         $serverName = $this->getParameter('app.janus_server_name');
         $data = $request->toArray();
-        /*$janusEventsLogger->info('events_start');
-        $janusEventsLogger->info(print_r($data, true));
-        $janusEventsLogger->info('events_end');*/
+        /*$this->logger->info('events_start');
+        $this->logger->info(print_r($data, true));
+        $this->logger->info('events_end');*/
 
         foreach ($data as $row) {
             if ($row['emitter'] !== $serverName) continue;
@@ -47,6 +47,9 @@ class JanusEventsController extends AbstractController
                     break;
                 case JanusConstants::JANUS_EVENT_TYPE_CORE:
                     $this->handleCoreEvent($row['event']);
+                    break;
+                default:
+                    $this->logger->info('other_event ' . json_encode($row));
                     break;
             }
         }
@@ -88,6 +91,9 @@ class JanusEventsController extends AbstractController
             case 'destroyed':
                 $this->logger->info('room_destroyed ' . $roomId);
                 $this->conn->update('text_rooms', ['active' => 0], ['id' => $roomId]);
+                break;
+            default:
+                $this->logger->info('other_textroom_event ' . json_encode($eventData));
                 break;
         }
     }

@@ -71,7 +71,7 @@ const mediaChatApi = {
             if (data) {
                 if ('id' in data) return data;
                 if ('error' in data) return Promise.reject(data.error);
-            };
+            }
             return Promise.reject('login_unknown_error');
         },
         logout: async () => {
@@ -109,15 +109,15 @@ const mediaChatApi = {
         },
     },
 
-    textroom: {
+    rooms: {
         getAll: async (thunkAPI) => {
             const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
         get: async (roomId, thunkAPI) => {
             const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
         create: async (data, thunkAPI, customSignal) => {
@@ -131,7 +131,7 @@ const mediaChatApi = {
                 },
                 body: JSON.stringify(data)
             };
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
         update: async (roomId, data, thunkAPI, customSignal) => {
@@ -145,7 +145,7 @@ const mediaChatApi = {
                 },
                 body: JSON.stringify(data)
             };
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
         delete: async (roomId, thunkAPI) => {
@@ -156,12 +156,12 @@ const mediaChatApi = {
                     ...fetchHeaderAccept,
                 }
             };
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom/${roomId}`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
-        info: async (thunkAPI) => {
+        stats: async (thunkAPI) => {
             const localInit = addSignalToFetchInit(fetchInit, thunkAPI.signal);
-            const response = await fetch(`${mediaChatApiBaseUrl}textroom/info`, localInit);
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms/stats`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
     },
