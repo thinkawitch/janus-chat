@@ -5,6 +5,8 @@ import { deleteRoom } from '../../redux-toolkit/actions/rooms-actions.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
 const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
+const dash = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-dash"></use></svg>`;
+const plus = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-plus"></use></svg>`;
 
 export default function RoomsList() {
     const { loading, rooms, filteredRooms, notInitialized } = useSelector(selectTextRoom);
@@ -31,7 +33,7 @@ export default function RoomsList() {
     const confirmToStart = useCallback(async (e) => {
         e.preventDefault();
         const roomId = e.target.rel;
-        const confirmed = await confirm({ message: `Activate room #${roomId}?`});
+        const confirmed = await confirm({ message: `Start room #${roomId}?`});
         if (confirmed) {
             /*const action = await dispatch(deleteRoom({ roomId }));
             console.log('result action', action)
@@ -62,7 +64,7 @@ export default function RoomsList() {
                 <th>description</th>
                 <th>history</th>
                 <th>private</th>
-                <th>active</th>
+                <th>status</th>
                 <th>pin</th>
                 <th>secret</th>
                 <th>participants</th>
@@ -76,14 +78,17 @@ export default function RoomsList() {
                     <td>${r.description}</td>
                     <td>${r.history}</td>
                     <td>${r.is_private ? check : ''}</td>
-                    <td>${r.active ? check : ''}</td>
+                    <td>
+                        <span title="Enabled">${r.enabled ? plus : dash}</span>
+                        <span title="Active">${r.active ? plus : dash}</span>
+                    </td>
                     <td>${r.pin ? check : ''}</td>
                     <td>${r.secret ? check : ''}</td>
                     <td>${r.num_participants}</td>
                     <td>
                         ${r.active 
-                            ? html`<a href="/rooms/stop/${r.id}" class="btn btn-sm btn-outline-secondary me-2" onClick=${confirmToStop} data-native off-title="Turn off"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg-->stop</a>` 
-                            : html`<a href="/rooms/start/${r.id}" class="btn btn-sm btn-outline-secondary me-2" onClick=${confirmToStart} data-native off-title="Turn on"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg-->activate</a>`
+                            ? html`<a href="/rooms/stop/${r.id}" class="btn btn-sm btn-outline-secondary me-2" rel=${r.id} onClick=${confirmToStop} data-native off-title="Turn off"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg-->stop</a>` 
+                            : html`<a href="/rooms/start/${r.id}" class="btn btn-sm btn-outline-secondary me-2" rel=${r.id} onClick=${confirmToStart} data-native off-title="Turn on"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg-->start</a>`
                         }
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
                         <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger" rel=${r.id} onClick=${confirmToDel} data-native>del</a>

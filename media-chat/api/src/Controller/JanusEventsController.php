@@ -65,7 +65,7 @@ class JanusEventsController extends AbstractController
                 // connect to server
                 // create absent rooms
                 $sql = '
-                    SELECT * FROM text_rooms WHERE deleted=0
+                    SELECT * FROM text_rooms WHERE deleted=0 AND enabled=1
                 ';
                 $rooms = $this->conn->fetchAllAssociative($sql);
                 foreach ($rooms as $room) {

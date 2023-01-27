@@ -124,19 +124,15 @@ class RoomsController extends AbstractController
         Connection $conn
     ) : JsonResponse
     {
-        //$roomId = 22;
-        $secret = null;
-        $pin = null;
         $isPrivate = true; // true
-        $history = 25;
         $post = null;
         $permanent = false; // false
-        $description = null;
 
 //        throw $this->createAccessDeniedException();
 //sleep(5); return $this->json(['test']);
 
         $data = $request->toArray();
+        $enabled = !empty($data['enabled']) ? boolval($data['enabled']) : false;
         $description = !empty($data['description']) ? trim($data['description']) : null;
         $history = !empty($data['history']) ? intval($data['history']) : 0;
         $secret = !empty($data['secret']) ? trim($data['secret']) : null;
@@ -148,6 +144,7 @@ class RoomsController extends AbstractController
                 //'id' => $roomId,
                 'user_id' => $this->getUser()->getId(),
                 'created' => date('Y-m-d H:i:s'),
+                'enabled' => $enabled ? 1 : 0,
                 'secret' => $secret,
                 'pin' => $pin,
                 'is_private' => $isPrivate ? 1 : 0,
@@ -157,15 +154,19 @@ class RoomsController extends AbstractController
                 'description' => $description,
             ]);
             $roomId = $conn->lastInsertId();
-            $result = $janusUserApi->createRoom(
-                $roomId,
-                description: $description,
-                secret: $secret,
-                pin: $pin,
-                history: $history,
-                //private: $private,
-                //permanent: $permanent
-            );
+            $result = ['room' => $roomId];
+
+            if ($enabled) {
+                $janusUserApi->createRoom(
+                    $roomId,
+                    description: $description,
+                    secret: $secret,
+                    pin: $pin,
+                    isPrivate: $isPrivate,
+                    history: $history,
+                );
+            }
+
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
@@ -213,8 +214,11 @@ class RoomsController extends AbstractController
         //dd($newRoom);
         try {
             $conn->beginTransaction();
-            $result = $janusUserApi->updateRoom($roomId, $room['secret'], $newRoom);
+            if ($room['active']) {
+                $janusUserApi->updateRoom($roomId, $room['secret'], $newRoom);
+            }
             $conn->update('text_rooms', $newRoom, ['id' => $roomId]);
+            $result = ['room' => $roomId];
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
@@ -246,28 +250,25 @@ class RoomsController extends AbstractController
         if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
 
 
-        $deleteFromDb = true;
+        $updateInDb = true;
+        $result = ['room' => $roomId];
 
+        // destroy on janus
         try {
-            $result = $janusUserApi->destroyRoom($roomId, $room['secret']);
+            $janusUserApi->destroyRoom($roomId, $room['secret']);
         } catch (\Exception $e) {
-            $deleteFromDb = false;
+            $updateInDb = false;
             switch ($e->getCode()) {
                 case JanusConstants::JANUS_TEXTROOM_ERROR_NO_SUCH_ROOM:
-                    $deleteFromDb = true;
-                    $result = [
-                        'textroom' => 'destroyed',
-                        'room' => $roomId,
-                        'permanent' => false,
-                    ];
+                    $updateInDb = true;
                     break;
                 default:
                     throw $e;
             }
         }
 
-        if ($deleteFromDb) {
-            //$conn->delete('text_rooms', ['id' => $roomId]);
+        // mark as deleted in db
+        if ($updateInDb) {
             $conn->update('text_rooms', ['deleted' => 1], ['id' => $roomId]);
         }
 
@@ -319,7 +320,7 @@ function local_getJanusRoomById($janusRooms, $id) : ?array {
 
 function local_getGoodRoomDataForUpdate(array $data) : array {
     $stringFields = ['description', 'secret', 'pin', 'post'];
-    $numFields = [/*'history'*/]; // history can't be changed after creation
+    $numFields = ['enabled', /*'history'*/]; // history can't be changed after creation
     $good = [];
     foreach ($stringFields as $f) {
         if (array_key_exists($f, $data)) {
