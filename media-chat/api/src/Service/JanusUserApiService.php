@@ -1,92 +1,53 @@
 <?php
 namespace App\Service;
 
-use App\Common\JanusConstants;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Thinkawitch\JanusApi\JanusConstants;
+use Thinkawitch\JanusApi\JanusException;
+use Thinkawitch\JanusApi\Plugin\JanusHttpTextRoomClient;
+use Thinkawitch\JanusApi\Plugin\JanusHttpVideoRoomClient;
 
 class JanusUserApiService
 {
-    private HttpClientInterface $client;
-    private string $textRoomAdminSecret;
-    private ?string $sessionId = null; # session handler
-    private ?string $textRoomId = null; # textroom plugin handler
+    protected JanusHttpTextRoomClient $textRoomClient;
+    protected JanusHttpVideoRoomClient $videoRoomClient;
 
-    public function __construct(HttpClientInterface $janusUserClient, string $textRoomAdminSecret)
+    protected bool $useTextRooms;
+    protected bool $useVideoRooms;
+
+    public function __construct(
+        bool $useTextRooms,
+        bool $useVideoRooms,
+        JanusHttpTextRoomClient $textRoomClient,
+        JanusHttpVideoRoomClient $videoRoomClient,
+    )
     {
-        $this->client = $janusUserClient;
-        $this->textRoomAdminSecret = $textRoomAdminSecret;
+        $this->useTextRooms = $useTextRooms;
+        $this->useVideoRooms = $useVideoRooms;
+        $this->textRoomClient = $textRoomClient;
+        $this->videoRoomClient = $videoRoomClient;
     }
 
-    public function getInfo() : array
+    public function OLD_getInfo() : array
     {
         $result = $this->makeRequest([], 'info', 'GET');
         return $result;
     }
 
-    private function createNewSession() : void
-    {
-        $data = [
-            'transaction' => $this->getNewTransactionId(),
-            'janus' => 'create',
-        ];
-        $result = $this->makeRequest($data);
-        $this->sessionId = $result['data']['id'];
-    }
-
-    private function destroySession() : void
-    {
-        $data = [
-            'transaction' => $this->getNewTransactionId(),
-            'janus' => 'destroy',
-        ];
-        $result = $this->makeRequest($data, $this->sessionId);
-        $this->sessionId = null;
-    }
-
-    private function attachToTextRoom() : void
-    {
-        $data = [
-            'transaction' => $this->getNewTransactionId(),
-            'janus' => 'attach',
-            'plugin' => 'janus.plugin.textroom',
-        ];
-        $result = $this->makeRequest($data, $this->sessionId);
-        $this->textRoomId = $result['data']['id'];
-    }
-
-    private function detachFromTextRoom() : void
-    {
-        $data = [
-            'transaction' => $this->getNewTransactionId(),
-            'janus' => 'detach',
-        ];
-        $endpoint = $this->sessionId . '/' . $this->textRoomId;
-        $result = $this->makeRequest($data, $endpoint);
-        $this->textRoomId = null;
-    }
-
     public function getRooms(bool $includePrivate = false) : array
     {
-        $this->createNewSession();
-        $this->attachToTextRoom();
+        $rooms = null;
 
-        $data = [
-            'transaction' => $this->getNewTransactionId(),
-            'janus' => 'message',
-            'body' => [
-                'request' => 'list',
-            ],
-        ];
-        if ($includePrivate) {
-            $data['body']['admin_key'] = $this->textRoomAdminSecret;
+        if ($this->useTextRooms) {
+            $this->textRoomClient->createSession();
+            $this->textRoomClient->attachToTextRoomPlugin();
+            $rooms = $this->textRoomClient->getRooms($includePrivate);
+            $this->textRoomClient->detachFromTextRoomPlugin();
+            $this->textRoomClient->destroySession();
         }
-        $endpoint = $this->sessionId . '/' . $this->textRoomId;
-        $result = $this->makeRequest($data, $endpoint);
 
-        $rooms = $result['plugindata']['data']['list'];
+        if ($this->useVideoRooms) {
 
-        $this->detachFromTextRoom();
-        $this->destroySession();
+        }
 
         return $rooms;
     }
@@ -102,34 +63,57 @@ class JanusUserApiService
         bool $permanent=false,
     ) : array
     {
-        $this->createNewSession();
-        $this->attachToTextRoom();
+        $result = null;
 
-        $body = [
-            'request' => 'create',
-            'admin_key' => $this->textRoomAdminSecret,
-            'room' => $id,
-            'is_private' => $isPrivate,
-            'history' => $history,
-            'permanent' => $permanent,
-        ];
+        if ($this->useTextRooms) {
+            $this->textRoomClient->createSession();
+            $this->textRoomClient->attachToTextRoomPlugin();
 
-        if (!empty($description)) $body['description'] = $description;
-        if (!empty($secret)) $body['secret'] = $secret;
-        if (!empty($pin)) $body['pin'] = $pin;
-        if (!empty($post)) $body['post'] = $post;
+            $result = $this->textRoomClient->createRoom($id, $description, $secret, $pin, $isPrivate, $history, $post, $permanent);
 
-        $endpoint = $this->sessionId . '/' . $this->textRoomId;
-        $result = $this->makeTextRoomRequest($body, $endpoint);
-
-        $this->detachFromTextRoom();
-        $this->destroySession();
+            $this->textRoomClient->detachFromTextRoomPlugin();
+            $this->textRoomClient->destroySession();
+        }
 
         return $result;
     }
 
     public function createRoomsIgnoreExisting(array $rooms): void
     {
+        if ($this->useTextRooms) {
+            $this->textRoomClient->createSession();
+            $this->textRoomClient->attachToTextRoomPlugin();
+
+            foreach ($rooms as $room) {
+
+                try {
+                    $args = [
+                        'id' => $room['id'],
+                        'description' => $room['description'],
+                        'secret' => $room['secret'],
+                        'pin' => $room['pin'],
+                        'isPrivate' => boolval($room['is_private']),
+                        'history' => $room['history'],
+                        'post' => $room['post'],
+                        'permanent' => boolval($room['permanent']),
+                    ];
+                    $this->textRoomClient->createRoom(...$args);
+                } catch (JanusException $e) {
+                    if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS) {
+                        // do nothing
+                    } else {
+                        throw $e;
+                    }
+                } catch (\Exception $e) {
+                    throw $e;
+                }
+
+            }
+
+            $this->textRoomClient->detachFromTextRoomPlugin();
+            $this->textRoomClient->destroySession();
+        }
+/*
         $this->createNewSession();
         $this->attachToTextRoom();
 
@@ -163,38 +147,22 @@ class JanusUserApiService
         }
 
         $this->detachFromTextRoom();
-        $this->destroySession();
+        $this->destroySession();*/
     }
 
-    public function updateRoom(int $roomId, ?string $secret, array $newRoom) : array
+    public function editRoom(int $id, ?string $secret, array $newRoom) : array
     {
-        $this->createNewSession();
-        $this->attachToTextRoom();
+        $result = null;
 
-        $body = [
-            'request' => 'edit',
-            'admin_key' => $this->textRoomAdminSecret,
-            'room' => $roomId,
-            'permanent' => false,
-        ];
+        if ($this->useTextRooms) {
+            $this->textRoomClient->createSession();
+            $this->textRoomClient->attachToTextRoomPlugin();
 
-        if (!empty($secret)) $body['secret'] = $secret;
-        if (!empty($newRoom['secret'])) $body['new_secret'] = $newRoom['secret'];
-        //$body['secret'] = 's';
-//        if (array_key_exists('secret', $newRoom)) {
-//            $body['new_secret'] = $newRoom['secret'];
-//        }
+            $result = $this->textRoomClient->editRoom($id, $secret, $newRoom);
 
-        if (!empty($newRoom['description'])) $body['new_description'] = $newRoom['description'];
-        if (!empty($newRoom['pin'])) $body['new_pin'] = $newRoom['pin'];
-        if (!empty($newRoom['post'])) $body['new_post'] = $newRoom['post'];
-        if (isset($newRoom['number'])) $body['new_number'] = $newRoom['number'];
-//        dd($body);
-        $endpoint = $this->sessionId . '/' . $this->textRoomId;
-        $result = $this->makeTextRoomRequest($body, $endpoint);
-
-        $this->detachFromTextRoom();
-        $this->destroySession();
+            $this->textRoomClient->detachFromTextRoomPlugin();
+            $this->textRoomClient->destroySession();
+        }
 
         return $result;
     }

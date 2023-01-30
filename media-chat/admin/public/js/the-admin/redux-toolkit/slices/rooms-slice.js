@@ -24,6 +24,7 @@ const initialState = {
     info: {
         loading: false,
         totalRooms: 0,
+        enabledRooms: 0,
         activeRooms: 0,
         deletedRooms: 0,
     },
@@ -150,6 +151,7 @@ export const roomsSlice = createSlice({
         [getRoomsStats.fulfilled]: (state, action) => {
             state.info.loading = false;
             state.info.activeRooms = action.payload.active_rooms;
+            state.info.enabledRooms = action.payload.enabled_rooms;
             state.info.totalRooms = action.payload.total_rooms;
             state.info.deletedRooms = action.payload.deleted_rooms;
         },

@@ -82,6 +82,8 @@ services:
       - JANUS_ADMIN_SECRET
       - JANUS_TEXTROOM_ADMIN_KEY
       - JANUS_VIDEOROOM_ADMIN_KEY
+      - USE_TEXT_ROOMS
+      - USE_VIDEO_ROOMS
     depends_on:
       - mysql
       - nginx

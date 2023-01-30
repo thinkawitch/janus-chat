@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Common\JanusConstants;
-use App\Service\JanusAdminApiService;
 use App\Service\JanusUserApiService;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,33 +18,21 @@ class RoomsController extends AbstractController
     #[Route('', methods: ['GET'])]
     public function getRooms(
         JanusUserApiService $janusUserApi,
-        /*JanusAdminApiService $janusAdminApi,*/
         JanusHttpAdminClient $janusAdmin,
         Connection $conn
     ) : JsonResponse
     {
-        // janus
-        $janusRooms = $janusUserApi->getRooms(true);
-        $handles = [];
-        $handlesInfo = [];
-        $status = $janusAdmin->getStatus();
-        $sessions = $janusAdmin->getSessions();
-        foreach ($sessions as $sessionId) {
-            $handles[$sessionId] = $janusAdmin->getHandles($sessionId);
-            foreach ($handles[$sessionId] as $handleId) {
-                $handlesInfo[$handleId] = $janusAdmin->getHandleInfo($sessionId, $handleId);
-            }
-        }
-
-
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        // janus text rooms
+        $janusTextRooms = $janusUserApi->getRooms(true);
+
+        // db text rooms
         $sql = 'SELECT * FROM text_rooms WHERE deleted=0';
         if (!$isAdmin) $sql .= ' AND user_id=' . $user->getId();
         $sql .= ' ORDER BY id';
-
-        // db
-        $dbRooms = $conn->fetchAllAssociative($sql);
+        $dbTextRooms = $conn->fetchAllAssociative($sql);
 
         // active -- room is running on janus
         // deleted - full deleted, disabled, not working, just left for stats
@@ -54,9 +41,9 @@ class RoomsController extends AbstractController
 
         // combine db data with janus live data
         $rooms = [];
-        foreach ($dbRooms as $dbRoom) {
-            $room = $dbRoom;
-            $liveRoom = local_getJanusRoomById($janusRooms, $dbRoom['id']);
+        foreach ($dbTextRooms as $dbTextRoom) {
+            $room = $dbTextRoom;
+            $liveRoom = self::getJanusRoomById($janusTextRooms, $dbTextRoom['id']);
             if ($liveRoom) {
                 $room['num_participants'] = $liveRoom['num_participants'];
             }
@@ -69,19 +56,35 @@ class RoomsController extends AbstractController
 
 //sleep(5); // to test abort controller
 
+        // regular user
+        if (!$isAdmin) {
+            $result = [
+                'rooms' => $rooms,
+            ];
+            return $this->json($result);
+        }
+
+        // admin
+        $handles = [];
+        $handlesInfo = [];
+        $status = $janusAdmin->getStatus();
+        $sessions = $janusAdmin->getSessions();
+        foreach ($sessions as $sessionId) {
+            $handles[$sessionId] = $janusAdmin->getHandles($sessionId);
+            foreach ($handles[$sessionId] as $handleId) {
+                $handlesInfo[$handleId] = $janusAdmin->getHandleInfo($sessionId, $handleId);
+            }
+        }
         $result = [
             'rooms' => $rooms,
-        ];
-
-        if ($user->getUserIdentifier() === 'andrew@cc.lan') {
-            $result['server_rooms'] = $janusRooms;
-            $result['admin'] = [
+            'server_text_rooms' => $janusTextRooms,
+            'admin' => [
                 'status' => $status,
                 'sessions' => $sessions,
                 'handles' => $handles,
-                'handlesInfo' => $handlesInfo,
-            ];
-        }
+                'handles_info' => $handlesInfo,
+            ]
+        ];
 
         return $this->json($result);
     }
@@ -105,7 +108,7 @@ class RoomsController extends AbstractController
         $room = $conn->fetchAssociative($sql, $sqlParams);
         if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found"], 404);
 
-        $liveRoom = local_getJanusRoomById($janusRooms, $roomId);
+        $liveRoom = self::getJanusRoomById($janusRooms, $roomId);
         if ($liveRoom) {
             $room['num_participants'] = $liveRoom['num_participants'];
         }
@@ -189,7 +192,7 @@ class RoomsController extends AbstractController
     ) : JsonResponse
     {
         $data = $request->toArray();
-        $newRoom = local_getGoodRoomDataForUpdate($data);
+        $newRoom = static::getGoodRoomDataForUpdate($data);
         if (empty($newRoom)) return $this->json(['textroom' => 1, 'status' => 400, 'title' => 'No data to update room', 'detail' => "No data to update room #$roomId"], 400);
 
         $user = $this->getUser();
@@ -215,7 +218,7 @@ class RoomsController extends AbstractController
         try {
             $conn->beginTransaction();
             if ($room['active']) {
-                $janusUserApi->updateRoom($roomId, $room['secret'], $newRoom);
+                $janusUserApi->editRoom($roomId, $room['secret'], $newRoom);
             }
             $conn->update('text_rooms', $newRoom, ['id' => $roomId]);
             $result = ['room' => $roomId];
@@ -277,8 +280,6 @@ class RoomsController extends AbstractController
 
     #[Route('/stats', methods: ['GET'])]
     public function getStats(
-        JanusUserApiService $janusUserApi,
-        JanusAdminApiService $janusAdminApi,
         Connection $conn
     ) : JsonResponse
     {
@@ -290,6 +291,11 @@ class RoomsController extends AbstractController
         $sql = 'SELECT COUNT(id) FROM text_rooms WHERE deleted=0';
         if (!$isAdmin) $sql .= ' AND user_id = :user_id';
         [$totalRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
+
+        // enabled
+        $sql = 'SELECT COUNT(id) FROM text_rooms WHERE deleted=0 AND enabled=1';
+        if (!$isAdmin) $sql .= ' AND user_id = :user_id';
+        [$enabledRooms] = $conn->fetchFirstColumn($sql, $sqlParams);
 
         // active
         $sql = 'SELECT COUNT(id) FROM text_rooms WHERE deleted=0 AND active=1';
@@ -303,34 +309,34 @@ class RoomsController extends AbstractController
 
         return $this->json([
             'total_rooms' => $totalRooms,
+            'enabled_rooms' => $enabledRooms,
             'active_rooms' => $activeRooms,
             'deleted_rooms' => $deletedRooms,
         ]);
     }
-}
 
-
-function local_getJanusRoomById($janusRooms, $id) : ?array {
-    if (!$janusRooms) return null;
-    foreach ($janusRooms as $jr) {
-        if ($jr['room'] == $id) return $jr;
-    }
-    return null;
-}
-
-function local_getGoodRoomDataForUpdate(array $data) : array {
-    $stringFields = ['description', 'secret', 'pin', 'post'];
-    $numFields = ['enabled', /*'history'*/]; // history can't be changed after creation
-    $good = [];
-    foreach ($stringFields as $f) {
-        if (array_key_exists($f, $data)) {
-            $good[$f] = trim($data[$f]);
+    protected static function getJanusRoomById($janusRooms, $id) : ?array {
+        if (!$janusRooms) return null;
+        foreach ($janusRooms as $jr) {
+            if ($jr['room'] == $id) return $jr;
         }
+        return null;
     }
-    foreach ($numFields as $f) {
-        if (array_key_exists($f, $data)) {
-            $good[$f] = intval($data[$f]);
+
+    protected static function getGoodRoomDataForUpdate(array $data) : array {
+        $stringFields = ['description', 'secret', 'pin', 'post'];
+        $numFields = ['enabled', /*'history'*/]; // history can't be changed after creation
+        $good = [];
+        foreach ($stringFields as $f) {
+            if (array_key_exists($f, $data)) {
+                $good[$f] = trim($data[$f]);
+            }
         }
+        foreach ($numFields as $f) {
+            if (array_key_exists($f, $data)) {
+                $good[$f] = intval($data[$f]);
+            }
+        }
+        return $good;
     }
-    return $good;
 }

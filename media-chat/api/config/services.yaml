@@ -11,6 +11,8 @@ parameters:
     app.janus_admin_secret: '%env(resolve:JANUS_ADMIN_SECRET)%'
     app.janus_textroom_admin_key: '%env(resolve:JANUS_TEXTROOM_ADMIN_KEY)%'
     app.janus_videoroom_admin_key: '%env(resolve:JANUS_VIDEOROOM_ADMIN_KEY)%'
+    app.use_text_rooms: '%env(resolve:USE_TEXT_ROOMS)%'
+    app.use_video_rooms: '%env(resolve:USE_VIDEO_ROOMS)%'
 
 services:
     # default configuration for services in *this* file
@@ -49,9 +51,7 @@ services:
             $apiSecret: '%app.janus_api_secret%'
             $videoRoomAdminKey: '%app.janus_videoroom_admin_key%'
 
-    App\Service\JanusAdminApiService:
-        arguments:
-            $adminSecret: '%app.janus_admin_secret%'
     App\Service\JanusUserApiService:
         arguments:
-            $textRoomAdminSecret: '%app.janus_textroom_admin_key%'
+            $useTextRooms: '%app.use_text_rooms%'
+            $useVideoRooms: '%app.use_video_rooms%'

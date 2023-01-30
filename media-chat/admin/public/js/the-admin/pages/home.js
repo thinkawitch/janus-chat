@@ -8,7 +8,7 @@ import { selectTextRoomInfo } from '../redux-toolkit/slices/rooms-slice.js';
 export default function Home() {
     const dispatch = useDispatch();
     useSmallTitle('Home');
-    const { loading, totalRooms, activeRooms, deletedRooms } = useSelector(selectTextRoomInfo);
+    const { loading, totalRooms, enabledRooms, activeRooms, deletedRooms } = useSelector(selectTextRoomInfo);
 
     useLayoutEffect(() => {
         const promise = dispatch(getRoomsStats());
@@ -34,7 +34,12 @@ export default function Home() {
                     <div class="mb-2">
                         <h5 class="card-title">Rooms</h5>
                         total: <span class="fw-bold me-2">${totalRooms}</span>
+                        <br/>
+                        enabled: <span class="fw-bold me-2">${enabledRooms}</span>
+                        <small>(allowed to start)</small>
+                        <br/>
                         active: <span class="fw-bold me-2">${activeRooms}</span>
+                        <small>(currently running)</small>
                         <br/>
                         deleted: <span class="fw-bold">${deletedRooms}</span>
                     </div>
