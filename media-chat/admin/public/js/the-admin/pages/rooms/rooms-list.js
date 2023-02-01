@@ -1,7 +1,7 @@
 import { html, useSelector, useDispatch, useCallback } from '../../imports.js';
 import { selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
 import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
-import { deleteRoom } from '../../redux-toolkit/actions/rooms-actions.js';
+import { deleteRoom, startRoom, stopRoom } from '../../redux-toolkit/actions/rooms-actions.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
 const check = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-check"></use></svg>`;
@@ -35,11 +35,11 @@ export default function RoomsList() {
         const roomId = e.target.rel;
         const confirmed = await confirm({ message: `Start room #${roomId}?`});
         if (confirmed) {
-            /*const action = await dispatch(deleteRoom({ roomId }));
+            const action = await dispatch(startRoom({ roomId }));
             console.log('result action', action)
             if (!action.error) {
-                addToast({ message: `Room #${roomId} deleted.` });
-            }*/
+                addToast({ message: `Room #${roomId} started.` });
+            }
         }
     }, []);
 
@@ -48,11 +48,11 @@ export default function RoomsList() {
         const roomId = e.target.rel;
         const confirmed = await confirm({ message: `Stop room #${roomId}?`});
         if (confirmed) {
-            /*const action = await dispatch(deleteRoom({ roomId }));
+            const action = await dispatch(stopRoom({ roomId }));
             console.log('result action', action)
             if (!action.error) {
-                addToast({ message: `Room #${roomId} deleted.` });
-            }*/
+                addToast({ message: `Room #${roomId} stopped.` });
+            }
         }
     }, []);
 
@@ -71,7 +71,11 @@ export default function RoomsList() {
                 <th></th>
             </thead>
             <tbody>
-            ${filteredRooms.map(r => html`
+            ${filteredRooms.map(r => { 
+                const showStop = r.active;
+                const showStart = !r.active && r.enabled;
+                const showStartDisabled = !r.active && !r.enabled;
+                return html`
                 <tr key=${r.id}>
                     <td>${r.id}</td>
                     <td>${r.user_id}</td>
@@ -86,15 +90,23 @@ export default function RoomsList() {
                     <td>${r.secret ? check : ''}</td>
                     <td>${r.num_participants}</td>
                     <td>
-                        ${r.active 
-                            ? html`<a href="/rooms/stop/${r.id}" class="btn btn-sm btn-outline-secondary me-2" rel=${r.id} onClick=${confirmToStop} data-native off-title="Turn off"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg-->stop</a>` 
-                            : html`<a href="/rooms/start/${r.id}" class="btn btn-sm btn-outline-secondary me-2" rel=${r.id} onClick=${confirmToStart} data-native off-title="Turn on"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg-->start</a>`
+                        ${showStop
+                            ? html`<a href="/rooms/${r.id}/stop" class="btn btn-sm btn-outline-secondary me-2" rel=${r.id} onClick=${confirmToStop} data-native off-title="Turn off"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-stop-fill"></use></svg-->stop</a>` 
+                            : null
+                        }
+                        ${showStart
+                            ? html`<a href="/rooms/${r.id}/start" class="btn btn-sm btn-outline-secondary me-2" rel=${r.id} onClick=${confirmToStart} data-native off-title="Turn on"><!--svg class="bi" width="16" height="16"><use xlink:href="#bi-play-fill"></use></svg-->start</a>`
+                            : null
+                        }
+                        ${showStartDisabled
+                            ? html`<button class="btn btn-sm btn-outline-secondary me-2" disabled>start</button>`
+                            : null
                         }
                         <a href="/rooms/edit/${r.id}" class="btn btn-sm btn-outline-secondary me-2">edit</a>
                         <a href="/rooms/delete/${r.id}" class="btn btn-sm btn-outline-danger" rel=${r.id} onClick=${confirmToDel} data-native>del</a>
                     </td>
                 </tr>
-            `)}
+            `})}
             </tbody>
         </table>
     `;

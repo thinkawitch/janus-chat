@@ -1,14 +1,14 @@
 import { html, useSelector, useDispatch, useMemo, useSmallTitle, useCallback, useLayoutEffect } from '../imports.js';
 import { getRoomsStats } from '../redux-toolkit/actions/rooms-actions.js';
 import ButtonSpinner from '../components/button-spinner.js';
-import { selectTextRoomInfo } from '../redux-toolkit/slices/rooms-slice.js';
+import { selectRoomsStats } from '../redux-toolkit/slices/rooms-slice.js';
 
 // value=useSelector() and action to change the value inside useEffect() - may lead to infinite loop
 
 export default function Home() {
     const dispatch = useDispatch();
     useSmallTitle('Home');
-    const { loading, totalRooms, enabledRooms, activeRooms, deletedRooms } = useSelector(selectTextRoomInfo);
+    const { loading, totalRooms, enabledRooms, activeRooms, deletedRooms } = useSelector(selectRoomsStats);
 
     useLayoutEffect(() => {
         const promise = dispatch(getRoomsStats());
@@ -40,10 +40,10 @@ export default function Home() {
                         <br/>
                         active: <span class="fw-bold me-2">${activeRooms}</span>
                         <small>(currently running)</small>
-                        <br/>
-                        deleted: <span class="fw-bold">${deletedRooms}</span>
                     </div>
                     <a href="/rooms/add" class="btn btn-primary">Add room</a>
+                    <hr />
+                    deleted rooms: <span class="fw-bold">${deletedRooms}</span>
                 </div>
             </div>
             <div class="dash-users card">

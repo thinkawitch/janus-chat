@@ -1,7 +1,10 @@
 import { createSlice, createSelector, createDraftSafeSelector } from '../../imports.js';
 //import { askExternalUser } from '../actions/users-actions.js';
 import {
-    getRooms, getRoom, createRoom, updateRoom, deleteRoom, getRoomsStats
+    getRooms, getRoom,
+    createRoom, updateRoom, deleteRoom,
+    startRoom, stopRoom,
+    getRoomsStats
 } from '../actions/rooms-actions.js';
 import { userLogout } from '../actions/auth-actions.js';
 
@@ -21,7 +24,7 @@ const initialState = {
     notInitialized: false,
     filter: {...initialFilter},
     filteredRooms: [],
-    info: {
+    stats: {
         loading: false,
         totalRooms: 0,
         enabledRooms: 0,
@@ -145,18 +148,40 @@ export const roomsSlice = createSlice({
         [deleteRoom.rejected]: (state, action) => {
             state.deleting = false;
         },
-        [deleteRoom.pending]: (state, action) => {
-            state.info.loading = true;
+        [startRoom.fulfilled]: (state, action) => {
+            // janus sends event after room is created/destroyed
+            // update here mainly for instant interface update
+            const roomId = parseInt(action.meta.arg.roomId);
+            state.rooms.some((r, idx) => {
+                if (r.id === roomId) {
+                    state.rooms[idx].active = 1;
+                    return true;
+                }
+            });
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
+        },
+        [stopRoom.fulfilled]: (state, action) => {
+            const roomId = parseInt(action.meta.arg.roomId);
+            state.rooms.some((r, idx) => {
+                if (r.id === roomId) {
+                    state.rooms[idx].active = 0;
+                    return true;
+                }
+            });
+            state.filteredRooms = filterRooms(state.rooms, state.filter);
+        },
+        [getRoomsStats.pending]: (state, action) => {
+            state.stats.loading = true;
         },
         [getRoomsStats.fulfilled]: (state, action) => {
-            state.info.loading = false;
-            state.info.activeRooms = action.payload.active_rooms;
-            state.info.enabledRooms = action.payload.enabled_rooms;
-            state.info.totalRooms = action.payload.total_rooms;
-            state.info.deletedRooms = action.payload.deleted_rooms;
+            state.stats.loading = false;
+            state.stats.activeRooms = action.payload.active_rooms;
+            state.stats.enabledRooms = action.payload.enabled_rooms;
+            state.stats.totalRooms = action.payload.total_rooms;
+            state.stats.deletedRooms = action.payload.deleted_rooms;
         },
         [getRoomsStats.rejected]: (state, action) => {
-            state.info.loading = false;
+            state.stats.loading = false;
         },
     }
 });
@@ -180,7 +205,7 @@ export const selectRoomsLoading = createSelector(selectTextRoom, rooms => {
     return rooms.loading
 });
 
-export const selectTextRoomInfo = (state) => state.rooms.info;
+export const selectRoomsStats = (state) => state.rooms.stats;
 
 
 export const selectRoomById = createSelector(

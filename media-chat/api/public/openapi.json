@@ -33,8 +33,8 @@
       "description": "User (me)"
     },
     {
-      "name": "textroom",
-      "description": "Janus textroom plugin"
+      "name": "rooms",
+      "description": "Rooms"
     }
   ],
   "paths": {
@@ -155,12 +155,12 @@
         }
       }
     },
-    "/textroom": {
+    "/rooms": {
       "get": {
-        "tags": ["textroom"],
-        "summary": "Get list of text rooms",
+        "tags": ["rooms"],
+        "summary": "Get list of rooms",
         "description": "",
-        "operationId": "textroomList",
+        "operationId": "roomsList",
         "requestBody": {
           "content": {
             "application/json": {
@@ -169,31 +169,31 @@
         },
         "responses": {
           "200": {
-            "description": "List of text rooms"
+            "description": "List of rooms"
           }
         }
       },
       "post": {
-        "tags": ["textroom"],
-        "summary": "Create new text room",
+        "tags": ["rooms"],
+        "summary": "Create new room",
         "description": "",
-        "operationId": "textroomCreate",
+        "operationId": "roomsCreate",
         "requestBody": {
-          "$ref": "#/components/requestBodies/Textroom"
+          "$ref": "#/components/requestBodies/Room"
         },
         "responses": {
           "200": {
-            "description": "Textroom created"
+            "description": "Room created"
           }
         }
       }
     },
-    "/textroom/{roomId}": {
+    "/rooms/{roomId}": {
       "get": {
-        "tags": ["textroom"],
-        "summary": "Get text room",
+        "tags": ["rooms"],
+        "summary": "Get room",
         "description": "",
-        "operationId": "textroomGet",
+        "operationId": "roomsGetOne",
         "parameters": [
           {
             "name": "roomId",
@@ -208,15 +208,15 @@
         ],
         "responses": {
           "200": {
-            "description": "Text room"
+            "description": "Room"
           }
         }
       },
       "put": {
-        "tags": ["textroom"],
-        "summary": "Update text room",
+        "tags": ["rooms"],
+        "summary": "Update room",
         "description": "",
-        "operationId": "textroomUpdate",
+        "operationId": "roomsUpdate",
         "parameters": [
           {
             "name": "roomId",
@@ -228,26 +228,26 @@
               "format": "int64"
             },
             "examples": {
-              "textroom_update": {
+              "room_update": {
                 "value": 1
               }
             }
           }
         ],
         "requestBody": {
-          "$ref": "#/components/requestBodies/Textroom"
+          "$ref": "#/components/requestBodies/Room"
         },
         "responses": {
           "200": {
-            "description": "Textroom updated"
+            "description": "Room updated"
           }
         }
       },
       "delete": {
-        "tags": ["textroom"],
-        "summary": "Delete text room",
+        "tags": ["rooms"],
+        "summary": "Delete room",
         "description": "",
-        "operationId": "textroomDelete",
+        "operationId": "roomsDelete",
         "parameters": [
           {
             "name": "roomId",
@@ -259,7 +259,7 @@
               "format": "int64"
             },
             "examples": {
-              "textroom_delete": {
+              "room_delete": {
                 "value": 1
               }
             }
@@ -267,7 +267,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Text room deleted"
+            "description": "Room deleted"
           }
         }
       }
@@ -297,15 +297,15 @@
           }
         }
       },
-      "Textroom": {
+      "Room": {
         "type": "object",
         "properties": {
-          "description": {
-            "type": "string",
+          "enabled": {
+            "type": "boolean",
             "required": false
           },
-          "history": {
-            "type": "number",
+          "description": {
+            "type": "string",
             "required": false
           },
           "pin": {
@@ -314,6 +314,10 @@
           },
           "secret": {
             "type": "string",
+            "required": false
+          },
+          "history": {
+            "type": "number",
             "required": false
           }
         }
@@ -355,27 +359,28 @@
           }
         }
       },
-      "Textroom": {
-        "description": "Textroom to test",
+      "Room": {
+        "description": "Room to test",
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Textroom"
+              "$ref": "#/components/schemas/Room"
             },
             "examples": {
-              "textroom_test": {
+              "room_test": {
                 "value": {
+                  "enabled": true,
                   "description": "new description",
                   "history": 50,
                   "pin": "1111",
                   "secret": "pineapple"
                 }
               },
-              "textroom_empty": {
+              "room_empty": {
                 "value": {
                 }
               },
-              "textroom_nulls": {
+              "room_nulls": {
                 "value": {
                   "description": null,
                   "history": null,

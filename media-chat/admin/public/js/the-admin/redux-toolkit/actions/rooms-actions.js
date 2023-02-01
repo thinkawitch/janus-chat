@@ -45,6 +45,22 @@ export const deleteRoom = createAsyncThunk(
     }
 )
 
+export const startRoom = createAsyncThunk(
+    'rooms/start-room',
+    async (args, thunkAPI) => {
+        const { roomId, data, signal } = args;
+        return await mediaChatApi.rooms.start(roomId, data, thunkAPI, signal);
+    }
+)
+
+export const stopRoom = createAsyncThunk(
+    'rooms/stop-room',
+    async (args, thunkAPI) => {
+        const { roomId, data, signal } = args;
+        return await mediaChatApi.rooms.stop(roomId, data, thunkAPI, signal);
+    }
+)
+
 
 export const getRoomsStats = createAsyncThunk(
     'rooms/get-stats',

@@ -164,6 +164,34 @@ const mediaChatApi = {
             const response = await fetch(`${mediaChatApiBaseUrl}rooms/stats`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);
         },
+        start: async (roomId, data, thunkAPI, customSignal) => {
+            const signal = customSignal ?? thunkAPI.signal;
+            const localInit = {
+                ...addSignalToFetchInit(fetchInit, signal),
+                method: 'PUT',
+                headers: {
+                    ...fetchHeaderAccept,
+                    ...fetchHeaderContentType,
+                },
+                body: JSON.stringify(data)
+            };
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms/${roomId}/start`, localInit);
+            return await processResponse(response, thunkAPI.rejectWithValue);
+        },
+        stop: async (roomId, data, thunkAPI, customSignal) => {
+            const signal = customSignal ?? thunkAPI.signal;
+            const localInit = {
+                ...addSignalToFetchInit(fetchInit, signal),
+                method: 'PUT',
+                headers: {
+                    ...fetchHeaderAccept,
+                    ...fetchHeaderContentType,
+                },
+                body: JSON.stringify(data)
+            };
+            const response = await fetch(`${mediaChatApiBaseUrl}rooms/${roomId}/stop`, localInit);
+            return await processResponse(response, thunkAPI.rejectWithValue);
+        },
     },
 
     test: {

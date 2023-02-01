@@ -106,7 +106,7 @@ class RoomsController extends AbstractController
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
 
         $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found"], 404);
+        if (!$room) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found"], 404);
 
         $liveRoom = self::getJanusRoomById($janusRooms, $roomId);
         if ($liveRoom) {
@@ -114,7 +114,6 @@ class RoomsController extends AbstractController
         }
 
         $result = [
-            'textroom' => 1,
             'room' => $room,
         ];
         return $this->json($result);
@@ -193,7 +192,7 @@ class RoomsController extends AbstractController
     {
         $data = $request->toArray();
         $newRoom = static::getGoodRoomDataForUpdate($data);
-        if (empty($newRoom)) return $this->json(['textroom' => 1, 'status' => 400, 'title' => 'No data to update room', 'detail' => "No data to update room #$roomId"], 400);
+        if (empty($newRoom)) return $this->json(['status' => 400, 'title' => 'No data to update room', 'detail' => "No data to update room #$roomId"], 400);
 
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
@@ -203,14 +202,14 @@ class RoomsController extends AbstractController
         $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
         $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
+        if (!$room) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
 
         // validate
         foreach (['description', 'pin', 'secret'] as $field) {
             // janus does not set empty value back, only non-empty values will be updated
             // this will make room non-editable non-deletable
             if (!empty($room[$field]) && array_key_exists($field, $newRoom) && strlen($newRoom[$field]) == 0) {
-                return $this->json(['textroom' => 1, 'status' => 400, 'title' => 'Can not make field empty', 'detail' => "Field #$field can not be set empty"], 400);
+                return $this->json(['status' => 400, 'title' => 'Can not make field empty', 'detail' => "Field #$field can not be set empty"], 400);
             }
         }
 
@@ -250,7 +249,7 @@ class RoomsController extends AbstractController
         $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
         if (!$isAdmin) $sql .= ' AND user_id=:user_id';
         $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['textroom' => 1, 'status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
+        if (!$room) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
 
 
         $updateInDb = true;
@@ -274,6 +273,67 @@ class RoomsController extends AbstractController
         if ($updateInDb) {
             $conn->update('text_rooms', ['deleted' => 1], ['id' => $roomId]);
         }
+
+        return $this->json($result);
+    }
+
+    #[Route('/{roomId}/start', requirements: ['roomId' => '\d+'],  methods: ['PUT'])]
+    public function startRoom(
+        int $roomId,
+        Request $request,
+        JanusUserApiService $janusUserApi,
+        Connection $conn
+    ) : JsonResponse
+    {
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        // only creator or admin may start the room
+        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
+        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+        $room = $conn->fetchAssociative($sql, $sqlParams);
+        if (!$room) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
+
+        if (!$room['enabled']) return $this->json(['status' => 400, 'title' => 'Room not enabled', 'detail' => "Room #$roomId not enabled"], 400);
+
+        $result = $janusUserApi->createRoom(
+            $room['id'],
+            $room['description'],
+            $room['secret'],
+            $room['pin'],
+            $room['is_private'],
+            $room['history'],
+            $room['post'],
+            $room['permanent'],
+        );
+
+        return $this->json($result);
+    }
+
+    #[Route('/{roomId}/stop', requirements: ['roomId' => '\d+'],  methods: ['PUT'])]
+    public function stopRoom(
+        int $roomId,
+        Request $request,
+        JanusUserApiService $janusUserApi,
+        Connection $conn
+    ) : JsonResponse
+    {
+        $user = $this->getUser();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        // only creator or admin may stop the room
+        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
+        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+        $room = $conn->fetchAssociative($sql, $sqlParams);
+        if (!$room) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
+
+        $result = $janusUserApi->destroyRoom(
+            $room['id'],
+            $room['secret'],
+            $room['permanent'],
+        );
 
         return $this->json($result);
     }
