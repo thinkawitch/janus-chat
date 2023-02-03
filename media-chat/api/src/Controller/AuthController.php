@@ -34,18 +34,4 @@ class AuthController extends AbstractController
     {
         throw new \Exception('Logout: should not run this');
     }
-
-    #[Route('/is_logged_out', name: 'app_is_logged_out', methods: ['GET'])]
-    public function isLoggedOut(#[CurrentUser] ?User $user): JsonResponse
-    {
-        if (null === $user) {
-            return $this->json([
-                'is_logged_out' => true,
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return $this->json([
-            'is_logged_out' => false,
-        ]);
-    }
 }

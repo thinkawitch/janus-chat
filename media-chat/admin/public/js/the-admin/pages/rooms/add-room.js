@@ -1,7 +1,7 @@
 import { html, useCallback, useMemo, useDispatch, useRouter, useAbortController, useSelector } from '../../imports.js';
 import RoomForm from './room-form.js';
 import { createRoom } from '../../redux-toolkit/actions/rooms-actions.js';
-import { cleanCreatingError, selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
+import { cleanCreatingError, selectRoomsSlice } from '../../redux-toolkit/slices/rooms-slice.js';
 import TopError from '../../components/top-error.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 
@@ -10,7 +10,7 @@ export default function AddRoom() {
     const [ routerCtx, route ] = useRouter();
     const returnUrl = routerCtx.previous ?? '/';
     const [ getAC, resetAC ] = useAbortController(true);
-    const { creatingError } = useSelector(selectTextRoom);
+    const { creatingError } = useSelector(selectRoomsSlice);
     const { addToast } = useToast();
 
     const onSubmit = useCallback(async data => {

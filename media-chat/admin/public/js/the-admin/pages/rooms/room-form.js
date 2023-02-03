@@ -1,10 +1,10 @@
 import { html, useEffect, useSelector, useDispatch, useCallback, useState, useRef } from '../../imports.js';
-import { selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
+import { selectRoomsSlice } from '../../redux-toolkit/slices/rooms-slice.js';
 import ButtonSpinner from '../../components/button-spinner.js';
 
 export default function RoomForm(props) {
     const { mode, room, actions: { onSubmit, onCancel } } = props;
-    const { creating, updating } = useSelector(selectTextRoom);
+    const { creating, updating } = useSelector(selectRoomsSlice);
     const modeAdd = mode === 'add';
     const modeEdit = mode === 'edit';
     const pending = creating || updating;

@@ -3,7 +3,9 @@ import { mediaChatApiBaseUrl } from './config.js';
 const fetchHeaderAccept = {
     'Accept': 'application/json'
 }
-const fetchHeaderContentType = { 'Content-Type': 'application/json;charset=utf-8' }
+const fetchHeaderContentType = {
+    'Content-Type': 'application/json;charset=utf-8'
+}
 const fetchInit = {
     mode: 'cors',
     credentials: 'include', //'same-origin',
@@ -80,11 +82,6 @@ const mediaChatApi = {
             //console.log('auth logout data', data);
             return data;
         },
-        /*isLoggedOut: async () => {
-            const response = await fetch(`${mediaChatApiBaseUrl}auth/is_logged_out`, fetchInit);
-            const data = await response.json();
-            console.log('auth isLoggedOut data', data);
-        },*/
     },
 
     user: {
@@ -152,9 +149,6 @@ const mediaChatApi = {
             const localInit = {
                 ...addSignalToFetchInit(fetchInit, thunkAPI.signal),
                 method: 'DELETE',
-                headers: {
-                    ...fetchHeaderAccept,
-                }
             };
             const response = await fetch(`${mediaChatApiBaseUrl}rooms/${roomId}`, localInit);
             return await processResponse(response, thunkAPI.rejectWithValue);

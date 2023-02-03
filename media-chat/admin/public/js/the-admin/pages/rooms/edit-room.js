@@ -1,7 +1,7 @@
 import { html, useEffect, useLayoutEffect, useRef, useCallback, useMemo, useSelector, useDispatch, useRouter, useAbortController } from '../../imports.js';
 import RoomForm from './room-form.js';
-import { getRoom, updateRoom, deleteRoom } from '../../redux-toolkit/actions/rooms-actions.js';
-import { selectTextRoom, selectRoomById, cleanUpdatingError } from '../../redux-toolkit/slices/rooms-slice.js';
+import { getRoom, updateRoom, deleteRoom, startRoom, stopRoom } from '../../redux-toolkit/actions/rooms-actions.js';
+import { selectRoomsSlice, selectRoomById, cleanUpdatingError } from '../../redux-toolkit/slices/rooms-slice.js';
 import TopError from '../../components/top-error.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
 import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
@@ -13,12 +13,12 @@ export default function EditRoom({ roomId }) {
     const [ routerCtx, route ] = useRouter();
     const returnUrl = routerCtx.previous ?? '/';
     const [ getAC, resetAC ] = useAbortController(true);
-    const { updatingError } = useSelector(selectTextRoom);
+    const { updatingError } = useSelector(selectRoomsSlice);
     const { addToast } = useToast();
 
     const selectTheRoom = useMemo(() => (state => selectRoomById(state, roomId)), [roomId]);
     const room = useSelector(selectTheRoom);
-    const { getting, gettingError } = useSelector(selectTextRoom);
+    const { getting, gettingError } = useSelector(selectRoomsSlice);
 
     let alwaysGetFresh = true;
     useLayoutEffect(() => {
@@ -61,6 +61,7 @@ export default function EditRoom({ roomId }) {
         content = html`
             ${notUpdated}
             <${RoomForm} mode="edit" actions=${actions} room=${room} />
+            <${StartStopRoom} room=${room} />
             <${DeleteRoom} room=${room} />
         `;
     } else {
@@ -87,13 +88,49 @@ export default function EditRoom({ roomId }) {
     `;
 }
 
+function StartStopRoom({ room }) {
+    const { id: roomId, enabled, active } = room;
+    const dispatch = useDispatch();
+    const { addToast } = useToast();
+
+    const startLabel = !enabled ? 'Enable & Start' : 'Start';
+
+    const doStart = useCallback(async () => {
+        if (!enabled) {
+            const action1 = await dispatch(updateRoom({ roomId, data: { 'enabled': true }}));
+            if (action1.error) {
+                return;
+            } else {
+                dispatch(getRoom({ roomId }));
+            }
+        }
+        const action2 = await dispatch(startRoom({ roomId }));
+        if (!action2.error) {
+            addToast({ message: `Room #${roomId} started.` });
+        }
+    }, [roomId, enabled])
+
+    const doStop = useCallback(async () => {
+        const action = await dispatch(stopRoom({ roomId }));
+        if (!action.error) {
+            addToast({ message: `Room #${roomId} stopped.` });
+        }
+    }, [roomId])
+
+    return html`
+        <hr />
+        <p class="text-muted">Start or stop room #${roomId}</p>
+        <button type="button" class="btn btn-secondary me-2" disabled=${active} onclick=${doStart}>${startLabel}<//>
+        <button type="button" class="btn btn-secondary" disabled=${!active} onclick=${doStop}>Stop<//>
+    `
+}
 
 function DeleteRoom({ room }) {
     const { id: roomId } = room;
     const dispatch = useDispatch();
     const { confirm } = useDialogConfirm();
     const { addToast } = useToast();
-    const { deleting } = useSelector(selectTextRoom);
+    const { deleting } = useSelector(selectRoomsSlice);
 
     const confirmToDel = useCallback(async () => {
         const confirmed = await confirm({ message: `Delete room #${roomId}?`});

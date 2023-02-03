@@ -194,13 +194,9 @@ export default roomsSlice.reducer;
 
 // Export a reusable selectors
 
-export const selectRooms = (state) => {
-    return state.rooms.rooms;
-}
+export const selectRoomsSlice = (state) => state.rooms;
 
-export const selectTextRoom = (state) => state.rooms;
-
-export const selectRoomsLoading = createSelector(selectTextRoom, rooms => {
+export const selectRoomsLoading = createSelector(selectRoomsSlice, rooms => {
     console.log('[selector] selectRoomsLoading', rooms.loading)
     return rooms.loading
 });

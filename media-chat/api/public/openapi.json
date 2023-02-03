@@ -89,31 +89,6 @@
         }
       }
     },
-    "/auth/is_logged_out": {
-      "get": {
-        "tags": ["auth"],
-        "summary": "Check if user is logged out",
-        "description": "",
-        "operationId": "authIsLoggedOut",
-        "requestBody": {
-          "content": {
-            "application/json": {
-            },
-            "text/html": {
-
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User still logged in"
-          },
-          "401": {
-            "description": "User logged out"
-          }
-        }
-      }
-    },
     "/me": {
       "get": {
         "tags": ["me"],

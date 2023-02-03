@@ -1,5 +1,5 @@
 import { html, useSelector, useDispatch, useCallback } from '../../imports.js';
-import { selectTextRoom } from '../../redux-toolkit/slices/rooms-slice.js';
+import { selectRoomsSlice } from '../../redux-toolkit/slices/rooms-slice.js';
 import { useDialogConfirm } from '../../components/andrew-preact-dialog/dialog-hook.js';
 import { deleteRoom, startRoom, stopRoom } from '../../redux-toolkit/actions/rooms-actions.js';
 import { useToast } from '../../components/andrew-preact-bootstrap-toast/toast-hook.js';
@@ -9,7 +9,7 @@ const dash = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-da
 const plus = html`<svg class="bi" width="16" height="16"><use xlink:href="#bi-plus"></use></svg>`;
 
 export default function RoomsList() {
-    const { loading, rooms, filteredRooms, notInitialized } = useSelector(selectTextRoom);
+    const { loading, rooms, filteredRooms, notInitialized } = useSelector(selectRoomsSlice);
     const { confirm } = useDialogConfirm();
     const { addToast } = useToast();
     const dispatch = useDispatch();
