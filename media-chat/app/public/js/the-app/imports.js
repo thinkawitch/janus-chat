@@ -56,7 +56,7 @@ delete window.ReactDOM;
 const { Provider, useSelector, useDispatch } = window.ReactRedux;
 
 // redux toolkit
-import 'https://unpkg.com/@reduxjs/toolkit@1.8.6/dist/redux-toolkit.umd.js';
+import 'https://unpkg.com/@reduxjs/toolkit@1.9.2/dist/redux-toolkit.umd.js';
 console.log('window.RTK', window.RTK);
 const { configureStore, createSlice, createAction, createAsyncThunk } = window.RTK;
 
@@ -71,7 +71,7 @@ dayjs.extend(isToday);
 //import StateMachine from 'https://cdn.skypack.dev/javascript-state-machine';
 //import StateMachine from '/js/vendor/javascript-state-machine/state-machine.esm.js';
 
-import 'https://unpkg.com/xstate@4.33.6/dist/xstate.js'
+import 'https://unpkg.com/xstate@4.35.4/dist/xstate.js'
 const xstate = window.XState;
 //console.log('window.XState', window.XState);
 

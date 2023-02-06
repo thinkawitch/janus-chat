@@ -21,6 +21,7 @@ function getInitialState() {
         textRoomJoining: false, // attach -> setup -> join
         textRoomJoined: false, // all the steps are done
         textRoomFailed: false, // all tries failed
+        textRoomDestroyed: false, // destroyed on server
         textRoomPinRequired: undefined,
         textRoomPinValue: undefined,
         textRoomJoiningWithPin: undefined,
@@ -81,6 +82,9 @@ export const janusSlice = createSlice({
             //state.textRoomJoiningWithPin = undefined;
             state.textRoomFailed = true;
         },
+        textRoomDestroyed: (state) => {
+            state.textRoomDestroyed = true;
+        },
         addJanusError: (state, action) => {
             state.errors.push(action.payload);
         },
@@ -111,6 +115,7 @@ export const {
     tryTextRoomJoin,
     textRoomJoined,
     textRoomFailed,
+    textRoomDestroyed,
     setTextRoomPinRequired,
     setTextRoomPinValue,
     setTextRoomPinIncorrect,

@@ -46,7 +46,7 @@ function App() {
         connecting, connectTryNumber, connected, connectFailed, disconnected,
         newCleanConnect, restoringConnect,
         errors,
-        textRoomJoining, textRoomJoined, textRoomFailed,
+        textRoomJoining, textRoomJoined, textRoomFailed, textRoomDestroyed,
         textRoomPinRequired, textRoomPinValue, textRoomPinIncorrect, textRoomJoiningWithPin,
     } = useSelector(selectJanus);
 
@@ -54,7 +54,7 @@ function App() {
 
     let mainPanel = null;
 
-    if ((!textRoomFailed && disconnected) || restoringConnect) {
+    if ((!textRoomDestroyed && !textRoomFailed && disconnected) || restoringConnect) {
         // (!textRoomFailed && disconnected) - to display final error when the initial first connect is failed
         // quick reconnect and new clean connect (after big error)
         let disconnectedOverlay;
@@ -135,7 +135,7 @@ function App() {
             mainPanel = BlockForFailed({ title: `Failed to join room #${roomId}!`, errors });
         }
 
-        if (textRoomJoined) {
+        if (textRoomJoined || textRoomDestroyed) {
             mainPanel = Main();
         }
     }

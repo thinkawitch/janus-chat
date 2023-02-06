@@ -113,11 +113,12 @@ export default function createTextRoomMachine() {
                                 meta: { message: 'joined the room' },
                                 entry: [ assign(_ => ({ joined: true })), 'sendTextRoomContext' ],
                                 exit: [ assign(_ => ({ joined: false })), 'sendTextRoomContext' ],
-                                /*on: {
-                                    ERROR: {
-
+                                on: {
+                                    DESTROYED: {
+                                        target: 'joinFailed',
+                                        actions: ['addError', 'sendTextRoomContext', 'onTextRoomPluginRoomDestroyed'],
                                     }
-                                }*/
+                                }
                             }
                         }
                     }
@@ -152,6 +153,7 @@ export default function createTextRoomMachine() {
             joinTextRoom: () => {},
             onTextRoomPluginJoinSuccess: () => {},
             onTextRoomPluginJoinFailed: () => {},
+            onTextRoomPluginRoomDestroyed: () => {},
         },
         guards: {
             notAttached: context => !context.attached,

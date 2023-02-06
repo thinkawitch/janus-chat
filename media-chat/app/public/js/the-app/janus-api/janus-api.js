@@ -4,7 +4,7 @@ import createJanusMachineService from './xstate/server.xs.js';
 import {
     addJanusError,
     tryConnect, connected, disconnected, connectFailed,
-    tryTextRoomJoin, textRoomJoined, textRoomFailed,
+    tryTextRoomJoin, textRoomJoined, textRoomFailed, textRoomDestroyed,
     setTextRoomPinRequired, setTextRoomPinValue, setTextRoomPinIncorrect, setTextRoomJoiningWithPin,
 } from '../redux-toolkit/slices/janus-slice.js';
 import { MESSAGE_TYPE_GENERAL, MESSAGE_TYPE_SYSTEM } from '../constants.js';
@@ -175,6 +175,18 @@ export function startJanus(theStore) {
             onTextRoomPluginJoinSuccess: (context, event) => {
                 console.log('[startJanus] onTextRoomPluginJoinSuccess', context, event);
                 dispatch(textRoomJoined());
+            },
+            onTextRoomPluginRoomDestroyed: (context, event) => {
+                console.log('[startJanus] onTextRoomPluginRoomDestroyed', context, event);
+                const errorText = 'Room stopped!';
+                dispatch(addMessage({
+                    type: MESSAGE_TYPE_SYSTEM,
+                    text: errorText,
+                    date: new Date().toISOString()
+                }));
+                dispatch(addJanusError(errorText));
+                dispatch(textRoomDestroyed());
+                janusMachineService.send({ type: 'DISCONNECT' }); // full stop
             },
         }
     }
@@ -445,6 +457,7 @@ function attachToTextRoomPlugin() {
                 case 'kicked':
                     break;
                 case 'destroyed':
+                    sendToTextRoomService({ type: 'DESTROYED', payload: `Room #${json.room} destroyed.` });
                     break;
             }
         },

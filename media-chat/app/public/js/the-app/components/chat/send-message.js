@@ -190,9 +190,12 @@ export default function SendMessage() {
         }
     }, [mentions]);
 
-    const { textRoomJoined } = useSelector(selectJanus);
-    const disabled = !textRoomJoined;
-    const placeholder = !textRoomJoined ? 'Loading ...' : 'Enter message, type @ to mention user for whisper message';
+    const { textRoomJoined, textRoomDestroyed } = useSelector(selectJanus);
+    const disabled = !textRoomJoined || textRoomDestroyed;
+    let placeholder = 'Enter message, type @ to mention user for whisper message';
+    if (textRoomDestroyed) placeholder = 'Room stopped.'
+    else if (!textRoomJoined) placeholder = 'Loading ...';
+    //const placeholder = !textRoomJoined ? 'Loading ...' : 'Enter message, type @ to mention user for whisper message';
 
     return html`
         <div class="send-message">
