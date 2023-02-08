@@ -1,6 +1,6 @@
 
 :root {
-    --mc-send-message-height: 8rem;
+    --mc-send-message-height: 5rem;
     --mc-send-message-padding: 0 0 0 3px;
     --mc-send-message-border-width: 2px; /* textarea border width, highlight fix */
     --mc-users-width: 15rem;
@@ -42,6 +42,22 @@
 .mc-cl-send-message {
     grid-area: cl-send-message;
     background: var(--mc-cl-send-message-bg);
+}
+
+/* different sizes */
+@media (max-width: /*767.98px*/ 991.98px) {
+    .mc-chat-layout {
+        grid-template-areas:
+            "cl-messages    "
+            "cl-send-message";
+        grid-template-columns: auto;
+    }
+    .mc-cl-users {
+        display: none;
+    }
+    .mc-cl-send-message .send-message form button {
+        margin-right: 0 !important;
+    }
 }
 
 /* messages list */
