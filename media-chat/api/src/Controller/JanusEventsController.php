@@ -1,7 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Common\JanusConstants;
 use App\Service\JanusUserApiService;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
@@ -9,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Thinkawitch\JanusApi\JanusConstants;
 
 class JanusEventsController extends AbstractController
 {

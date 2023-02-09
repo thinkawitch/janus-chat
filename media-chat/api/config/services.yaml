@@ -40,18 +40,13 @@ services:
         arguments:
             $url: '%app.janus_admin_url%'
             $adminSecret: '%app.janus_admin_secret%'
-    Thinkawitch\JanusApi\Plugin\JanusHttpTextRoomClient:
+    Thinkawitch\JanusApi\JanusHttpClient:
         arguments:
             $url: '%app.janus_api_url%'
             $apiSecret: '%app.janus_api_secret%'
-            $textRoomAdminKey: '%app.janus_textroom_admin_key%'
-    Thinkawitch\JanusApi\Plugin\JanusHttpVideoRoomClient:
-        arguments:
-            $url: '%app.janus_api_url%'
-            $apiSecret: '%app.janus_api_secret%'
-            $videoRoomAdminKey: '%app.janus_videoroom_admin_key%'
-
     App\Service\JanusUserApiService:
         arguments:
             $useTextRooms: '%app.use_text_rooms%'
             $useVideoRooms: '%app.use_video_rooms%'
+            $textRoomAdminKey: '%app.janus_textroom_admin_key%'
+            $videoRoomAdminKey: '%app.janus_videoroom_admin_key%'

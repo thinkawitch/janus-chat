@@ -3,28 +3,31 @@ namespace App\Service;
 
 use Thinkawitch\JanusApi\JanusConstants;
 use Thinkawitch\JanusApi\JanusException;
-use Thinkawitch\JanusApi\Plugin\JanusHttpTextRoomClient;
-use Thinkawitch\JanusApi\Plugin\JanusHttpVideoRoomClient;
+use Thinkawitch\JanusApi\JanusHttpClient;
 
 class JanusUserApiService
 {
-    protected JanusHttpTextRoomClient $textRoomClient;
-    protected JanusHttpVideoRoomClient $videoRoomClient;
+    protected JanusHttpClient $janusClient;
 
     protected bool $useTextRooms;
     protected bool $useVideoRooms;
 
+    protected string $textRoomAdminKey;
+    protected string $videoRoomAdminKey;
+
     public function __construct(
+        JanusHttpClient $janusClient,
         bool $useTextRooms,
         bool $useVideoRooms,
-        JanusHttpTextRoomClient $textRoomClient,
-        JanusHttpVideoRoomClient $videoRoomClient,
+        string $textRoomAdminKey,
+        string $videoRoomAdminKey,
     )
     {
+        $this->janusClient = $janusClient;
         $this->useTextRooms = $useTextRooms;
         $this->useVideoRooms = $useVideoRooms;
-        $this->textRoomClient = $textRoomClient;
-        $this->videoRoomClient = $videoRoomClient;
+        $this->textRoomAdminKey = $textRoomAdminKey;
+        $this->videoRoomAdminKey = $videoRoomAdminKey;
     }
 
     public function OLD_getInfo() : array
@@ -35,20 +38,30 @@ class JanusUserApiService
 
     public function getRooms(bool $includePrivate = false) : array
     {
-        $rooms = null;
+        $rooms = [];
+        $this->janusClient->createSession();
 
         if ($this->useTextRooms) {
-            $this->textRoomClient->createSession();
-            $this->textRoomClient->attachToTextRoomPlugin();
-            $rooms = $this->textRoomClient->getRooms($includePrivate);
-            $this->textRoomClient->detachFromTextRoomPlugin();
-            $this->textRoomClient->destroySession();
+            $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
+            $textRooms = $textRoomPlugin->getRooms($includePrivate);
+            $textRoomPlugin->detach();
+            foreach ($textRooms as $tr) {
+                $tr['room_type'] = 'text';
+                $rooms[] = $tr;
+            }
         }
 
         if ($this->useVideoRooms) {
-
+            $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+            $videoRooms = $videoRoomPlugin->getRooms($includePrivate);
+            $videoRoomPlugin->detach();
+            foreach ($videoRooms as $vr) {
+                $vr['room_type'] = 'video';
+                $rooms[] = $vr;
+            }
         }
 
+        $this->janusClient->destroySession();
         return $rooms;
     }
 
@@ -64,28 +77,29 @@ class JanusUserApiService
     ) : array
     {
         $result = null;
+        $this->janusClient->createSession();
 
         if ($this->useTextRooms) {
-            $this->textRoomClient->createSession();
-            $this->textRoomClient->attachToTextRoomPlugin();
-
-            $result = $this->textRoomClient->createRoom($id, $description, $secret, $pin, $isPrivate, $history, $post, $permanent);
-
-            $this->textRoomClient->detachFromTextRoomPlugin();
-            $this->textRoomClient->destroySession();
+            $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
+            $result = $textRoomPlugin->createRoom($id, $description, $secret, $pin, $isPrivate, $history, $post, $permanent);
+            $textRoomPlugin->detach();
         }
 
+        if ($this->useVideoRooms) {
+
+        }
+
+        $this->janusClient->destroySession();
         return $result;
     }
 
     public function createRoomsIgnoreExisting(array $rooms): void
     {
+        $this->janusClient->createSession();
+
         if ($this->useTextRooms) {
-            $this->textRoomClient->createSession();
-            $this->textRoomClient->attachToTextRoomPlugin();
-
+            $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
             foreach ($rooms as $room) {
-
                 try {
                     $args = [
                         'id' => $room['id'],
@@ -97,7 +111,7 @@ class JanusUserApiService
                         'post' => $room['post'],
                         'permanent' => boolval($room['permanent']),
                     ];
-                    $this->textRoomClient->createRoom(...$args);
+                    $textRoomPlugin->createRoom(...$args);
                 } catch (JanusException $e) {
                     if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS) {
                         // do nothing
@@ -107,45 +121,40 @@ class JanusUserApiService
                 } catch (\Exception $e) {
                     throw $e;
                 }
-
             }
-
-            $this->textRoomClient->detachFromTextRoomPlugin();
-            $this->textRoomClient->destroySession();
+            $textRoomPlugin->detach();
         }
+
+        $this->janusClient->destroySession();
     }
 
     public function editRoom(int $id, ?string $secret, array $newRoom) : array
     {
         $result = null;
+        $this->janusClient->createSession();
 
         if ($this->useTextRooms) {
-            $this->textRoomClient->createSession();
-            $this->textRoomClient->attachToTextRoomPlugin();
-
-            $result = $this->textRoomClient->editRoom($id, $secret, $newRoom);
-
-            $this->textRoomClient->detachFromTextRoomPlugin();
-            $this->textRoomClient->destroySession();
+            $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
+            $result = $textRoomPlugin->editRoom($id, $secret, $newRoom);
+            $textRoomPlugin->detach();
         }
 
+        $this->janusClient->destroySession();
         return $result;
     }
 
     public function destroyRoom(int $id, string $secret=null, bool $permanent=false) : array
     {
         $result = null;
+        $this->janusClient->createSession();
 
         if ($this->useTextRooms) {
-            $this->textRoomClient->createSession();
-            $this->textRoomClient->attachToTextRoomPlugin();
-
-            $result = $this->textRoomClient->destroyRoom($id, $secret, $permanent);
-
-            $this->textRoomClient->detachFromTextRoomPlugin();
-            $this->textRoomClient->destroySession();
+            $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
+            $result = $textRoomPlugin->destroyRoom($id, $secret, $permanent);
+            $textRoomPlugin->detach();
         }
 
+        $this->janusClient->destroySession();
         return $result;
     }
 }

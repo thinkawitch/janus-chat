@@ -18,6 +18,7 @@ framework:
     php_errors:
         log: true
 
+    # to remove
     http_client:
         scoped_clients:
             janus.user.client:

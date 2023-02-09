@@ -2,15 +2,14 @@
 
 namespace App\Controller;
 
-use App\Common\JanusConstants;
 use App\Service\JanusUserApiService;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Thinkawitch\JanusApi\JanusHttpClient;
 use Thinkawitch\JanusApi\JanusHttpAdminClient;
+use Thinkawitch\JanusApi\JanusConstants;
 
 #[Route(path: '/rooms', format: 'json')]
 class RoomsController extends AbstractController
@@ -25,8 +24,8 @@ class RoomsController extends AbstractController
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        // janus text rooms
-        $janusTextRooms = $janusUserApi->getRooms(true);
+        // janus rooms
+        $janusRooms = $janusUserApi->getRooms(true);
 
         // db text rooms
         $sql = 'SELECT * FROM text_rooms WHERE deleted=0';
@@ -43,7 +42,7 @@ class RoomsController extends AbstractController
         $rooms = [];
         foreach ($dbTextRooms as $dbTextRoom) {
             $room = $dbTextRoom;
-            $liveRoom = self::getJanusRoomById($janusTextRooms, $dbTextRoom['id']);
+            $liveRoom = self::getJanusRoomById($janusRooms, $dbTextRoom['id']);
             if ($liveRoom) {
                 $room['num_participants'] = $liveRoom['num_participants'];
             }
@@ -77,7 +76,7 @@ class RoomsController extends AbstractController
         }
         $result = [
             'rooms' => $rooms,
-            'server_text_rooms' => $janusTextRooms,
+            'server_rooms' => $janusRooms,
             'admin' => [
                 'status' => $status,
                 'sessions' => $sessions,
