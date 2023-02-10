@@ -8,4 +8,5 @@ make.env
 janus-gateway/
 media-chat/app/public/js/vendor
 media-chat/app/public/js/the-app/config-ice-servers.js
+media-chat/app/public/js/the-app/config-secrets.js
 media-chat/admin/public/js/vendor

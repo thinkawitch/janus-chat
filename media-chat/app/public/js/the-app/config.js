@@ -1,4 +1,4 @@
-import iceServers from './config-ice-servers.js';
+import { iceServers, apisecret } from './config-secrets.js';
 
 const server = 'wss://' + window.location.hostname + ':8989';
 //const server = 'wss://absent-' + window.location.hostname + ':1111';
@@ -13,6 +13,7 @@ const settings = {
 
 export {
     server,
+    apisecret,
     iceServers,
     opaqueId,
     settings,

@@ -6,7 +6,7 @@
 parameters:
     app.janus_server_name: '%env(resolve:JANUS_SERVER_NAME)%'
     app.janus_api_url: '%env(resolve:JANUS_API_URL)%'
-    app.janus_api_secret: '%env(resolve:JANUS_API_URL)%'
+    app.janus_api_secret: '%env(resolve:JANUS_API_SECRET)%'
     app.janus_admin_url: '%env(resolve:JANUS_ADMIN_URL)%'
     app.janus_admin_secret: '%env(resolve:JANUS_ADMIN_SECRET)%'
     app.janus_textroom_admin_key: '%env(resolve:JANUS_TEXTROOM_ADMIN_KEY)%'

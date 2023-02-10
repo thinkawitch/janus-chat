@@ -1,4 +1,4 @@
-import { server, iceServers, opaqueId } from './../config.js';
+import { server, iceServers, opaqueId, apisecret } from './../config.js';
 import { randomString } from '../utils.js';
 import createJanusMachineService from './xstate/server.xs.js';
 import {
@@ -245,6 +245,7 @@ function connectToJanusServer() {
     const gatewayCallbacks = {
         server,
         iceServers,
+        apisecret,
         success: gwcSuccess,
         error: gwcError,
         destroyed: gwcDestroyed,
