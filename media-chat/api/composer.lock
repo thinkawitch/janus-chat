@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "735ba86182d488335bc046123f254bfd",
+    "content-hash": "042b4c99c5f6a3c445c48f28fa4c580d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -5657,6 +5657,53 @@
                 }
             ],
             "time": "2023-01-10T18:53:53+00:00"
+        },
+        {
+            "name": "thinkawitch/janus-php-api",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thinkawitch/janus-php-api.git",
+                "reference": "a3abbe1e61bf1c2d8f224aeb38f383be7d4a2789"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thinkawitch/janus-php-api/zipball/a3abbe1e61bf1c2d8f224aeb38f383be7d4a2789",
+                "reference": "a3abbe1e61bf1c2d8f224aeb38f383be7d4a2789",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.1",
+                "symfony/http-client": "^6.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Thinkawitch\\JanusApi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "unlicense"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Sinkevitch",
+                    "email": "andrew.sinkevitch@gmail.com"
+                }
+            ],
+            "description": "PHP API for Janus gateway",
+            "keywords": [
+                "Janus",
+                "api",
+                "janus gateway"
+            ],
+            "support": {
+                "issues": "https://github.com/thinkawitch/janus-php-api/issues",
+                "source": "https://github.com/thinkawitch/janus-php-api/tree/v0.0.1"
+            },
+            "time": "2023-02-10T18:37:27+00:00"
         },
         {
             "name": "webmozart/assert",

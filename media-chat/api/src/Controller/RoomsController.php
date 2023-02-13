@@ -95,21 +95,52 @@ class RoomsController extends AbstractController
         JanusUserApiService $janusUserApi,
     ) : JsonResponse
     {
-        // janus
-        $janusRooms = $janusUserApi->getRooms(true);
-
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
-        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
-        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
-        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
 
-        $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found"], 404);
+        // janus
+        $janusRooms = $janusUserApi->getRooms(true);
+        $janusTextRoom = self::getJanusRoomById($janusRooms, $roomId);
 
-        $liveRoom = self::getJanusRoomById($janusRooms, $roomId);
-        if ($liveRoom) {
-            $room['num_participants'] = $liveRoom['num_participants'];
+        $textRoom = null;
+        $videoRoom = null;
+        $room = null; // combined all data
+
+        // textroom
+        if (true) {
+            $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+            $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
+            if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+            $textRoom = $conn->fetchAssociative($sql, $sqlParams);
+            if (!$textRoom) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found, text"], 404);
+        }
+
+        // videoroom
+        if (false) {
+            $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+            $sql = 'SELECT * FROM video_rooms WHERE deleted=0 AND id=:id';
+            if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+            $videoRoom = $conn->fetchAssociative($sql, $sqlParams);
+            if (!$videoRoom) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found, video"], 404);
+        }
+
+        // combine
+        if ($textRoom) {
+            $room = $textRoom;
+        }
+        if ($videoRoom) {
+            if (!$room) {
+                $room = $videoRoom;
+            } else {
+                $room = [...$room, ...$videoRoom];
+            }
+        }
+
+        // add live textroom data
+        if ($janusTextRoom) {
+            $room['num_participants'] = $janusTextRoom['num_participants'];
+        } else {
+            $room['num_participants'] = 0;
         }
 
         $result = [

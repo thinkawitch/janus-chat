@@ -34,7 +34,8 @@
         "symfony/security-bundle": "6.2.*",
         "symfony/serializer": "6.2.*",
         "symfony/validator": "6.2.*",
-        "symfony/yaml": "6.2.*"
+        "symfony/yaml": "6.2.*",
+        "thinkawitch/janus-php-api": "^0.0.1"
     },
     "require-dev": {
         "symfony/maker-bundle": "1.48.*"
@@ -51,10 +52,17 @@
         },
         "sort-packages": true
     },
+    "andrewJanusApi": {
+        "autoload": {
+            "psr-4": {
+                "Thinkawitch\\JanusApi\\": "JanusApi/src/"
+            }
+        }
+    },
     "autoload": {
         "psr-4": {
             "App\\": "src/",
-            "Thinkawitch\\JanusApi\\": "JanusApi/src/"
+            "OffThinkawitch\\JanusApi\\": "JanusApi/src/"
         }
     },
     "autoload-dev": {

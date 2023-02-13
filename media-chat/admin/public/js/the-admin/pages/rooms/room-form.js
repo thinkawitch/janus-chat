@@ -11,14 +11,15 @@ export default function RoomForm(props) {
 
     const initFields = {
         // db
-        enabled: '1',
+        enabled: true,
         // common text and video
         description: '',
         pin: '',
         secret: '',
         // textroom
-        history: '',
+        history: 0,
         // videoroom
+        publishers: 1,
     };
     if (modeEdit) {
         for (const f in initFields) initFields[f] = room[f];
@@ -35,16 +36,22 @@ export default function RoomForm(props) {
 
     const onFormSubmit = useCallback(e => {
         e.preventDefault();
+        /*
         const enabled = e.target.rfEnabled.checked;
         const description = e.target.rfDescription.value;
-        const history = e.target.rfHistory.value;
         const pin = e.target.rfPin.value;
         const secret = e.target.rfSecret.value;
-        const data = { enabled, description, history, pin, secret };
+        //textroom
+        const history = e.target.rfHistory.value;
+        //videoroom
+        const publishers = e.target.rfPublishers.value;
+        const data = { enabled, description, pin, secret, history, publishers, };
+        */
+        const data = { ...fields };
         console.log('onFormSubmit data', data);
         //console.log('onFormSubmit fields', fields); // need fields in dep list
-        onSubmit(data);
-    }, [onSubmit])
+        //onSubmit(data);
+    }, [fields, onSubmit])
 
     const onFormCancel = useCallback(e => {
         e.preventDefault();
@@ -69,9 +76,13 @@ export default function RoomForm(props) {
     const onInput = useCallback(e => {
         const field = e.target.name;
         let val = e.target.value;
-        if (field == 'history') val = parseInt(val);
+        if (field == 'history' || field == 'publishers') {
+            val = parseInt(val);
+            if (isNaN(val)) val = null;
+        }
         if (field == 'enabled') val = e.target.checked;
         const newFields = { ...fields, [field]: val };
+        //console.log('newFields', newFields)
         setFields(newFields);
     }, [fields]);
 
@@ -117,6 +128,13 @@ export default function RoomForm(props) {
                     <input type="number" class="form-control" id="rfHistory" name="history" min="0" max="500" value=${fields.history} onInput=${onInput} readonly=${modeEdit}/>
                     ${modeAdd && html`<small class="text-muted">Can not be changed later</small>`}
                     ${modeEdit && html`<small class="text-muted">Can not be changed</small>`}
+                </div>
+            </div>
+            <hr />
+            <div class="row mb-3">
+                <label for="rfPublishers" class="col-sm-2 col-form-label">Publishers *</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="rfPublishers" name="publishers" min="1" max="10" value=${fields.publishers} onInput=${onInput} required />
                 </div>
             </div>
             <hr />
