@@ -33,18 +33,31 @@ class RoomsController extends AbstractController
         $sql .= ' ORDER BY id';
         $dbTextRooms = $conn->fetchAllAssociative($sql);
 
+        // db video rooms
+        $sql = 'SELECT * FROM video_rooms WHERE deleted=0';
+        if (!$isAdmin) $sql .= ' AND user_id=' . $user->getId();
+        $sql .= ' ORDER BY id';
+        $dbVideoRooms = $conn->fetchAllAssociative($sql);
+
         // active -- room is running on janus
         // deleted - full deleted, disabled, not working, just left for stats
         // enabled - should be launched on janus start,
         // disabled - should not be launched by janus on start
 
         // combine db data with janus live data
+        // also mix textroom with videoroom
         $rooms = [];
         foreach ($dbTextRooms as $dbTextRoom) {
             $room = $dbTextRoom;
             $liveRoom = self::getJanusRoomById($janusRooms, $dbTextRoom['id']);
             if ($liveRoom) {
                 $room['num_participants'] = $liveRoom['num_participants'];
+            }
+            $videoRoom = self::getDbVideoRoomById($dbVideoRooms, $dbTextRoom['id']);
+            if ($videoRoom) {
+                foreach ($videoRoom as $vrField => $vrValue) {
+                    if (!array_key_exists($room, $vrField)) $room[$vrField] = $vrValue;
+                }
             }
 
             if (!$isAdmin) {
@@ -281,27 +294,30 @@ class RoomsController extends AbstractController
         $room = $conn->fetchAssociative($sql, $sqlParams);
         if (!$room) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
 
-
         $updateInDb = true;
         $result = ['room' => $roomId];
 
-        // destroy on janus
-        try {
+        // destroy on janus,
+        // exceptions moved to $janusUserApi, constants have equal values, bad for checks
+        $janusUserApi->destroyRoom($roomId, $room['secret']);
+        /*try {
             $janusUserApi->destroyRoom($roomId, $room['secret']);
         } catch (\Exception $e) {
             $updateInDb = false;
             switch ($e->getCode()) {
                 case JanusConstants::JANUS_TEXTROOM_ERROR_NO_SUCH_ROOM:
+                case JanusConstants::JANUS_VIDEOROOM_ERROR_NO_SUCH_ROOM:
                     $updateInDb = true;
                     break;
                 default:
                     throw $e;
             }
-        }
+        }*/
 
         // mark as deleted in db
         if ($updateInDb) {
             $conn->update('text_rooms', ['deleted' => 1], ['id' => $roomId]);
+            $conn->update('video_rooms', ['deleted' => 1], ['id' => $roomId]);
         }
 
         return $this->json($result);
@@ -405,7 +421,8 @@ class RoomsController extends AbstractController
         ]);
     }
 
-    protected static function getJanusRoomById($janusRooms, $id) : ?array {
+    protected static function getJanusRoomById($janusRooms, $id) : ?array
+    {
         if (!$janusRooms) return null;
         foreach ($janusRooms as $jr) {
             if ($jr['room'] == $id) return $jr;
@@ -413,7 +430,17 @@ class RoomsController extends AbstractController
         return null;
     }
 
-    protected static function getGoodRoomDataForUpdate(array $data) : array {
+    protected static function getDbVideoRoomById($videoRooms, $id) : ?array
+    {
+        if (!$videoRooms) return null;
+        foreach ($videoRooms as $vr) {
+            if ($vr['id'] == $id) return $vr;
+        }
+        return null;
+    }
+
+    protected static function getGoodRoomDataForUpdate(array $data) : array
+    {
         $stringFields = ['description', 'secret', 'pin', 'post'];
         $numFields = ['enabled', /*'history'*/]; // history can't be changed after creation
         $good = [];

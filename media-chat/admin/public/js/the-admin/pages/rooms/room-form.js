@@ -46,11 +46,11 @@ export default function RoomForm(props) {
         //videoroom
         const publishers = e.target.rfPublishers.value;
         const data = { enabled, description, pin, secret, history, publishers, };
+        //console.log('onFormSubmit fields', fields); // need fields in dep list
         */
         const data = { ...fields };
         console.log('onFormSubmit data', data);
-        //console.log('onFormSubmit fields', fields); // need fields in dep list
-        //onSubmit(data);
+        onSubmit(data);
     }, [fields, onSubmit])
 
     const onFormCancel = useCallback(e => {

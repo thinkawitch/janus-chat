@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use Doctrine\DBAL\Exception;
 use Thinkawitch\JanusApi\JanusConstants;
 use Thinkawitch\JanusApi\JanusException;
 use Thinkawitch\JanusApi\JanusHttpClient;
@@ -139,22 +140,51 @@ class JanusUserApiService
             $textRoomPlugin->detach();
         }
 
+        if ($this->useVideoRooms) {
+            $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+        }
+
         $this->janusClient->destroySession();
         return $result;
     }
 
     public function destroyRoom(int $id, string $secret=null, bool $permanent=false) : array
     {
-        $result = null;
+        $textRoomDeleted = true;  // deleted without errors, it is not an error if room doesn't exist
+        $videoRoomDeleted = true;
         $this->janusClient->createSession();
 
         if ($this->useTextRooms) {
             $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
-            $result = $textRoomPlugin->destroyRoom($id, $secret, $permanent);
+            try {
+                $textRoomPlugin->destroyRoom($id, $secret, $permanent);
+            } catch (JanusException $e) {
+                $textRoomDeleted = false;
+                if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_NO_SUCH_ROOM) {
+                    $textRoomDeleted = true;
+                } else {
+                    throw $e;
+                }
+            }
             $textRoomPlugin->detach();
         }
 
+        if ($this->useVideoRooms) {
+            $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+            try {
+                $videoRoomPlugin->destroyRoom($id, $secret, $permanent);
+            } catch (JanusException $e) {
+                $videoRoomDeleted = false;
+                if ($e->getCode() === JanusConstants::JANUS_VIDEOROOM_ERROR_NO_SUCH_ROOM) {
+                    $videoRoomDeleted = true;
+                } else {
+                    throw $e;
+                }
+            }
+            $videoRoomPlugin->detach();
+        }
+
         $this->janusClient->destroySession();
-        return $result;
+        return ['textroom_deleted' => $textRoomDeleted, 'videoroom_deleted' => $videoRoomDeleted];
     }
 }

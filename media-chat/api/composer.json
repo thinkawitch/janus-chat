@@ -62,7 +62,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/",
-            "OffThinkawitch\\JanusApi\\": "JanusApi/src/"
+            "Thinkawitch\\JanusApi\\": "JanusApi/src/"
         }
     },
     "autoload-dev": {
