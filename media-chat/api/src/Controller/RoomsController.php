@@ -14,6 +14,15 @@ use Thinkawitch\JanusApi\JanusConstants;
 #[Route(path: '/rooms', format: 'json')]
 class RoomsController extends AbstractController
 {
+    private bool $useTextRooms;
+    private bool $useVideoRooms;
+
+    public function __construct(bool $useTextRooms, bool $useVideoRooms)
+    {
+        $this->useTextRooms = $useTextRooms;
+        $this->useVideoRooms = $useVideoRooms;
+    }
+
     #[Route('', methods: ['GET'])]
     public function getRooms(
         JanusUserApiService $janusUserApi,
@@ -56,7 +65,7 @@ class RoomsController extends AbstractController
             $videoRoom = self::getDbVideoRoomById($dbVideoRooms, $dbTextRoom['id']);
             if ($videoRoom) {
                 foreach ($videoRoom as $vrField => $vrValue) {
-                    if (!array_key_exists($room, $vrField)) $room[$vrField] = $vrValue;
+                    if (!array_key_exists($vrField, $room)) $room[$vrField] = $vrValue;
                 }
             }
 
@@ -169,36 +178,64 @@ class RoomsController extends AbstractController
         Connection $conn
     ) : JsonResponse
     {
+        //$useTextRooms = $this->getParameter('app.use_text_rooms');
+        //$useVideoRooms = $this->getParameter('app.use_video_rooms');
+
         $isPrivate = true; // true
         $post = null;
         $permanent = false; // false
 
-//        throw $this->createAccessDeniedException();
-//sleep(5); return $this->json(['test']);
-
         $data = $request->toArray();
+        // common
         $enabled = !empty($data['enabled']) ? boolval($data['enabled']) : false;
         $description = !empty($data['description']) ? trim($data['description']) : null;
-        $history = !empty($data['history']) ? intval($data['history']) : 0;
         $secret = !empty($data['secret']) ? trim($data['secret']) : null;
         $pin = !empty($data['pin']) ? trim($data['pin']) : null;
+        // text
+        $history = !empty($data['history']) ? intval($data['history']) : 0;
+        // video
+        $publishers = !empty($data['publishers']) ? intval($data['publishers']) : 0;
 
         try {
             $conn->beginTransaction();
-            $conn->insert('text_rooms', [
-                //'id' => $roomId,
-                'user_id' => $this->getUser()->getId(),
-                'created' => date('Y-m-d H:i:s'),
-                'enabled' => $enabled ? 1 : 0,
-                'secret' => $secret,
-                'pin' => $pin,
-                'is_private' => $isPrivate ? 1 : 0,
-                'history' => $history,
-                'post' => $post,
-                'permanent' => $permanent ? 1 : 0,
-                'description' => $description,
-            ]);
-            $roomId = $conn->lastInsertId();
+            $roomId = null;
+            $userId = $this->getUser()->getId();
+            if ($this->useTextRooms) {
+                $conn->insert('text_rooms', [
+                    'user_id' => $userId,
+                    'created' => date('Y-m-d H:i:s'),
+                    'enabled' => $enabled ? 1 : 0,
+                    'secret' => $secret,
+                    'pin' => $pin,
+                    'is_private' => $isPrivate ? 1 : 0,
+                    'history' => $history,
+                    'post' => $post,
+                    'permanent' => $permanent ? 1 : 0,
+                    'description' => $description,
+                ]);
+                $roomId = $conn->lastInsertId();
+            }
+            if ($this->useVideoRooms) {
+                $videoRoomData = [
+                    'user_id' => $userId,
+                    'created' => date('Y-m-d H:i:s'),
+                    'enabled' => $enabled ? 1 : 0,
+                    'secret' => $secret,
+                    'pin' => $pin,
+                    'is_private' => $isPrivate ? 1 : 0,
+                    'permanent' => $permanent ? 1 : 0,
+                    'description' => $description,
+                    'publishers' => $publishers,
+                ];
+                if ($this->useTextRooms) {
+                    $videoRoomData['id'] = $roomId;
+                }
+                $conn->insert('video_rooms', $videoRoomData);
+                if (!$this->useTextRooms) {
+                    $roomId = $conn->lastInsertId();
+                }
+            }
+
             $result = ['room' => $roomId];
 
             if ($enabled) {
@@ -215,10 +252,13 @@ class RoomsController extends AbstractController
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
+            /* # do we need this, should move the check into $janusUserApi
             switch ($e->getCode()) {
                 case JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS:
                     break;
-            }
+                case JanusConstants::JANUS_VIDEOROOM_ERROR_ROOM_EXISTS:
+                    break;
+            }*/
             throw $e;
         }
 
