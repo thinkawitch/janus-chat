@@ -1,7 +1,6 @@
 <?php
 namespace App\Service;
 
-use Doctrine\DBAL\Exception;
 use Thinkawitch\JanusApi\JanusConstants;
 use Thinkawitch\JanusApi\JanusException;
 use Thinkawitch\JanusApi\JanusHttpClient;
@@ -67,31 +66,64 @@ class JanusUserApiService
     }
 
     public function createRoom(
+        // common props
         int $id,
         ?string $description=null,
         ?string $secret=null,
         ?string $pin=null,
         bool $isPrivate=true,
+        bool $permanent=false,
+        // text room
         int $history=0,
         ?string $post=null,
-        bool $permanent=false,
+        // video room
     ) : array
     {
-        $result = null;
+        $textRoomCreated = true;
+        $videoRoomCreated = true;
+
         $this->janusClient->createSession();
+
+        $allowed = null;
+        $extra = [];
 
         if ($this->useTextRooms) {
             $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
-            $result = $textRoomPlugin->createRoom($id, $description, $secret, $pin, $isPrivate, $history, $post, $permanent);
+            try {
+                $textRoomPlugin->createRoom($id, $description, $secret, $pin, $isPrivate, $history, $post, $permanent);
+            } catch (JanusException $e) {
+                $textRoomCreated = false;
+                if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS) {
+                    $textRoomCreated = true; // count existing room as good one
+                } else {
+                    throw $e;
+                }
+            } catch (\Exception $e) {
+                throw $e;
+            }
             $textRoomPlugin->detach();
         }
 
         if ($this->useVideoRooms) {
+            $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+            try {
+                $videoRoomPlugin->createRoom($id, $description, $secret, $pin, $isPrivate, $permanent, $allowed, $extra);
+            } catch (JanusException $e) {
+                $videoRoomCreated = false;
+                if ($e->getCode() === JanusConstants::JANUS_VIDEOROOM_ERROR_ROOM_EXISTS) {
+                    $videoRoomCreated = true; // count existing room as good one
+                } else {
+                    throw $e;
+                }
+            } catch (\Exception $e) {
+                throw $e;
+            }
 
+            $videoRoomPlugin->detach();
         }
 
         $this->janusClient->destroySession();
-        return $result;
+        return [$textRoomCreated, $videoRoomCreated];
     }
 
     public function createRoomsIgnoreExisting(array $rooms): void
@@ -150,8 +182,10 @@ class JanusUserApiService
 
     public function destroyRoom(int $id, string $secret=null, bool $permanent=false) : array
     {
-        $textRoomDeleted = true;  // deleted without errors, it is not an error if room doesn't exist
-        $videoRoomDeleted = true;
+        // destroy without errors, it is not an error if room doesn't exist
+        // true - means there were no errors
+        $textRoomDestroyed = true;
+        $videoRoomDestroyed = true;
         $this->janusClient->createSession();
 
         if ($this->useTextRooms) {
@@ -159,12 +193,14 @@ class JanusUserApiService
             try {
                 $textRoomPlugin->destroyRoom($id, $secret, $permanent);
             } catch (JanusException $e) {
-                $textRoomDeleted = false;
+                $textRoomDestroyed = false;
                 if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_NO_SUCH_ROOM) {
-                    $textRoomDeleted = true;
+                    $textRoomDestroyed = true;
                 } else {
                     throw $e;
                 }
+            } catch (\Exception $e) {
+                throw $e;
             }
             $textRoomPlugin->detach();
         }
@@ -174,17 +210,20 @@ class JanusUserApiService
             try {
                 $videoRoomPlugin->destroyRoom($id, $secret, $permanent);
             } catch (JanusException $e) {
-                $videoRoomDeleted = false;
+                $videoRoomDestroyed = false;
                 if ($e->getCode() === JanusConstants::JANUS_VIDEOROOM_ERROR_NO_SUCH_ROOM) {
-                    $videoRoomDeleted = true;
+                    $videoRoomDestroyed = true;
                 } else {
                     throw $e;
                 }
+            } catch (\Exception $e) {
+                throw $e;
             }
             $videoRoomPlugin->detach();
         }
 
         $this->janusClient->destroySession();
-        return ['textroom_deleted' => $textRoomDeleted, 'videoroom_deleted' => $videoRoomDeleted];
+
+        return [$textRoomDestroyed, $videoRoomDestroyed];
     }
 }

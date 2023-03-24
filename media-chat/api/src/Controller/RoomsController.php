@@ -235,7 +235,6 @@ class RoomsController extends AbstractController
                     $roomId = $conn->lastInsertId();
                 }
             }
-
             $result = ['room' => $roomId];
 
             if ($enabled) {
@@ -252,13 +251,6 @@ class RoomsController extends AbstractController
             $conn->commit();
         } catch (\Exception $e) {
             $conn->rollBack();
-            /* # do we need this, should move the check into $janusUserApi
-            switch ($e->getCode()) {
-                case JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS:
-                    break;
-                case JanusConstants::JANUS_VIDEOROOM_ERROR_ROOM_EXISTS:
-                    break;
-            }*/
             throw $e;
         }
 
@@ -337,22 +329,8 @@ class RoomsController extends AbstractController
         $updateInDb = true;
         $result = ['room' => $roomId];
 
-        // destroy on janus,
-        // exceptions moved to $janusUserApi, constants have equal values, bad for checks
-        $janusUserApi->destroyRoom($roomId, $room['secret']);
-        /*try {
-            $janusUserApi->destroyRoom($roomId, $room['secret']);
-        } catch (\Exception $e) {
-            $updateInDb = false;
-            switch ($e->getCode()) {
-                case JanusConstants::JANUS_TEXTROOM_ERROR_NO_SUCH_ROOM:
-                case JanusConstants::JANUS_VIDEOROOM_ERROR_NO_SUCH_ROOM:
-                    $updateInDb = true;
-                    break;
-                default:
-                    throw $e;
-            }
-        }*/
+        // destroy on janus
+        [$textRoomDestroyed, $videoRoomDestroyed] = $janusUserApi->destroyRoom($roomId, $room['secret']);
 
         // mark as deleted in db
         if ($updateInDb) {
