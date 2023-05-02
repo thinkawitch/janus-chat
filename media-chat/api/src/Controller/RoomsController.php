@@ -129,21 +129,21 @@ class RoomsController extends AbstractController
         $room = null; // combined all data
 
         // textroom
-        if (true) {
+        if ($this->useTextRooms) {
             $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
             $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
             if (!$isAdmin) $sql .= ' AND user_id=:user_id';
             $textRoom = $conn->fetchAssociative($sql, $sqlParams);
-            if (!$textRoom) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found, text"], 404);
+            if (!$textRoom) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "TextRoom $roomId not found"], 404);
         }
 
         // videoroom
-        if (false) {
+        if ($this->useVideoRooms) {
             $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
             $sql = 'SELECT * FROM video_rooms WHERE deleted=0 AND id=:id';
             if (!$isAdmin) $sql .= ' AND user_id=:user_id';
             $videoRoom = $conn->fetchAssociative($sql, $sqlParams);
-            if (!$videoRoom) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "Room $roomId not found, video"], 404);
+            if (!$videoRoom) return $this->json(['status' => 404, 'title' => 'Not found', 'detail' => "VideoRoom $roomId not found"], 404);
         }
 
         // combine
@@ -238,13 +238,17 @@ class RoomsController extends AbstractController
             $result = ['room' => $roomId];
 
             if ($enabled) {
-                $janusUserApi->createRoom(
+                [$textRoomCreated, $videoRoomCreated] = $janusUserApi->createRoom(
                     $roomId,
                     description: $description,
                     secret: $secret,
                     pin: $pin,
                     isPrivate: $isPrivate,
+                    // text
                     history: $history,
+                    post: $post,
+                    // video
+                    publishers: $publishers,
                 );
             }
 
@@ -352,24 +356,47 @@ class RoomsController extends AbstractController
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        // only creator or admin may start the room
-        $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
-        $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
-        if (!$isAdmin) $sql .= ' AND user_id=:user_id';
-        $room = $conn->fetchAssociative($sql, $sqlParams);
-        if (!$room) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "Room #$roomId not found"], 404);
+        $room = null; // common data
+        $textRoom = ['history' => 0, 'post' => null]; // null data when useTextRooms=false
+        $videoRoom = ['publishers' => 1];
 
-        if (!$room['enabled']) return $this->json(['status' => 400, 'title' => 'Room not enabled', 'detail' => "Room #$roomId not enabled"], 400);
+        if ($this->useTextRooms) {
+            // only creator or admin may start the room
+            $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+            $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND id=:id';
+            if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+            $textRoom = $conn->fetchAssociative($sql, $sqlParams);
+            if (!$textRoom) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "TextRoom #$roomId not found"], 404);
+            if (!$textRoom['enabled']) return $this->json(['status' => 400, 'title' => 'Room not enabled', 'detail' => "TextRoom #$roomId not enabled"], 400);
+
+            $room = $textRoom;
+        }
+
+        if ($this->useVideoRooms) {
+            // only creator or admin may start the room
+            $sqlParams = ['id' => $roomId, 'user_id' => $user->getId()];
+            $sql = 'SELECT * FROM video_rooms WHERE deleted=0 AND id=:id';
+            if (!$isAdmin) $sql .= ' AND user_id=:user_id';
+            $videoRoom = $conn->fetchAssociative($sql, $sqlParams);
+            if (!$videoRoom) return $this->json(['status' => 404, 'title' => 'Room not found', 'detail' => "VideoRoom #$roomId not found"], 404);
+            if (!$videoRoom['enabled']) return $this->json(['status' => 400, 'title' => 'Room not enabled', 'detail' => "VideoRoom #$roomId not enabled"], 400);
+
+            if (!$room) $room = $videoRoom;
+        }
 
         $result = $janusUserApi->createRoom(
+            // common
             $room['id'],
-            $room['description'],
-            $room['secret'],
-            $room['pin'],
-            $room['is_private'],
-            $room['history'],
-            $room['post'],
-            $room['permanent'],
+            description: $room['description'],
+            secret: $room['secret'],
+            pin: $room['pin'],
+            isPrivate: $room['is_private'],
+            permanent: $room['permanent'],
+            // text room
+            history: $textRoom['history'],
+            post: $textRoom['post'],
+            // video room
+            publishers: $videoRoom['publishers']
         );
 
         return $this->json($result);

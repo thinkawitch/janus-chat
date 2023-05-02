@@ -77,6 +77,7 @@ class JanusUserApiService
         int $history=0,
         ?string $post=null,
         // video room
+        int $publishers=0,
     ) : array
     {
         $textRoomCreated = true;
@@ -85,7 +86,7 @@ class JanusUserApiService
         $this->janusClient->createSession();
 
         $allowed = null;
-        $extra = [];
+        $extra = ['publishers' => $publishers];
 
         if ($this->useTextRooms) {
             $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
@@ -158,6 +159,11 @@ class JanusUserApiService
             $textRoomPlugin->detach();
         }
 
+        if ($this->useVideoRooms) {
+            $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+            $videoRoomPlugin->detach();
+        }
+
         $this->janusClient->destroySession();
     }
 
@@ -174,6 +180,8 @@ class JanusUserApiService
 
         if ($this->useVideoRooms) {
             $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+            //
+            $videoRoomPlugin->detach();
         }
 
         $this->janusClient->destroySession();
