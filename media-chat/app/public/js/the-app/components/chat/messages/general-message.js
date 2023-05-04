@@ -11,7 +11,8 @@ export default function GeneralMessage(props) {
         <div class="ml-message general-message ${clWhisper}">
             <span class="date-from">
                 ${showTime && html`<span class="date">[${formatMessageDate(date)}]</span>`}
-                <span class="from ${cutClass}" title=${theName}>${theName}:</span>
+                <span class="from ${cutClass}" title=${theName}>${theName}</span>
+                <span class="dots">:</span>
             </span>
             <span class="text">${text}</span>
         </div>

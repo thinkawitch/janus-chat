@@ -62,16 +62,19 @@ class JanusEventsController extends AbstractController
         switch ($event['status']) {
             case 'started':
                 $this->logger->info('server_started');
+
+                $sql = 'SELECT * FROM text_rooms WHERE deleted=0 AND enabled=1';
+                $textRooms = $this->conn->fetchAllAssociative($sql);
+
+                $sql = 'SELECT * FROM video_rooms WHERE deleted=0 AND enabled=1';
+                $videoRooms = $this->conn->fetchAllAssociative($sql);
+
+                /*foreach ($textRooms as $room) {
+                    $this->logger->info('try to launch room ' . json_encode($room));
+                }*/
                 // connect to server
                 // create absent rooms
-                $sql = '
-                    SELECT * FROM text_rooms WHERE deleted=0 AND enabled=1
-                ';
-                $rooms = $this->conn->fetchAllAssociative($sql);
-                foreach ($rooms as $room) {
-                    $this->logger->info('try to launch room ' . json_encode($room));
-                }
-                $this->janusUserApi->createRoomsIgnoreExisting($rooms);
+                $this->janusUserApi->createRoomsIgnoreExisting($textRooms, $videoRooms, $this->logger);
                 break;
             case 'shutdown':
                 $this->logger->info('server_shutdown');

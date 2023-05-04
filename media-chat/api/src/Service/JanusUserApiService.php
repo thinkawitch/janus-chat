@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use Psr\Log\LoggerInterface;
 use Thinkawitch\JanusApi\JanusConstants;
 use Thinkawitch\JanusApi\JanusException;
 use Thinkawitch\JanusApi\JanusHttpClient;
@@ -127,13 +128,13 @@ class JanusUserApiService
         return [$textRoomCreated, $videoRoomCreated];
     }
 
-    public function createRoomsIgnoreExisting(array $rooms): void
+    public function createRoomsIgnoreExisting(?array $textRooms, ?array $videoRooms, ?LoggerInterface $logger): void
     {
         $this->janusClient->createSession();
 
-        if ($this->useTextRooms) {
+        if ($this->useTextRooms && is_array($textRooms)) {
             $textRoomPlugin = $this->janusClient->attachToTextRoomPlugin($this->textRoomAdminKey);
-            foreach ($rooms as $room) {
+            foreach ($textRooms as $room) {
                 try {
                     $args = [
                         'id' => $room['id'],
@@ -145,6 +146,7 @@ class JanusUserApiService
                         'post' => $room['post'],
                         'permanent' => boolval($room['permanent']),
                     ];
+                    $logger && $logger->info('try to create text room ' . json_encode($room));
                     $textRoomPlugin->createRoom(...$args);
                 } catch (JanusException $e) {
                     if ($e->getCode() === JanusConstants::JANUS_TEXTROOM_ERROR_ROOM_EXISTS) {
@@ -159,8 +161,33 @@ class JanusUserApiService
             $textRoomPlugin->detach();
         }
 
-        if ($this->useVideoRooms) {
+        if ($this->useVideoRooms && is_array($videoRooms)) {
             $videoRoomPlugin = $this->janusClient->attachToVideoRoomPlugin($this->videoRoomAdminKey);
+            foreach ($videoRooms as $room) {
+                try {
+                    $args = [
+                        'id' => $room['id'],
+                        'description' => $room['description'],
+                        'secret' => $room['secret'],
+                        'pin' => $room['pin'],
+                        'isPrivate' => boolval($room['is_private']),
+                        'permanent' => boolval($room['permanent']),
+                        'extra' => [
+                            'publishers' => $room['publishers'],
+                        ],
+                    ];
+                    $logger && $logger->info('try to create video room ' . json_encode($room));
+                    $videoRoomPlugin->createRoom(...$args);
+                } catch (JanusException $e) {
+                    if ($e->getCode() === JanusConstants::JANUS_VIDEOROOM_ERROR_ROOM_EXISTS) {
+                        // do nothing
+                    } else {
+                        throw $e;
+                    }
+                } catch (\Exception $e) {
+                    throw $e;
+                }
+            }
             $videoRoomPlugin->detach();
         }
 

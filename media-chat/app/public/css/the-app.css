@@ -72,13 +72,14 @@
 }
 
 .mc-cl-messages .messages-list .ml-message {
-    margin: 0.2rem 0.5rem 0 0.5rem;
+    margin: 0.3rem 0.5rem;
+    line-height: 1.1;
 }
 
 .mc-cl-messages .messages-list .ml-message .date-from {
     display: inline-flex;
     align-items: center;
-    transform: translate(0, -4px); /* still vertical align not fine, with/without time vertical align differs */
+    off-transform: translate(0, -4px); /* still vertical align not fine, with/without time vertical align differs */
 }
 /*@supports (-moz-appearance:button) and (contain:paint) {
     !* firefox only *!
@@ -91,11 +92,12 @@
     margin: 0 0.2rem 0 0;
     color: var(--jca-gray-600);
     font-size: 70%;
+    off-border: 1px solid indianred;
 }
 
 .mc-cl-messages .messages-list .ml-message .from {
-    margin: 0 0.2rem 0 0;
     font-weight: bold;
+    off-border: 1px solid deepskyblue;
 }
 .mc-cl-messages .messages-list .ml-message .from.cut-long-username {
     max-width: 20ch;
@@ -104,8 +106,13 @@
     white-space: nowrap;
 }
 
+.mc-cl-messages .messages-list .ml-message .date-from .dots {
+    margin: 0 0.2rem 0 0;
+}
+
 .mc-cl-messages .messages-list .ml-message .text {
     word-break: break-all;
+    off-border: 1px solid limegreen;
 }
 
 .mc-cl-messages .messages-list .ml-message.system-message {
