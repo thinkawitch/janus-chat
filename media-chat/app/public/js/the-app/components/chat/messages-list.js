@@ -8,7 +8,7 @@ import { selectSettings } from '../../redux-toolkit/slices/settings-slice.js';
 
 export default function MessagesList() {
     const { messages } = useSelector(selectTextRoom);
-    const { showTime, cutLongUsername } = useSelector(selectSettings);
+    const { showTime, cutLongUsername, showJoinLeave } = useSelector(selectSettings);
     const user = useSelector(selectUser);
     const panelRef = useRef(null);
 
@@ -32,6 +32,7 @@ export default function MessagesList() {
             ${messages.map((message,key) => {
                 switch (message.type) {
                     case MESSAGE_TYPE_SYSTEM:
+                        if (!showJoinLeave) return null; // temp,  should skip only join/leave
                         return html`<${SystemMessage} key=${'msk-'+key} message=${message} showTime=${showTime} />`;
                     case MESSAGE_TYPE_GENERAL:
                         return html`<${GeneralMessage} key=${'mgk-'+key} message=${message} showTime=${showTime} cutLongUsername=${cutLongUsername} />`;

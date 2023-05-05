@@ -21,9 +21,9 @@ export function renderApp(node, { roomId, user, settings }) {
 
     // apply settings
     const appSettings = { ...defaultSettings, ...settings };
-    externalApi.showTime(appSettings.showTime);
-    externalApi.showJoinLeave(appSettings.showJoinLeave);
-    externalApi.cutLongUsername(appSettings.cutLongUsername);
+    externalApi.setShowTime(appSettings.showTime);
+    externalApi.setShowJoinLeave(appSettings.showJoinLeave);
+    externalApi.setCutLongUsername(appSettings.cutLongUsername);
 
     node.innerHTML = ''; // clean the place
     render(html`

@@ -37,6 +37,18 @@
         function switchToBootstrap() {
             window.location = '/index.html' + window.location.search;
         }
+        function toggleTime() {
+            if (!window.chatApi) return;
+            window.chatApi.setShowTime(!window.chatApi.getShowTime());
+        }
+        function toggleCutUsername() {
+            if (!window.chatApi) return;
+            window.chatApi.setCutLongUsername(!window.chatApi.getCutLongUsername());
+        }
+        function toggleJoinLeave() {
+            if (!window.chatApi) return;
+            window.chatApi.setShowJoinLeave(!window.chatApi.getShowJoinLeave());
+        }
     </script>
 </head>
 <body>
@@ -50,8 +62,15 @@
     <main class="grow p-2">
         <div class="flex h-full">
             <div class="grow flex flex-col">
-                <div class="border-solid border-2 border-gray-400 rounded-t bg-slate-50 p-1">
-                    Chat on tailwind page <button class="bg-purple-500 text-slate-50 rounded p-1 text-xs" onclick="switchToBootstrap()">to bootstrap</button>
+                <div class="flex flex-row border-solid border-2 border-gray-400 rounded-t bg-slate-50 p-1">
+                    <div class="grow">
+                        Chat on tailwind page <button class="bg-purple-500 text-slate-50 rounded p-1 text-xs" onclick="switchToBootstrap()">to bootstrap</button>
+                    </div>
+                    <div>
+                        <button class="bg-slate-500 text-slate-50 rounded p-1 text-xs" onclick="toggleTime()">time</button>
+                        <button class="bg-slate-500 text-slate-50 rounded p-1 text-xs" onclick="toggleCutUsername()">name</button>
+                        <button class="bg-slate-500 text-slate-50 rounded p-1 text-xs" onclick="toggleJoinLeave()">join</button>
+                    </div>
                 </div>
                 <div class="border-solid border-2 border-gray-400 rounded-b bg-white p-1 grow bs-in-pocket" id="the-media-chat">
                         Loading...

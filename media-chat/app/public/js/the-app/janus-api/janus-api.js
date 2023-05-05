@@ -419,8 +419,9 @@ function attachToTextRoomPlugin() {
                 case 'announcement':
                     break;
                 case 'join': {
-                    const settings = selectSettings(getState());
-                    if (!settings.showJoinLeave) return;
+                    // add message, filtering moved to messages-list
+                    //const settings = selectSettings(getState());
+                    //if (!settings.showJoinLeave) return;
                     const participant = { username: json.username, display: json.display };
                     dispatch(addParticipant(participant));
                     dispatch(addMessage({
@@ -437,8 +438,8 @@ function attachToTextRoomPlugin() {
                     break;
                 }
                 case 'leave': {
-                    const settings = selectSettings(getState());
-                    if (!settings.showJoinLeave) return;
+                    //const settings = selectSettings(getState());
+                    //if (!settings.showJoinLeave) return;
                     const participant = selectParticipantByFrom(getState(), json.username);
                     if (participant) {
                         dispatch(addMessage({
@@ -551,6 +552,7 @@ export function joinTextRoom() {
             dispatch(addParticipants(response.participants));
             response.participants.forEach(p => {
                 dispatch(askExternalUser(p.username)).then(() => {
+                    console.log('response.participants')
                     const user = selectUserByFrom(getState(), p.username);
                     if (user) {
                         dispatch(setUserOnline(user));

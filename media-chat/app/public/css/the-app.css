@@ -79,7 +79,7 @@
 .mc-cl-messages .messages-list .ml-message .date-from {
     display: inline-flex;
     align-items: center;
-    off-transform: translate(0, -4px); /* still vertical align not fine, with/without time vertical align differs */
+    vertical-align: middle;
 }
 /*@supports (-moz-appearance:button) and (contain:paint) {
     !* firefox only *!
@@ -92,12 +92,11 @@
     margin: 0 0.2rem 0 0;
     color: var(--jca-gray-600);
     font-size: 70%;
-    off-border: 1px solid indianred;
 }
 
 .mc-cl-messages .messages-list .ml-message .from {
     font-weight: bold;
-    off-border: 1px solid deepskyblue;
+    font-size: 120%;
 }
 .mc-cl-messages .messages-list .ml-message .from.cut-long-username {
     max-width: 20ch;
@@ -111,8 +110,8 @@
 }
 
 .mc-cl-messages .messages-list .ml-message .text {
+    vertical-align: middle;
     word-break: break-all;
-    off-border: 1px solid limegreen;
 }
 
 .mc-cl-messages .messages-list .ml-message.system-message {

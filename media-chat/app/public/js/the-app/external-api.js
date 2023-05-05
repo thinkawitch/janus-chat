@@ -13,14 +13,23 @@ export function startExternalApi(theStore) {
         setUserResolver: (handler) => {
             userResolver = handler;
         },
-        showTime: (value) => {
+        setShowTime: (value) => {
             dispatch(showTime(value));
         },
-        showJoinLeave: (value) => {
+        getShowTime: () => {
+            return store.getState().settings.showTime;
+        },
+        setShowJoinLeave: (value) => {
             dispatch(showJoinLeave(value));
         },
-        cutLongUsername: (value) => {
+        getShowJoinLeave: () => {
+            return store.getState().settings.showJoinLeave;
+        },
+        setCutLongUsername: (value) => {
             dispatch(cutLongUsername(value));
+        },
+        getCutLongUsername: () => {
+            return store.getState().settings.cutLongUsername;
         },
     }
 }

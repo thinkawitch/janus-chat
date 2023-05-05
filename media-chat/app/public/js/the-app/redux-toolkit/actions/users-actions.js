@@ -20,12 +20,13 @@ export const askExternalUser = createAsyncThunk(
 
         return await resolver(username);
     }, {
-        condition: (username, thunkAPI) => {
+        // condition makes bug with users marked offline when they are not
+        /*condition: (username, thunkAPI) => {
             const { usersRequests } = thunkAPI.getState();
             const fetchStatus = usersRequests[username];
             if (fetchStatus && fetchStatus === 'pending') {
                 return false;
             }
-        }
+        }*/
     }
 )
