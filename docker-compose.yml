@@ -12,7 +12,8 @@ services:
   # janus-gateway
   janus-gateway:
     #image: canyan/janus-gateway:master_a10bf8c6a9dbc1f21645db64f12d934b9cc33f0e # Oct 13, 2022 at 7:10 am
-    image: canyan/janus-gateway:master_ef984223dd0cfbaa07445c18748f506899678305 # Mon Nov 14 04:07:05 UTC 2022
+    #image: canyan/janus-gateway:master_ef984223dd0cfbaa07445c18748f506899678305 # Mon Nov 14 04:07:05 UTC 2022
+    image: canyan/janus-gateway:1.1.4 # May 20, 2023
     command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
     ports:
       - "${EXPOSE_IP}:8088:8088" # http  temp for thinkawitch-janus-php-api

@@ -310,13 +310,19 @@ nat: {
 
     # andrew
 	#ignore_mdns = true
+
 	#stun_server = "openrelay.metered.ca"
     #stun_port = 80
+
     #stun_server = "stun.l.google.com"
     #stun_port = 19302
+
     stun_server = "stun.sinkevitch.name"
-    #stun_port = 3478
     stun_port = 5349
+    #ice_lite = true
+    #ice_tcp = true
+
+    # /andrew
 
 
 	# In case you're deploying Janus on a server which is configured with
