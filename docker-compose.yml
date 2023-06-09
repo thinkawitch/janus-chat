@@ -41,7 +41,7 @@ services:
   # nginx
   # with static apps: chat app, admin app
   nginx:
-    image: nginx:1.21-alpine
+    image: nginx:1.25-alpine
     ports:
       - "${EXPOSE_IP}:80:80"
       - "${EXPOSE_IP}:443:443"
@@ -97,7 +97,7 @@ services:
   #
   #
   mysql:
-    image: mysql:5.7.22
+    image: mysql:5.7.40
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/containers/mysql/initdb.d:/docker-entrypoint-initdb.d
