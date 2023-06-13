@@ -1,9 +1,19 @@
 server {
-    listen 80; # for special events from janus-gateway to media-chat-api
+    # for special events from janus-gateway to media-chat-api
+    # and coturn access api
+    listen 80;
 
     server_name ${API_DOMAIN};
 
-    if ($uri != '/janus-events') {
+    set $doSslRedir 1;
+
+    if ($uri = '/janus-events') {
+        set $doSslRedir 0;
+    }
+    if ($uri = '/coturn-access') {
+        set $doSslRedir 0;
+    }
+    if ($doSslRedir = 1) {
         return 302 https://$host$request_uri;
     }
 

@@ -14,6 +14,8 @@ parameters:
     app.janus_videoroom_admin_key: '%env(string:JANUS_VIDEOROOM_ADMIN_KEY)%'
     app.use_text_rooms: '%env(bool:USE_TEXT_ROOMS)%'
     app.use_video_rooms: '%env(bool:USE_VIDEO_ROOMS)%'
+    app.coturn_domain: '%env(string:COTURN_DOMAIN)%'
+    app.coturn_static_auth_secret: '%env(string:COTURN_STATIC_AUTH_SECRET)%'
 
 services:
     # default configuration for services in *this* file

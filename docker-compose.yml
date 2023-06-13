@@ -85,6 +85,8 @@ services:
       - JANUS_VIDEOROOM_ADMIN_KEY
       - USE_TEXT_ROOMS
       - USE_VIDEO_ROOMS
+      - COTURN_DOMAIN
+      - COTURN_STATIC_AUTH_SECRET
     depends_on:
       - mysql
       - nginx

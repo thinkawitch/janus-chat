@@ -309,7 +309,7 @@ nat: {
 	#ignore_mdns = true
 
     # andrew
-	#ignore_mdns = true
+	ignore_mdns = true
 
 	#stun_server = "openrelay.metered.ca"
     #stun_port = 80
@@ -320,7 +320,7 @@ nat: {
     stun_server = "stun.sinkevitch.name"
     stun_port = 5349
     #ice_lite = true
-    #ice_tcp = true
+    ice_tcp = true
 
     # /andrew
 
@@ -379,6 +379,11 @@ nat: {
 	#turn_rest_api_key = "anyapikeyyoumayhaveset"
 	#turn_rest_api_method = "GET"
 	#turn_rest_api_timeout = 10
+
+    # andrew, http, janus doesn't like self signed cert
+	turn_rest_api = "http://jc-api-a91.cc.lan/coturn-access"
+    turn_rest_api_method = "GET"
+    turn_rest_api_timeout = 10
 
 	# In case a TURN server is provided, you can allow applications to force
 	# Janus to use TURN (https://github.com/meetecho/janus-gateway/pull/2774).

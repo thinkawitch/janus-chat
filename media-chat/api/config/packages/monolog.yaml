@@ -2,6 +2,7 @@ monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
         - janus_events # For events from janus gateway
+        - coturn_access # coturn create temp users
 
 
 when@dev:
@@ -11,7 +12,7 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ["!event", "!janus_events"]
+                channels: ["!event", "!janus_events", "!coturn_access"]
             # uncomment to get logging in your browser
             # you may have to allow bigger header sizes in your Web server configuration
             #firephp:
@@ -32,6 +33,13 @@ when@dev:
               channels: [ "janus_events" ]
               formatter: monolog.multiline_formatter
               max_files: 3
+            coturn_access:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.coturn_access.log"
+                level: debug
+                channels: [ "coturn_access" ]
+                formatter: monolog.multiline_formatter
+                max_files: 3
 
 when@test:
     monolog:
@@ -56,7 +64,7 @@ when@prod:
                 handler: nested
                 excluded_http_codes: [404, 405]
                 buffer_size: 50 # How many messages should be saved? Prevent memory leaks
-                channels: ["!janus_events"]
+                channels: ["!janus_events", "!coturn_access"]
             nested:
                 type: stream
                 path: php://stderr
@@ -76,5 +84,12 @@ when@prod:
                 path: "%kernel.logs_dir%/%kernel.environment%.janus_events.log"
                 level: error
                 channels: [ "janus_events" ]
+                formatter: monolog.multiline_formatter
+                max_files: 3
+            coturn_access:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.coturn_access.log"
+                level: error
+                channels: [ "coturn_access" ]
                 formatter: monolog.multiline_formatter
                 max_files: 3

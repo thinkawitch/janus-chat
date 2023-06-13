@@ -255,7 +255,7 @@ function connectToJanusServer() {
     };
 
     function initDone() {
-        console.log('[connectToJanusServer] initDone');
+        console.log('[connectToJanusServer] initDone gatewayCallbacks', gatewayCallbacks);
         janus = new Janus(gatewayCallbacks);
     }
 

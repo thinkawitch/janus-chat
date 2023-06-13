@@ -43,6 +43,7 @@ security:
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: /me, roles: PUBLIC_ACCESS } # only this url for all
         - { path: ^/janus-events, roles: ROLE_JANUS_EVENTS }
+        - { path: ^/coturn-access, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
 
