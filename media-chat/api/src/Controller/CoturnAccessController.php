@@ -52,7 +52,8 @@ class CoturnAccessController extends AbstractController
         }
 
         if ($paramService === 'turn') {
-            $result['uris'][] = "turns:turn.$coturnDomain:5349?transport=tcp";
+            $result['uris'][] = "turns:turn.$coturnDomain:5349?transport=tcp"; // firefox doesnt like turns, not sure
+            //$result['uris'][] = "turn:turn.$coturnDomain:5349?transport=tcp";
         }
 
         $this->logger->info(print_r($result, true));

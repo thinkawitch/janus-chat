@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket check</title>
+</head>
+<body>
+<h4>websocket check</h4>
+<p>See console</p>
+<script>
+
+  const server = 'wss://' + window.location.hostname + ':8989';
+  const protocols = 'janus-protocol';
+  console.log('server', server);
+  const ws = new WebSocket(server, protocols);
+
+  ws.addEventListener('open', (event) => {
+    console.log('websocket opened', event);
+    let request = { janus: 'create', transaction: '' };
+    ws.send(JSON.stringify(request));
+  });
+
+  ws.addEventListener('message', (event) => {
+    console.log('websocket message', event.data);
+  });
+
+  ws.addEventListener('error', (event) => {
+    console.warn('websocket error', event);
+  });
+
+  ws.addEventListener('close', (event) => {
+    console.log('websocket closed', event);
+  });
+
+</script>
+
+</body>
+</html>
