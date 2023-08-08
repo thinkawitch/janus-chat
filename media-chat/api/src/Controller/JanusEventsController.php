@@ -43,6 +43,8 @@ class JanusEventsController extends AbstractController
                 case JanusConstants::JANUS_EVENT_TYPE_PLUGIN:
                     if ($row['event']['plugin'] === 'janus.plugin.textroom') {
                         $this->handleTextRoomEvent($row['event']['data']);
+                    } else if ($row['event']['plugin'] === 'janus.plugin.videoroom') {
+                        $this->handleVideoRoomEvent($row['event']['data']);
                     }
                     break;
                 case JanusConstants::JANUS_EVENT_TYPE_CORE:
@@ -88,15 +90,33 @@ class JanusEventsController extends AbstractController
         $roomId = $eventData['room'];
         switch ($eventData['event']) {
             case 'created':
-                $this->logger->info('room_created ' . $roomId);
+                $this->logger->info('textroom_created ' . $roomId);
                 $this->conn->update('text_rooms', ['active' => 1], ['id' => $roomId]);
                 break;
             case 'destroyed':
-                $this->logger->info('room_destroyed ' . $roomId);
+                $this->logger->info('textroom_destroyed ' . $roomId);
                 $this->conn->update('text_rooms', ['active' => 0], ['id' => $roomId]);
                 break;
             default:
-                $this->logger->info('other_textroom_event ' . json_encode($eventData));
+                $this->logger->info('textroom_other_event ' . json_encode($eventData));
+                break;
+        }
+    }
+
+    private function handleVideoRoomEvent(array $eventData): void
+    {
+        $roomId = $eventData['room'];
+        switch ($eventData['event']) {
+            case 'created':
+                $this->logger->info('videoroom_created ' . $roomId);
+                $this->conn->update('video_rooms', ['active' => 1], ['id' => $roomId]);
+                break;
+            case 'destroyed':
+                $this->logger->info('videoroom_destroyed ' . $roomId);
+                $this->conn->update('video_rooms', ['active' => 0], ['id' => $roomId]);
+                break;
+            default:
+                $this->logger->info('videoroom_other_event ' . json_encode($eventData));
                 break;
         }
     }

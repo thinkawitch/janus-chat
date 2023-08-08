@@ -154,7 +154,7 @@ class RoomsController extends AbstractController
             if (!$room) {
                 $room = $videoRoom;
             } else {
-                $room = [...$room, ...$videoRoom];
+                $room = [...$room, ...$videoRoom]; // should add specific video fields only?
             }
         }
 
@@ -298,7 +298,9 @@ class RoomsController extends AbstractController
             if ($room['active']) {
                 $janusUserApi->editRoom($roomId, $room['secret'], $newRoom);
             }
+            // not sure, depends on getGoodRoomDataForUpdate()
             $conn->update('text_rooms', $newRoom, ['id' => $roomId]);
+            $conn->update('video_rooms', $newRoom, ['id' => $roomId]);
             $result = ['room' => $roomId];
             $conn->commit();
         } catch (\Exception $e) {

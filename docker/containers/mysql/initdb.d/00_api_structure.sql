@@ -1,6 +1,13 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 192.168.88.91:33091
+-- Generation Time: Aug 08, 2023 at 02:41 PM
+-- Server version: 5.7.40
+-- PHP Version: 8.2.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -31,10 +38,12 @@ CREATE TABLE `text_rooms` (
     `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `text_rooms`
+--
 
-
-INSERT INTO `text_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `history`, `post`, `permanent`, `description`) VALUES
-    (1234, 1, '2022-01-01 00:00:01', NULL, 1, 1, 0, 'adminpwd', '', 0, 100, NULL, 0, 'default demo room');
+INSERT INTO `text_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `history`, `post`, `permanent`, `description`) VALUES(1234, 1, '2022-01-01 00:00:01', NULL, 1, 1, 0, 'adminpwd', '', 0, 100, NULL, 0, 'default demo room');
+INSERT INTO `text_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `history`, `post`, `permanent`, `description`) VALUES(1239, 1, '2023-08-08 13:21:32', NULL, 1, 1, 0, '', '', 1, 100, NULL, 0, 'Room 1');
 
 -- --------------------------------------------------------
 
@@ -55,8 +64,7 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `created`, `username`, `password`, `type`, `disabled`) VALUES
-    (1, '2022-05-30 14:10:45', 'andrew@cc.lan', '$2y$13$UQJ7lAh4TWTkobL7zoBhFOyeKfMFUWSvN5r4E0UQMFADAYerUW9ZS', 1, 0);
+INSERT INTO `users` (`id`, `created`, `username`, `password`, `type`, `disabled`) VALUES(1, '2022-05-30 14:10:45', 'andrew@cc.lan', '$2y$13$UQJ7lAh4TWTkobL7zoBhFOyeKfMFUWSvN5r4E0UQMFADAYerUW9ZS', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -65,10 +73,10 @@ INSERT INTO `users` (`id`, `created`, `username`, `password`, `type`, `disabled`
 --
 
 CREATE TABLE `users_log` (
-     `id` int(10) UNSIGNED NOT NULL,
-     `user_id` int(11) NOT NULL,
-     `date` datetime NOT NULL,
-     `type` tinyint(3) UNSIGNED NOT NULL
+    `id` int(10) UNSIGNED NOT NULL,
+    `user_id` int(11) NOT NULL,
+    `date` datetime NOT NULL,
+    `type` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -82,16 +90,22 @@ CREATE TABLE `video_rooms` (
     `user_id` int(11) NOT NULL,
     `created` datetime NOT NULL,
     `updated` datetime DEFAULT NULL,
+    `enabled` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
     `active` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
     `deleted` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
     `secret` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `pin` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    `private` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-    `history` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-    `post` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `is_private` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
     `permanent` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-    `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+    `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `publishers` tinyint(3) UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `video_rooms`
+--
+
+INSERT INTO `video_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `permanent`, `description`, `publishers`) VALUES(1239, 1, '2023-08-08 13:21:32', NULL, 1, 1, 0, '', '', 1, 0, 'Room 1', 1);
 
 --
 -- Indexes for dumped tables
@@ -135,7 +149,7 @@ ALTER TABLE `video_rooms`
 -- AUTO_INCREMENT for table `text_rooms`
 --
 ALTER TABLE `text_rooms`
-    MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+    MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1240;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -153,7 +167,7 @@ ALTER TABLE `users_log`
 -- AUTO_INCREMENT for table `video_rooms`
 --
 ALTER TABLE `video_rooms`
-    MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+    MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1240;
 
 --
 -- Constraints for dumped tables
@@ -170,6 +184,4 @@ ALTER TABLE `text_rooms`
 --
 ALTER TABLE `users_log`
     ADD CONSTRAINT `users_log_ibfk_userid` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
-
 COMMIT;
