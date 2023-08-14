@@ -101,7 +101,7 @@ function StartStopRoom({ room }) {
             if (action1.error) {
                 return;
             } else {
-                dispatch(getRoom({ roomId }));
+                await dispatch(getRoom({ roomId }));
             }
         }
         const action2 = await dispatch(startRoom({ roomId }));

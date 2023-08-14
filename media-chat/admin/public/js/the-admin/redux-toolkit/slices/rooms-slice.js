@@ -127,6 +127,7 @@ export const roomsSlice = createSlice({
         [updateRoom.fulfilled]: (state, action) => {
             console.log('textRoomSlice textRoomUpdate.fulfilled')
             //const roomId = action.payload.room;
+            // maybe update the fields here? and get rid of excess getRoom()
             state.updating = false;
         },
         [updateRoom.rejected]: (state, action) => {
