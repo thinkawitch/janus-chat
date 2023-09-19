@@ -61,7 +61,7 @@ delete window.ReactDOM;
 const { Provider, useSelector, useDispatch, shallowEqual } = window.ReactRedux;
 
 // redux toolkit
-import 'https://unpkg.com/@reduxjs/toolkit@1.8.6/dist/redux-toolkit.umd.js';
+import 'https://unpkg.com/@reduxjs/toolkit@1.9.5/dist/redux-toolkit.umd.js';
 console.log('window.RTK', window.RTK);
 const { configureStore, createSlice, createAction, createAsyncThunk, createSelector, createDraftSafeSelector } = window.RTK;
 
