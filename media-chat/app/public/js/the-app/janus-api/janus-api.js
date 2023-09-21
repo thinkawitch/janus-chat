@@ -275,6 +275,7 @@ function reconnectToJanusServer() {
         },
         error: (error) => {
             Janus.warn('[reconnectToJanusServer] error', error);
+            dispatch(addJanusError(error));
             janusMachineService.send({ type: 'CONNECT_ERROR', payload: error });
             if (String(error).substring(0, 15) === 'No such session') {
                 // do full reconnect

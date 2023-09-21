@@ -1,9 +1,9 @@
 // preact 10.11.3 put into local dir, unpkg.com have not-correct builds
 
 
-const shouldLoadDT = true; //new URLSearchParams(window.location.search).has('dev');
-console.log('should load devtool?', shouldLoadDT);
-if (shouldLoadDT) {
+const devMode = true; //new URLSearchParams(window.location.search).has('dev');
+console.log('devMode', devMode);
+if (devMode) {
     //await import('https://unpkg.com/preact@10.11.3/devtools/dist/devtools.module.js?module');
     await import('/js/vendor/preact/preact.devtools.js');
 }
@@ -50,14 +50,14 @@ window.ReactDOM = {
 }
 await import('https://unpkg.com/react-redux@7.2.9/dist/react-redux.js');
 //import('../react-redux-temp.js');
-console.log('window.ReactRedux', window.ReactRedux);
+devMode && console.log('window.ReactRedux', window.ReactRedux);
 delete window.React;
 delete window.ReactDOM;
 const { Provider, useSelector, useDispatch } = window.ReactRedux;
 
 // redux toolkit
-import 'https://unpkg.com/@reduxjs/toolkit@1.9.2/dist/redux-toolkit.umd.js';
-console.log('window.RTK', window.RTK);
+import 'https://unpkg.com/@reduxjs/toolkit@1.9.5/dist/redux-toolkit.umd.js';
+devMode && console.log('window.RTK', window.RTK);
 const { configureStore, createSlice, createAction, createAsyncThunk } = window.RTK;
 
 // day.js
@@ -71,7 +71,7 @@ dayjs.extend(isToday);
 //import StateMachine from 'https://cdn.skypack.dev/javascript-state-machine';
 //import StateMachine from '/js/vendor/javascript-state-machine/state-machine.esm.js';
 
-import 'https://unpkg.com/xstate@4.35.4/dist/xstate.js'
+import 'https://unpkg.com/xstate@4.38.2/dist/xstate.js'
 const xstate = window.XState;
 //console.log('window.XState', window.XState);
 
