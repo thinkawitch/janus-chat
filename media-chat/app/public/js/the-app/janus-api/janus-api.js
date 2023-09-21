@@ -105,9 +105,11 @@ export function startJanus(theStore) {
             disconnectFromJanusServer: (context, event) => {
                 console.log('[startJanus] disconnectFromJanusServer', context, event);
                 console.log('[startJanus] disconnectFromJanusServer', janusMachineService.getSnapshot());
+                let destroyEnded = false;
                 janus.destroy({
                     cleanupHandles: true,
                     success: () => {
+                        destroyEnded = true;
                         console.log('[startJanus] disconnectFromJanusServer success');
                         dispatch(disconnected());
                         // connect again in server.xs disconnecting.DISCONNECTED
@@ -117,9 +119,18 @@ export function startJanus(theStore) {
                         }, 100);
                     },
                     error: (error) => {
+                        destroyEnded = true;
                         console.error('[startJanus] disconnectFromJanusServer error', error);
                     },
                 });
+                // second check, the .success() handler may not be called
+                setTimeout(() => {
+                    if (!destroyEnded) {
+                        console.log('[startJanus] disconnectFromJanusServer !destroyEnded');
+                        dispatch(disconnected());
+                        janusMachineService.send({ type: 'DISCONNECTED' });
+                    }
+                }, 200)
             },
         }
     }
