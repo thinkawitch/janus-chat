@@ -165,6 +165,11 @@ export default function SendMessage() {
                 //
                 //console.log('caret coordinates', getCaretCoordinates());
                 //console.log('textarea rec', inputRef.current.getBoundingClientRect());
+                // prevent multiple "@@..@"
+                if (inputRef.current.value.slice(-1) === '@') {
+                    e.preventDefault();
+                    return;
+                }
             }
             if (e.key === 'Escape') {
                 setShowSelectUser(false);

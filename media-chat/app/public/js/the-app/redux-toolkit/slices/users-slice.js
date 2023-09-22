@@ -6,7 +6,7 @@ import { USER_STATUS_ONLINE, USER_STATUS_OFFLINE } from '../../constants.js';
 // {id, username, displayName, status:{online,offline}}
 const initialState = [
     { username: 'User100', displayName: 'User 100', status: 'offline' },
-    { username: 'User10_0', displayName: 'User 10 0', status: 'offline' },
+    { username: 'User10_0', displayName: 'User 100 10', status: 'offline' },
     { username: 'User200', displayName: 'User 200', status: 'offline' },
     { username: 'User300', displayName: 'User 300', status: 'offline' },
     { username: 'User400', displayName: 'User 400', status: 'offline' },

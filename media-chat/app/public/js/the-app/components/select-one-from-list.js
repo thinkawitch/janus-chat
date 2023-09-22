@@ -30,6 +30,7 @@ export default function SelectOneFromList({ items, selected, onSelect, onCancel 
                     onSelect(itemId);
                     break;
                 default:
+                    // maybe should move to name containing the letter
                     onCancel();
                     break;
             }
@@ -46,8 +47,20 @@ export default function SelectOneFromList({ items, selected, onSelect, onCancel 
         }
     }, [itemId]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (refContainer.current && !refContainer.current.contains(event.target)) {
+                onCancel();
+            }
+        };
+        document.addEventListener('click', handleClickOutside, true);
+        return () => {
+            document.removeEventListener('click', handleClickOutside, true);
+        };
+    }, [onCancel])
+
     return html`
-        <div class="select-one-from-list"  ref=${refContainer}>
+        <div class="select-one-from-list" ref=${refContainer}>
             <div class="list-group list-group-flush flex-grow-1">
                 ${items.map(item => {
                     const ca = item.id === itemId ? 'active' : '';
