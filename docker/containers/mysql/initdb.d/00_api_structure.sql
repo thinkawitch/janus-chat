@@ -42,7 +42,7 @@ CREATE TABLE `text_rooms` (
 -- Dumping data for table `text_rooms`
 --
 
-INSERT INTO `text_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `history`, `post`, `permanent`, `description`) VALUES(1234, 1, '2022-01-01 00:00:01', NULL, 1, 1, 0, 'adminpwd', '', 0, 100, NULL, 0, 'default demo room');
+INSERT INTO `text_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `history`, `post`, `permanent`, `description`) VALUES(1234, 1, '2022-01-01 00:00:01', NULL, 1, 1, 0, 'adminpwd', '', 0, 100, NULL, 0, 'Demo room');
 INSERT INTO `text_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `history`, `post`, `permanent`, `description`) VALUES(1239, 1, '2023-08-08 13:21:32', NULL, 1, 1, 0, '', '', 1, 100, NULL, 0, 'Room 1');
 
 -- --------------------------------------------------------
@@ -105,6 +105,7 @@ CREATE TABLE `video_rooms` (
 -- Dumping data for table `video_rooms`
 --
 
+INSERT INTO `video_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `permanent`, `description`, `publishers`) VALUES(1234, 1, '2022-01-01 00:00:01', NULL, 1, 1, 0, 'adminpwd', NULL, 0, 0, 'Demo room', 6);
 INSERT INTO `video_rooms` (`id`, `user_id`, `created`, `updated`, `enabled`, `active`, `deleted`, `secret`, `pin`, `is_private`, `permanent`, `description`, `publishers`) VALUES(1239, 1, '2023-08-08 13:21:32', NULL, 1, 1, 0, '', '', 1, 0, 'Room 1', 1);
 
 --
